@@ -24,11 +24,13 @@
     "@nestjs/common": "^7.0.0",
     "@nestjs/core": "^7.0.0",
     "@nestjs/platform-express": "^7.0.0",
+    "@nestjs/typeorm": "^7.1.0",
     "chokidar": "^3.4.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",
     "rxjs-compat": "^6.6.0",
+    "sqlite": "^4.0.11",
     "sqlite3": "^5.0.0",
     "typeorm": "^0.2.25"
   },

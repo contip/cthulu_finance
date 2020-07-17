@@ -1,0 +1,10 @@
+import { UserEntity } from './database.entity';
+import { EntityRepository, Repository } from 'typeorm';
+import { userDto } from './database.interface';
+
+@EntityRepository(UserEntity)
+export class UserRepository extends Repository<UserEntity> {
+    createUser = async (usrDto: userDto) => {
+        return await this.save(usrDto);
+    };
+}
