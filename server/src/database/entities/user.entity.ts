@@ -13,6 +13,6 @@ export class UserEntity extends BaseEntity {
     @Column()
     hash: string;
 
-    @Column()
+    @Column({default: 10000})
     cash: number;
 }

@@ -4,9 +4,10 @@ import { LookupService } from './lookup/lookup.service'
 import { LookupController } from './lookup/lookup.controller';
 import { DatabaseModule } from './database/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RegisterModule } from './register/register.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), HttpModule, DatabaseModule],
+  imports: [TypeOrmModule.forRoot(), HttpModule, DatabaseModule, RegisterModule],
   controllers: [LookupController],
   providers: [AppService, LookupService]
 })
