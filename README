@@ -1,0 +1,12 @@
+The idea is to implement the CS50x finance application, only using node.js
+instead of python and flask.  Since I just learned about node.js recently.
+
+Decide on a framework to use (e.g. nest) for the server part.  And instead
+of using something like handlebars... try to use react or angular
+
+Then just replicate everything they did in python with flask, node.
+
+
+first goal:
+
+write handler for POST request
