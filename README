@@ -1,12 +1,17 @@
-The idea is to implement the CS50x finance application, only using node.js
-instead of python and flask.  Since I just learned about node.js recently.
+The idea is to implement something like the CS50x finance application:
 
-Decide on a framework to use (e.g. nest) for the server part.  And instead
-of using something like handlebars... try to use react or angular
+https://cs50.harvard.edu/x/2020/tracks/web/finance/
 
-Then just replicate everything they did in python with flask, node.
+using nest js and react with typescript instead of flask and python.
+The reason is that I have taken a web dev course recently, and would like to 
+apply some of the skills (js / node) I learned in that course.  I would also 
+like to learn react.
 
+The CS50x project itself is presented as mostly pre-built, with the user to 
+finish writing several incomplete functions.  This project aims to implement 
+everything from scratch and use none of the CS50 code (except for, perhaps, 
+the html layout of the main app page).
 
-first goal:
+current goal:
 
-write handler for POST request
+implement SQL database integration for the backend
