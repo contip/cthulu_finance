@@ -19,18 +19,32 @@ export default function App() {
   const onSubmit = (data: IFormInput) => {
     if (data.confirm !== data.hash){
       alert("passwords don't matched!!");
+      return;
     }
     else {
-      console.log(JSON.stringify(data));
-      console.log(data.confirm);
-      alert('A form was submitted: ' + JSON.stringify(data));
-      fetch('http://localhost:6969/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-      }).then(response => response.json())
-      .then(response => console.log("registration successful!"));
-      };
+
+      if (valid) {
+        if (data.confirm === "" || data.hash === "")
+        {
+          alert("u must entered a pw!!!");
+          return;
+        }
+        console.log(JSON.stringify(data));
+        console.log(data.confirm);
+        alert('A form was submitted: ' + JSON.stringify(data));
+        fetch('http://localhost:6969/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+        .then(response => console.log("registration successful!"));
+        }
+      else {
+        alert("u must enter valid user name!")  
+        return;
+      }
+        
+        ;}
     }
   
     const userNameChange = (event: React.ChangeEvent<HTMLInputElement>, ) => {
