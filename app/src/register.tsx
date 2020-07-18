@@ -1,62 +1,98 @@
-import React from "react";
+import React, { IframeHTMLAttributes, useState } from "react";
 import { useForm } from "react-hook-form";
 
-type RegisterState = {
-  username: string,
-  hash: string,
-  confirm: string
+interface IFormInput {
+  username: string;
+  hash: string;
+  confirm: string;
+  valid: boolean;
 }
 
-export class RegisterForm extends React.Component<{}, RegisterState> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      username: '',
-      hash: '',
-      confirm: '',
-    }
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-
-  handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log("i am changin the dang state of things");
-    console.log(this.state);
-    this.setState({ username: event.target.value });
-  }
-
-  handleSubmit(event: React.FormEvent) {
-    if (this.state.confirm !== this.state.hash){
+export default function App() {
+  
+  const [ username, setUsername ] = useState('');
+  const [ hash, setHash ] = useState('');
+  const [ confirm, setConfirm ] = useState('');
+  const [ valid, setValid ] = useState(false);
+  const [ changed, setChanged ] = useState(false);
+  const { register, handleSubmit } = useForm<IFormInput>();
+  const onSubmit = (data: IFormInput) => {
+    if (data.confirm !== data.hash){
       alert("passwords don't matched!!");
     }
     else {
-      console.log(JSON.stringify(this.state));
-      console.log(this.state.confirm);
-      alert('A form was submitted: ' + JSON.stringify(this.state));
+      console.log(JSON.stringify(data));
+      console.log(data.confirm);
+      alert('A form was submitted: ' + JSON.stringify(data));
       fetch('http://localhost:6969/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(this.state)
+          body: JSON.stringify(data)
       }).then(response => response.json())
       .then(response => console.log("registration successful!"));
       };
-    
-  }
+    }
+  
+    const userNameChange = (event: React.ChangeEvent<HTMLInputElement>, ) => {
+        console.log('i am in the user name change handler');
+        console.log(event);
+        setUsername(event.target.value);
+        setChanged(false);
+        console.log(username);
 
-  render()
-  {
+    }
+
+    const userNameCheck = (event: any) => {
+      fetch('http://localhost:6969/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ "username": username, "hash":"" })
+      }).then(response => response.json())
+      .then(response => 
+        {
+          if (response["VALID"])
+          {
+            setValid(true);
+            setChanged(true);
+          }
+          else {
+            setValid(false);
+            setChanged(true);
+        }})
+    
+
+    }
+    
+    const userPassChange = (event: React.ChangeEvent<HTMLInputElement>, ) => {
+        console.log('i am in the user pass change handler');
+        console.log(event);
+        setHash(event.target.value);
+        console.log(hash);
+
+    }
+
+    const confirmChange = (event: React.ChangeEvent<HTMLInputElement>, ) => {
+        console.log('i am in the confirm pass change handler');
+        console.log(event);
+        setConfirm(event.target.value);
+        console.log(confirm);
+
+    }
   return (
-    <form onSubmit={this.handleSubmit}>
-      <input name="username" placeholder="User Name" required={true} maxLength={20} onChange={this.handleChange}/>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input name="username" placeholder="User Name" ref={register({ required:
+         true, maxLength: 20 })} onChange={userNameChange} onBlur={userNameCheck} />
       <p>
-      <input name="hash" type="password" placeholder="Password" />
+        {valid && changed && <p>this user name is available lol </p>}
+        {!valid && changed && <p>this user name is NOT available lol </p>}
+      <input name="hash" type="password" placeholder="Password" ref={register({ pattern: 
+        /^[A-Za-z]+$/i })} onChange={userPassChange} />
       </p>
       <p>
-      <input name="confirm" type="password" placeholder="Password (again)" />
+      <input name="confirm" type="password" placeholder="Password (again)" ref={register({ 
+        pattern: /^[A-Za-z]+$/i })} onChange={confirmChange} />
       </p>
       <input type="submit" value="Register!" />
     </form>
   );
-      }
 }
