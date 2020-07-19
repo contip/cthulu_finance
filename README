@@ -14,4 +14,7 @@ the html layout of the main app page).
 
 current goal:
 
-implement SQL database integration for the backend
+implement a login / user authentication system
+
+for pw hashing:
+use the @BeforeInsert() hook from TypeORM module to hash the user password before interacting with the database.  Hook allows for running code before saving Entity in database.
