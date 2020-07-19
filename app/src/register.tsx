@@ -29,15 +29,15 @@ export default function App() {
           alert("u must entered a pw!!!");
           return;
         }
-        console.log(JSON.stringify(data));
-        console.log(data.confirm);
+        // console.log(JSON.stringify(data));
+        // console.log(data.confirm);
         alert('A form was submitted: ' + JSON.stringify(data));
-        fetch('http://localhost:6969/register', {
+        fetch('http://localhost:6969/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         }).then(response => response.json())
-        .then(response => console.log("registration successful!"));
+        .then(response => {sessionStorage.setItem("token", response.access_token); console.log(sessionStorage.token)});
         }
       else {
         alert("u must enter valid user name!")  
@@ -57,7 +57,7 @@ export default function App() {
     }
 
     const userNameCheck = (event: any) => {
-      fetch('http://localhost:6969/register', {
+      fetch('http://localhost:6969/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ "username": username, "hash":"" })

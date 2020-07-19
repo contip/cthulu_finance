@@ -4,11 +4,13 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 import Lookup from './lookup';
 import App from './register';
+import Login from './login';
 
 ReactDOM.render(
   <div>
   <Lookup />
   <App />
+  <Login />
   </div>, document.getElementById('root') as HTMLElement
 );
 

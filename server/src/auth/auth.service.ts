@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserService } from '../database/user.service';
 import { userDto } from '../database/interfaces/user-dto.interface';
 import { JwtService } from '@nestjs/jwt';
+import { async } from 'rxjs';
 
 
 @Injectable()
@@ -18,6 +19,16 @@ export class AuthService {
             return user;
         }
         return null;
+    }
+
+    async regLookup(username: string): Promise<userDto> {
+        return await this.userService.findOne(username);
+    }
+
+    async registerUser(userDto: userDto): Promise<userDto> {
+        return this.userService.createUser(userDto);
+
+
     }
 
     async login(user: any) {

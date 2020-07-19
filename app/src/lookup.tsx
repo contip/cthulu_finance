@@ -26,7 +26,10 @@ export default class Lookup extends React.Component<{}, LookUpState> {
         alert('A form was submitted: ' + JSON.stringify(this.state.name));
         fetch('http://localhost:6969/lookup', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + sessionStorage.token,
+         },
             body: JSON.stringify(this.state.name)
         }).then(response => response.json())
         .then(response => this.setState({
