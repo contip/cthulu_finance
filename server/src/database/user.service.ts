@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
+import { userDto } from './interfaces/user-dto.interface';
 
 @Injectable()
 export class UserService {
@@ -23,11 +24,10 @@ export class UserService {
   * if so, returns that user
   * if not, returns simple key value pair VALID: VALID
   */
-  async findOne (username: string): Promise<any> {
-    return await this.userRepository.findOne({ username: username }) || {
-      "VALID": "VALID"
-    }
-    }
+  async findOne (username: string): Promise<userDto> {
+    return await this.userRepository.findOne({ username: username }) || { id: -1, username: '', hash: '', cash: 0 };
+  }
+    
   
 
   async remove(id: string): Promise<void> {

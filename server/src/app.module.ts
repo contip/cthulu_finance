@@ -7,9 +7,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RegisterModule } from './register/register.module';
 import { LoginController } from './login/login.controller';
 import { LoginModule } from './login/login.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), HttpModule, DatabaseModule, RegisterModule, LoginModule],
+  imports: [TypeOrmModule.forRoot(), HttpModule, DatabaseModule, RegisterModule, LoginModule, AuthModule],
   controllers: [LookupController, LoginController],
   providers: [AppService, LookupService]
 })

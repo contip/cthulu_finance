@@ -48,8 +48,8 @@ export default function App() {
     }
   
     const userNameChange = (event: React.ChangeEvent<HTMLInputElement>, ) => {
-        console.log('i am in the user name change handler');
-        console.log(event);
+        // console.log('i am in the user name change handler');
+        // console.log(event);
         setUsername(event.target.value);
         setChanged(false);
         console.log(username);
@@ -64,7 +64,8 @@ export default function App() {
       }).then(response => response.json())
       .then(response => 
         {
-          if (response["VALID"])
+          /* i think this qualifies as a magic string */
+          if (response.id === -1)
           {
             setValid(true);
             setChanged(true);
