@@ -1,8 +1,13 @@
 import { BehaviorSubject } from 'rxjs';
+import { report } from 'process';
 
 // const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
-const currentUserSubject = new BehaviorSubject(JSON.parse(JSON.stringify(localStorage.getItem('currentUser'))));
+// localStorage.clear();
+const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser') || '{}'));
 
+// console.log(currentUserSubject.value);
+// console.log(currentUserSubject);
+// console.log(localStorage.getItem('currentUser'));
 interface IFormInput {
   username: string;
   password: string;
@@ -16,7 +21,7 @@ export const authService = {
     get currentUserValue() { return currentUserSubject.value }
 };
 
-async function login(data: IFormInput): Promise<any> {
+function login(data: IFormInput) {
     fetch('http://localhost:6969/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -31,9 +36,27 @@ async function login(data: IFormInput): Promise<any> {
                 return;
             }
             else {
-                localStorage.setItem("currentUser", JSON.stringify(data));
-                currentUserSubject.next(JSON.stringify(data));
-                console.log(localStorage)
+                // localStorage.currentUser.token = response.access_token;
+                // console.log("im in auth, user been found, response token is: " + response.access_token);
+                // console.log('previous to calling next, currentUserSubject value is: ' + JSON.stringify(currentUserSubject.value));
+                // currentUserSubject.subscribe({
+                //     next: (v) => console.log(v),
+
+                // })
+                currentUserSubject.next({ userName: data['username'], token: response.access_token });
+                // authService.currentUser.subscribe({
+                //     next: (v) => {
+                //         localStorage.currentUser = v;
+                //     }
+                // })
+                // currentUserSubject.next(response.access_token);
+                localStorage['currentUser'] = JSON.stringify(currentUserSubject.value);
+                console.log('after calling next, currentUserSubject value is: ' + JSON.stringify(currentUserSubject.value));
+                console.log('value of local storage is: ', localStorage['currentUser']);
+                console.log('again is: ' + localStorage.getItem('currentUser'));
+
+
+                // console.log("im in auth, uesr been found, localstorage currentuser  is: " + localStorage.getItem('currentUser'));
                 return;
             }
         })
@@ -41,7 +64,7 @@ async function login(data: IFormInput): Promise<any> {
 
 function logout(): void {
     /* remove any token / current user in the session storage */
-    localStorage.clear();
+    localStorage['currentUser'] = null;
     /* somehow let the app know to re-render the LOGIN page */
 
 }
