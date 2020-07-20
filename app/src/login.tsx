@@ -9,7 +9,7 @@ interface IFormInput {
 
 export default function LoginForm() {
 
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
   
   const { register, handleSubmit } = useForm<IFormInput>();
   const onSubmit = (data: IFormInput) => {
@@ -28,7 +28,7 @@ export default function LoginForm() {
          /* call the login function of authservice) */
          authService.login(data);
          if (authService.currentUser !== null) {
-           setCurrentUser(localStorage.token);
+           setCurrentUser(localStorage.getItem("currentUser"));
            console.log("the current user been set and is: " + currentUser);
          }
          else {

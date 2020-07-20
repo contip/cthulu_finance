@@ -1,6 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 
-const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem("currentUser") || "null"));
+// const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
+const currentUserSubject = new BehaviorSubject(JSON.parse(JSON.stringify(localStorage.getItem('currentUser'))));
 
 interface IFormInput {
   username: string;
@@ -10,6 +11,7 @@ interface IFormInput {
 export const authService = {
     login,
     logout,
+    authHeader,
     currentUser: currentUserSubject.asObservable(),
     get currentUserValue() { return currentUserSubject.value }
 };
@@ -29,10 +31,9 @@ async function login(data: IFormInput): Promise<any> {
                 return;
             }
             else {
-                localStorage.setItem("token", response.access_token); 
-                localStorage.setItem("currentUser", data.username);
-                currentUserSubject.next(data.username);
-                console.log(localStorage.token)
+                localStorage.setItem("currentUser", JSON.stringify(data));
+                currentUserSubject.next(JSON.stringify(data));
+                console.log(localStorage)
                 return;
             }
         })
@@ -43,4 +44,17 @@ function logout(): void {
     localStorage.clear();
     /* somehow let the app know to re-render the LOGIN page */
 
+}
+
+function authHeader() {
+    /* returns HTTP authorization header containing the JWT auth token of 
+    * the currently logged-in user.  if user isn't logged in, returns an 
+    * empty object instead */
+   const currentUser = authService.currentUserValue;
+   if (currentUser && currentUser.token) {
+       return { Authorization: `Bearer ${currentUser.token}` };
+   }
+   else {
+       return {};
+   }
 }
