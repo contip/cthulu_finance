@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { authService } from "./auth.service";
 
 interface IFormInput {
   username: string;
   password: string;
 }
 
-export default function Login() {
+export default function LoginForm() {
+
+  const [currentUser, setCurrentUser] = useState(null);
   
   const { register, handleSubmit } = useForm<IFormInput>();
   const onSubmit = (data: IFormInput) => {
@@ -22,27 +25,21 @@ export default function Login() {
      }
      else {
          /* if the username and password fields are filled out, submit the post request to auth/login */
-         fetch('http://localhost:6969/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(response => response.json())
-        .then(response => {
-            if (!response.access_token) {
-                /* bad login... alert user and reload login form */
-                alert("invalid username / password!  plz tried again");
-                /* call service_unauthorized()  -- general function to drop user from whatever they are accessing and bring to the login page */
-                return;
-            }
-            else {
-                sessionStorage.setItem("token", response.access_token); 
-                console.log(sessionStorage.token)
-            }
-        })
-     }
-    }
+         /* call the login function of authservice) */
+         authService.login(data);
+         if (authService.currentUser !== null) {
+           setCurrentUser(localStorage.token);
+           console.log("the current user been set and is: " + currentUser);
+         }
+         else {
+           console.log("current user aint been set and is: " + currentUser);
+           setCurrentUser(null);
+         }
+        }};
   
   return (
+    <div>
+      {!currentUser &&
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="username" placeholder="User Name" ref={register({ required:
          true, maxLength: 20 })} />
@@ -51,6 +48,7 @@ export default function Login() {
         /^[A-Za-z]+$/i })} />
       </p>
       <input type="submit" value="Login!" />
-    </form>
+    </form>}
+    </div>
   );
 }
