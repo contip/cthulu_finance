@@ -14,4 +14,4 @@ the html layout of the main app page).
 
 current goal:
 
-continue working on frontend authorization
+hide login form on successful login, show dashboard
