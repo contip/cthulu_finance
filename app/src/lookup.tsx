@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { authService } from './auth.service';
 
 type LookUpProps = {
     actionURL: string
@@ -28,7 +29,8 @@ export default class Lookup extends React.Component<{}, LookUpState> {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + sessionStorage.token,
+                // 'Authorization': 'Bearer ' + sessionStorage.token,
+                'Authorization': 'Bearer ' + authService.currentUserValue.token,
          },
             body: JSON.stringify(this.state.name)
         }).then(response => response.json())

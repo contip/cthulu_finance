@@ -54,7 +54,7 @@ function login(data: IFormInput) {
                 console.log('after calling next, currentUserSubject value is: ' + JSON.stringify(currentUserSubject.value));
                 console.log('value of local storage is: ', localStorage['currentUser']);
                 console.log('again is: ' + localStorage.getItem('currentUser'));
-
+                console.log(currentUserSubject.getValue().token);
 
                 // console.log("im in auth, uesr been found, localstorage currentuser  is: " + localStorage.getItem('currentUser'));
                 return;
