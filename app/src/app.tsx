@@ -6,8 +6,12 @@ import * as serviceWorker from './serviceWorker';
 import Lookup from './lookup';
 import Login from './login';
 import Logout from './logout';
+import { AppState } from 'react-native';
 
-export default class App extends React.Component {
+interface appState {
+    currentUser: object | null
+}
+export default class App extends React.Component<{},appState> {
     constructor(props: any) {
         super(props);
 
@@ -17,7 +21,7 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
-        authService.currentUser.subscribe(x => this.setState({ currentUser: x }));
+       authService.currentUser.subscribe(x => this.setState({ currentUser: x }));
     }
 
     logout() {
@@ -25,7 +29,10 @@ export default class App extends React.Component {
     }
 
     render() {
-        const currentUser = this.state;
+        /* every time rendering happens, is when the check to see if user
+         * is logged in or not should occur */
+        const currentUser = this.state.currentUser;
+        console.log(currentUser);
         if (authService.currentUserValue == null)
         {
             return (
