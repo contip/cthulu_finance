@@ -65,6 +65,7 @@ function login(data: IFormInput) {
 function logout(): void {
     /* remove any token / current user in the session storage */
     localStorage['currentUser'] = null;
+    window.location.reload(false);
     /* somehow let the app know to re-render the LOGIN page */
 
 }

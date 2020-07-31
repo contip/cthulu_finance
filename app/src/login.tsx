@@ -27,7 +27,7 @@ export default function LoginForm() {
          /* if the username and password fields are filled out, submit the post request to auth/login */
          /* call the login function of authservice) */
          authService.login(data);
-         if (authService.currentUserValue.userName !== null) {
+         if (authService.currentUserValue !== null) {
            console.log("the current user been set and is: " + JSON.stringify(authService.currentUserValue));
            console.log("localstorage.getitem(currentuser) is:" + localStorage.getItem('currentUser'));
          }
@@ -39,7 +39,7 @@ export default function LoginForm() {
   
   return (
     <div>
-      {!currentUser &&
+
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="username" placeholder="User Name" ref={register({ required:
          true, maxLength: 20 })} />
@@ -48,7 +48,7 @@ export default function LoginForm() {
         /^[A-Za-z]+$/i })} />
       </p>
       <input type="submit" value="Login!" />
-    </form>}
+    </form>
     </div>
   );
 }

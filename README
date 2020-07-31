@@ -14,4 +14,4 @@ the html layout of the main app page).
 
 current goal:
 
-hide login form on successful login, show dashboard
+add hashing of user passwords, add registration form
