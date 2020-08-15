@@ -64,7 +64,9 @@ function login(data: IFormInput) {
 
 function logout(): void {
     /* remove any token / current user in the session storage */
+    console.log('auth service logout function has just been called');
     localStorage['currentUser'] = null;
+    currentUserSubject.next(null);
     //window.location.reload(false);
     /* somehow let the app know to re-render the LOGIN page */
 
