@@ -1,54 +1,8 @@
 import { BehaviorSubject } from 'rxjs';
 import { report } from 'process';
 
-
-type authProps = {
-    actionURL: string
-}
-
-type authState = {
-    /* way to check authorization is to see if user object exists.. if so, can
-     * access username and token in the object.. if not, we know user is not
-     * logged in */
-    user: { name: string, token: string } | null,
-    lookupResponse: { company: string, price: number, symbol: string }
-}
-
-export default class Lookup extends React.Component<{}, LookUpState> {
-    constructor(props: LookUpProps) {
-        super(props)
-        this.state = {
-            name: {name: ''},
-            lookupResponse: { company: '', price: 0, symbol: '' }
-        };
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
-// localStorage.clear();
+ //localStorage.clear();
 const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser') || '{}'));
 
 // console.log(currentUserSubject.value);
@@ -111,7 +65,7 @@ function login(data: IFormInput) {
 function logout(): void {
     /* remove any token / current user in the session storage */
     localStorage['currentUser'] = null;
-    window.location.reload(false);
+    //window.location.reload(false);
     /* somehow let the app know to re-render the LOGIN page */
 
 }

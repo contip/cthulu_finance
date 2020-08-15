@@ -33,7 +33,7 @@ export default class App extends React.Component<{},appState> {
          * is logged in or not should occur */
         const currentUser = this.state.currentUser;
         console.log(currentUser);
-        if (authService.currentUserValue == null)
+        if (currentUser == null)
         {
             return (
                 <div>

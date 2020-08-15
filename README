@@ -14,7 +14,4 @@ the html layout of the main app page).
 
 current goal:
 
-need to change frontend auth to be a class, the state of which i can export
-to other components.  then i can have a requirement behind each route, that 
-the state of auth must be true (i.e. a user must be logged in, otherwise either 
-redirect to login page, or go to an error page)
+add hashing of user passwords, add registration form
