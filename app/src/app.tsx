@@ -31,9 +31,8 @@ export default class App extends React.Component<{},appState> {
     render() {
         /* every time rendering happens, is when the check to see if user
          * is logged in or not should occur */
-        const { currentUser } = this.state;
-        console.log(currentUser);
-        if (currentUser == null)
+        console.log(this.state.currentUser);
+        if (!this.state.currentUser)
         {
             return (
                 <div>

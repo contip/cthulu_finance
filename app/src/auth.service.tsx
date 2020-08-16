@@ -43,18 +43,21 @@ function login(data: IFormInput) {
                 //     next: (v) => console.log(v),
 
                 // })
-                currentUserSubject.next({ userName: data['username'], token: response.access_token });
+                let user = JSON.parse(response.userName);
+                console.log(JSON.stringify(user));
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                currentUserSubject.next(user);
                 // authService.currentUser.subscribe({
                 //     next: (v) => {
                 //         localStorage.currentUser = v;
                 //     }
                 // })
                 // currentUserSubject.next(response.access_token);
-                localStorage['currentUser'] = JSON.stringify(currentUserSubject.value);
-                console.log('after calling next, currentUserSubject value is: ' + JSON.stringify(currentUserSubject.value));
-                console.log('value of local storage is: ', localStorage['currentUser']);
-                console.log('again is: ' + localStorage.getItem('currentUser'));
-                console.log(currentUserSubject.getValue().token);
+                // localStorage['currentUser'] = JSON.stringify(currentUserSubject.value);
+                // console.log('after calling next, currentUserSubject value is: ' + JSON.stringify(currentUserSubject.value));
+                // console.log('value of local storage is: ', localStorage['currentUser']);
+                // console.log('again is: ' + localStorage.getItem('currentUser'));
+                // console.log(currentUserSubject.getValue().token);
 
                 // console.log("im in auth, uesr been found, localstorage currentuser  is: " + localStorage.getItem('currentUser'));
                 return;
@@ -65,7 +68,7 @@ function login(data: IFormInput) {
 function logout(): void {
     /* remove any token / current user in the session storage */
     console.log('auth service logout function has just been called');
-    localStorage['currentUser'] = null;
+    localStorage.clear();
     currentUserSubject.next(null);
     //window.location.reload(false);
     /* somehow let the app know to re-render the LOGIN page */
