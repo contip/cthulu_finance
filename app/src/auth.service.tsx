@@ -2,8 +2,8 @@ import { BehaviorSubject } from 'rxjs';
 import { report } from 'process';
 
 // const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
- //localStorage.clear();
-const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser') || '{}'));
+//  localStorage.clear();
+const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')!));
 
 // console.log(currentUserSubject.value);
 // console.log(currentUserSubject);
@@ -28,7 +28,7 @@ function login(data: IFormInput) {
             body: JSON.stringify(data)
         }).then(response => response.json())
         .then(response => {
-            if (!response.access_token) {
+            if (!response.accessToken) {
                 /* bad login... alert user and reload login form */
                 alert("invalid username / password!  plz tried again");
                 /* call service_unauthorized()  -- general function to drop user from whatever they are accessing and bring to the login page */
@@ -43,8 +43,9 @@ function login(data: IFormInput) {
                 //     next: (v) => console.log(v),
 
                 // })
-                let user = JSON.parse(response.userName);
-                console.log(JSON.stringify(user));
+                // console.log(response);
+                let user = response;
+                // console.log(JSON.stringify(user));
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 currentUserSubject.next(user);
                 // authService.currentUser.subscribe({
@@ -80,8 +81,8 @@ function authHeader() {
     * the currently logged-in user.  if user isn't logged in, returns an 
     * empty object instead */
    const currentUser = authService.currentUserValue;
-   if (currentUser && currentUser.token) {
-       return { Authorization: `Bearer ${currentUser.token}` };
+   if (currentUser && currentUser.accessToken) {
+       return { Authorization: `Bearer ${currentUser.accessToken}` };
    }
    else {
        return {};

@@ -30,7 +30,7 @@ export default class Lookup extends React.Component<{}, LookUpState> {
             headers: { 
                 'Content-Type': 'application/json',
                 // 'Authorization': 'Bearer ' + sessionStorage.token,
-                'Authorization': 'Bearer ' + authService.currentUserValue.token,
+                'Authorization': 'Bearer ' + authService.currentUserValue.accessToken,
          },
             body: JSON.stringify(this.state.name)
         }).then(response => response.json())

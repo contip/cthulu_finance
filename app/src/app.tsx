@@ -11,7 +11,7 @@ import { AppState } from 'react-native';
 interface appState {
     currentUser: object | null
 }
-export default class App extends React.Component<{},appState> {
+export default class App extends React.Component<{}, appState> {
     constructor(props: any) {
         super(props);
 
@@ -21,7 +21,7 @@ export default class App extends React.Component<{},appState> {
     }
 
     componentDidMount() {
-       authService.currentUser.subscribe(x => this.setState({ currentUser: x }));
+        authService.currentUser.subscribe(x => this.setState({ currentUser: x }));
     }
 
     logout() {
@@ -32,8 +32,8 @@ export default class App extends React.Component<{},appState> {
         /* every time rendering happens, is when the check to see if user
          * is logged in or not should occur */
         console.log(this.state.currentUser);
-        if (!this.state.currentUser)
-        {
+        if (!this.state.currentUser) {
+                console.log('bitch i should be showing login');
             return (
                 <div>
                     <Login />
@@ -41,14 +41,14 @@ export default class App extends React.Component<{},appState> {
             )
         }
         else {
-        return (
-            <div>
-  <Lookup />
-  <Logout />
-  </div>
-        );
+            return (
+                <div>
+                    <Lookup />
+                    <Logout />
+                </div>
+            );
+        }
     }
-}
 }
 
 export { App };
