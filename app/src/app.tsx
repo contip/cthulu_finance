@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { authService } from './auth.service';
-import ReactDOM from 'react-dom';
 import './index.css';
-import * as serviceWorker from './serviceWorker';
-import Lookup from './lookup';
-import Login from './login';
+import { BrowserRouter as Router, Route, Link, Switch, useHistory } from 'react-router-dom';
+import LoginForm from './login';
 import Logout from './logout';
-import { AppState } from 'react-native';
+import Register from './register';
+import Test from './test';
+import { withRouter } from 'react-router';
 
 interface appState {
     currentUser: object | null
@@ -19,35 +19,53 @@ export default class App extends React.Component<{}, appState> {
             currentUser: null
         };
     }
+    
 
     componentDidMount() {
         authService.currentUser.subscribe(x => this.setState({ currentUser: x }));
     }
 
-    logout() {
-        authService.logout();
-    }
+    // logout() {
+    //     authService.logout();
+    //     //this.props.history.push('/login');
+    // }
 
     render() {
-        /* every time rendering happens, is when the check to see if user
-         * is logged in or not should occur */
-        console.log(this.state.currentUser);
-        if (!this.state.currentUser) {
-                console.log('bitch i should be showing login');
-            return (
+        // /* every time rendering happens, is when the check to see if user
+        //  * is logged in or not should occur */
+        // console.log(this.state.currentUser);
+        // if (!this.state.currentUser) {
+        //         console.log('bitch i should be showing login');
+        //     return (
+        //         <div>
+        //             <Login />
+        //         </div>
+        //     )
+        // }
+        // else {
+        //     return (
+        //         <div>
+        //             <Lookup />
+        //             <Logout />
+        //         </div>
+        //     );
+        // }
+        return(
+            <Router>
                 <div>
-                    <Login />
+                    <nav>
+                        <Link to="/login">Bitch log in</Link>
+                        <Link to="/register">Bitch register</Link>
+                    </nav>
+                    <Switch>
+                        <Route exact path="/login" component={LoginForm} />
+                        <Route exact path="/register" component={Register} />
+                        <Route exact path="/test" component={Test} />
+                        <Logout />
+                    </Switch>
                 </div>
-            )
-        }
-        else {
-            return (
-                <div>
-                    <Lookup />
-                    <Logout />
-                </div>
-            );
-        }
+            </Router>
+        )
     }
 }
 

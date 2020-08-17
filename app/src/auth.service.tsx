@@ -21,8 +21,8 @@ export const authService = {
     get currentUserValue() { return currentUserSubject.value }
 };
 
-function login(data: IFormInput) {
-    fetch('http://localhost:6969/auth/login', {
+async function login(data: IFormInput) {
+    await fetch('http://localhost:6969/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
