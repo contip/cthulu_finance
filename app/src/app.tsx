@@ -6,6 +6,7 @@ import LoginForm from './login';
 import Register from './register';
 import Test from './test';
 import { withRouter } from 'react-router';
+import PrivateRoute from './components/protected-route';
 
 interface appState {
     currentUser: object | null
@@ -59,7 +60,7 @@ export default class App extends React.Component<{}, appState> {
                     <Switch>
                         <Route exact path="/login" component={LoginForm} />
                         <Route exact path="/register" component={Register} />
-                        <Route exact path="/test" component={Test} />
+                        <PrivateRoute exact path="/test" component={Test} />
                     </Switch>
                 </div>
             </Router>
