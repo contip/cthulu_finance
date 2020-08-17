@@ -21,7 +21,7 @@ export default function Register() {
   const { register, handleSubmit } = useForm<IFormInput>();
   const onSubmit = async (data: IFormInput) => {
     /* if the user is somehow already logged in, redirect their ass to the 
-      login page */
+      main app page */
     if (authService.currentUserValue)
     {
       alert("your ass is already logged in!  redirecting u")

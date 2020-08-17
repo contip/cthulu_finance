@@ -1,11 +1,15 @@
 import * as React from 'react';
+import LogoutButton from './logout';
 
 export default function Test() {
 
     return(
-        <div>
-            <h1>Bung</h1>
-        </div>
-    );
+
+        <React.Fragment>
+            <div className="Bung">
+                <LogoutButton />
+            </div>
+        </React.Fragment>
+    )
     
 }

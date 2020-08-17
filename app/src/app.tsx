@@ -3,7 +3,6 @@ import { authService } from './auth.service';
 import './index.css';
 import { BrowserRouter as Router, Route, Link, Switch, useHistory } from 'react-router-dom';
 import LoginForm from './login';
-import Logout from './logout';
 import Register from './register';
 import Test from './test';
 import { withRouter } from 'react-router';
@@ -61,7 +60,6 @@ export default class App extends React.Component<{}, appState> {
                         <Route exact path="/login" component={LoginForm} />
                         <Route exact path="/register" component={Register} />
                         <Route exact path="/test" component={Test} />
-                        <Logout />
                     </Switch>
                 </div>
             </Router>
