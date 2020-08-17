@@ -22,9 +22,8 @@ export default function Register() {
   const onSubmit = async (data: IFormInput) => {
     /* if the user is somehow already logged in, redirect their ass to the 
       main app page */
-    if (authService.currentUserValue)
-    {
-      alert("your ass is already logged in!  redirecting u")
+    if (authService.currentUserValue) {
+      alert("your ass is already logged in!  redirecting u");
       return history.push("/test");
     }
     if (data.confirm !== data.hash) {
@@ -45,11 +44,13 @@ export default function Register() {
           body: JSON.stringify(data),
         })
           .then((response) => response.json())
-          .then((response) => {
-            sessionStorage.setItem("token", response.access_token);
-            console.log(sessionStorage.token);
+          .then(async (response) => {
+            await authService.newUser(response);
+            //currentUserSubject.next(user);
+            //sessionStorage.setItem("token", response.access_token);
+            //console.log(sessionStorage);
+            history.push("/test");
           });
-        history.push("/test");
       } else {
         alert("u must enter valid user name!");
         return;
