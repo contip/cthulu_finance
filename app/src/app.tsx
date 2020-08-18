@@ -10,9 +10,9 @@ import {
 } from "react-router-dom";
 import LoginForm from "./login";
 import Register from "./register";
-import Test from "./test";
-import { withRouter } from "react-router";
 import PrivateRoute from "./components/protected-route";
+import Lookup from "./lookup";
+import { Home } from "./home";
 
 interface appState {
   currentUser: object | null;
@@ -58,7 +58,11 @@ export default class App extends React.Component<{}, appState> {
     return (
       <Router>
         <div>
+          {/* if user is logged in, don't display the login and register 
+                links */}
+
           <nav>
+              {this.state.currentUser && <Link to="/lookup">Bitch Members Only</Link>}
             {!this.state.currentUser && <Link to="/login">Bitch log in</Link>}
             {!this.state.currentUser && (
               <Link to="/register">Bitch register</Link>
@@ -67,7 +71,8 @@ export default class App extends React.Component<{}, appState> {
           <Switch>
             <Route exact path="/login" component={LoginForm} />
             <Route exact path="/register" component={Register} />
-            <PrivateRoute exact path="/test" component={Test} />
+            <PrivateRoute exact path="/lookup" component={Lookup} />
+            <PrivateRoute exact path="/" component={Home} />
           </Switch>
         </div>
       </Router>

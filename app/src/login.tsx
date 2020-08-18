@@ -24,7 +24,7 @@ export default function LoginForm() {
       main app page */
     if (authService.currentUserValue) {
       alert("your ass is already logged in!  redirecting u");
-      return history.push("/test");
+      return history.push("/");
     }
     /* before submitting, check if either of the input fields are blank */
     if (data.username === "" || data.password === "") {
@@ -43,7 +43,7 @@ export default function LoginForm() {
           "localstorage.getitem(currentuser) is:" +
             localStorage.getItem("currentUser")
         );
-        history.push("/test");
+        history.push("/");
       } else {
         console.log("current user aint been set and is: " + currentUser);
         setCurrentUser(null);

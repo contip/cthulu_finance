@@ -1,60 +1,20 @@
 import * as React from 'react';
-import { authService } from './auth.service';
+import LogoutButton from './logout';
+import LookupApi from './lookup-api';
 
-type LookUpProps = {
-    actionURL: string
+export default function Lookup() {
+
+    return(
+
+        <React.Fragment>
+            <div className="LookUpForm">
+                <LookupApi />
+            </div>
+            {/* i will probably have the logout button in the navbar my dude */}
+            <div className="LogoutButton">
+                <LogoutButton />
+            </div>
+        </React.Fragment>
+    )
+    
 }
-
-type LookUpState = {
-    name: { name: string },
-    lookupResponse: { company: string, price: number, symbol: string }
-}
-
-export default class Lookup extends React.Component<{}, LookUpState> {
-    constructor(props: LookUpProps) {
-        super(props)
-        this.state = {
-            name: {name: ''},
-            lookupResponse: { company: '', price: 0, symbol: '' }
-        };
-    }
-
-    handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({name: {name: event.target.value}});
-    }
-
-    handleSubmit = (event: React.MouseEvent) => {
-        alert('A form was submitted: ' + JSON.stringify(this.state.name));
-        fetch('http://localhost:6969/lookup', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                // 'Authorization': 'Bearer ' + sessionStorage.token,
-                'Authorization': 'Bearer ' + authService.currentUserValue.accessToken,
-         },
-            body: JSON.stringify(this.state.name)
-        }).then(response => response.json())
-        .then(response => this.setState({
-            lookupResponse: { company: response.companyName, price: response.latestPrice, symbol: response.symbol }
-        }));
-
-    }
-
-    render() {
-        return (
-                <div className='lookup'>
-                <p>
-                    <input type="text" value={this.state.name.name} name="name" onChange={this.handleChange} />
-                    <button onClick={this.handleSubmit}>Get Quote!</button>
-                </p>
-                <p>
-                    {this.state.lookupResponse.company !== '' &&
-                    <p>company: {this.state.lookupResponse.company}
-                    <p>price: {this.state.lookupResponse.price}
-                    <p>label: {this.state.lookupResponse.symbol}</p></p></p>}
-                    </p>
-                    </div>
-        );
-    }
-}
-

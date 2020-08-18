@@ -24,7 +24,7 @@ export default function Register() {
       main app page */
     if (authService.currentUserValue) {
       alert("your ass is already logged in!  redirecting u");
-      return history.push("/test");
+      return history.push("/");
     }
     if (data.confirm !== data.hash) {
       alert("passwords don't matched!!");
@@ -49,7 +49,7 @@ export default function Register() {
             //currentUserSubject.next(user);
             //sessionStorage.setItem("token", response.access_token);
             //console.log(sessionStorage);
-            history.push("/test");
+            history.push("/");
           });
       } else {
         alert("u must enter valid user name!");
