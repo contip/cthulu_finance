@@ -18,7 +18,7 @@ export class LookupService {
 
   /* when called with string representing stock symbol to look up, submits
    *  API request to stock prices service, returns the mapped response */
-  async get_quote(symbol: string): Promise<Observable<string>> {
+  async get_quote(symbol: string): Promise<Observable<object>> {
     /* input string must be 1 to 4 chars long and only consist of 
             alphabetical letters (case insensitive) */
     if (

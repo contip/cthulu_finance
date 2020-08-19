@@ -12,6 +12,7 @@ export class UserService {
   ) {}
 
   /* must include hashing of plaintext passwords... */
+  /* fix variable name and add type */
   createUser = async (regDto) => {
     return await this.userRepository.save(regDto);
   };

@@ -13,7 +13,7 @@ export class TradesController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   /* what is the return type of this?  boolean?  */
- async secret(@Body() body: Body) {
+ async secret(@Body() body: Body): Promise<userDto> {
     /* send the buy request to the trades service for processing */
     /* perform basic validation here and then send purchase data to trades
         service */
@@ -28,11 +28,13 @@ export class TradesController {
       stock: body['stock'],
       shares: body['shares'],
     };
-   console.log(await this.tradesService.logPurchase(purchaseData));
+   //console.log(await this.tradesService.logPurchase(purchaseData));
       
-      return await this.tradesService.logPurchase(purchaseData) };
+      return this.tradesService.logPurchase(purchaseData);
+      }
+     };
 
-  }
+  
 
   // // @UseGuards(AuthGuard('local'))
   // @Post('/register')

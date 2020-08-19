@@ -16,7 +16,7 @@ export class LookupController {
      *  to get_quote function (part of lookup.service) */
     /* must include checks for illegal inputs (blank name fields, additional
         random fields in the body of the post, etc) */
-    async get_quote(@Body() body: Body): Promise<Observable<string>> {
+    async get_quote(@Body() body: Body): Promise<Observable<object>> {
         console.log(body)
         const lookup_symbol = body['name'];
         return this.lookupService.get_quote(lookup_symbol);
