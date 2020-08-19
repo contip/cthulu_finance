@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Trades } from './entities/trades.entity';
-import { tradesDto, purchaseDto } from './interfaces/trades-dto.interface';
+import { tradesDto, tradeInputDto } from './interfaces/trades-dto.interface';
 import { userDto } from './interfaces/user-dto.interface';
 import { async, of, interval, Observable } from 'rxjs';
 import { UserService } from './user.service';
@@ -21,7 +21,7 @@ export class TradesService {
     private lookupService: LookupService,
   ) {}
 
-  logPurchase = async (purchaseData: purchaseDto): Promise<userDto> => {
+  logPurchase = async (purchaseData: tradeInputDto): Promise<userDto> => {
     /* already verified that purchaseData input has user_id, stock, and shares
       datamembers */
 
@@ -65,6 +65,15 @@ export class TradesService {
     return await this.getUserID(purchaseData.user_id);
   };
 
+  logSale = async (saleData: tradeInputDto): Promise<userDto> => {
+
+
+    return;
+  }
+
+
+
+  /* helpers */
   getUserID = async (user_id: number): Promise<userDto> => {
     return await this.userService.findOneID(user_id);
   };

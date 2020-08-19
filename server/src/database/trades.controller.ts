@@ -2,18 +2,18 @@ import { Controller, Request, Post, UseGuards, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/auth/auth.service';
 import { TradesService } from './trades.service';
-import { purchaseDto } from './interfaces/trades-dto.interface';
+import { tradeInputDto } from './interfaces/trades-dto.interface';
 import { userDto } from './interfaces/user-dto.interface';
 import { of } from 'rxjs';
 
-@Controller('buy') /* i.e. the URL the controller is handling */
+@Controller('trades') /* i.e. the URL the controller is handling */
 export class TradesController {
   constructor(private tradesService: TradesService) {}
 
   @UseGuards(AuthGuard('jwt'))
-  @Post()
+  @Post('/buy')
   /* what is the return type of this?  boolean?  */
- async secret(@Body() body: Body): Promise<userDto> {
+  async handleBuy(@Body() body: Body): Promise<userDto> {
     /* send the buy request to the trades service for processing */
     /* perform basic validation here and then send purchase data to trades
         service */
@@ -23,31 +23,43 @@ export class TradesController {
     if (!body['user_id'] || !body['stock'] || !body['shares']) {
       return null;
     }
-    let purchaseData: purchaseDto = {
+    let purchaseData: tradeInputDto = {
       user_id: body['user_id'],
       stock: body['stock'],
       shares: body['shares'],
     };
-   //console.log(await this.tradesService.logPurchase(purchaseData));
-      
-      return this.tradesService.logPurchase(purchaseData);
-      }
-     };
+    //console.log(await this.tradesService.logPurchase(purchaseData));
 
-  
+    return this.tradesService.logPurchase(purchaseData);
+  }
 
-  // // @UseGuards(AuthGuard('local'))
-  // @Post('/register')
-  // async register(@Request() req) {
-  //     if (req.body.username != '' && req.body.hash === '')
-  //     {
-  //         console.log('we has receive a request with only the username')
-  //         return this.authService.regLookup(req.body.username)
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/sell')
+  async handleSell(@Body() body: Body): Promise<userDto> {
+    if (!body['user_id'] || !body['stock'] || !body['shares']) {
+      return null;
+    }
+    let saleData: tradeInputDto = {
+      user_id: body['user_id'],
+      stock: body['stock'],
+      shares: body['shares'],
+    };
 
-  //     }
-  //     else {
-  //         this.authService.registerUser(req.body);
-  //         return this.authService.login(req.body)
-  //     }
-  // }
+    return this.tradesService.logSale(saleData);
+  }
+}
 
+// // @UseGuards(AuthGuard('local'))
+// @Post('/register')
+// async register(@Request() req) {
+//     if (req.body.username != '' && req.body.hash === '')
+//     {
+//         console.log('we has receive a request with only the username')
+//         return this.authService.regLookup(req.body.username)
+
+//     }
+//     else {
+//         this.authService.registerUser(req.body);
+//         return this.authService.login(req.body)
+//     }
+// }
