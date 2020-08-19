@@ -4,6 +4,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { TradesService } from './trades.service';
 import { purchaseDto } from './interfaces/trades-dto.interface';
 import { userDto } from './interfaces/user-dto.interface';
+import { of } from 'rxjs';
 
 @Controller('buy') /* i.e. the URL the controller is handling */
 export class TradesController {
@@ -12,7 +13,7 @@ export class TradesController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   /* what is the return type of this?  boolean?  */
-  async secret(@Body() body: Body): Promise<userDto> {
+ async secret(@Body() body: Body) {
     /* send the buy request to the trades service for processing */
     /* perform basic validation here and then send purchase data to trades
         service */
@@ -27,9 +28,10 @@ export class TradesController {
       stock: body['stock'],
       shares: body['shares'],
     };
-    let my_jawn = await this.tradesService.logPurchase(purchaseData);
-    console.log(my_jawn);
-    return my_jawn;
+   console.log(await this.tradesService.logPurchase(purchaseData));
+      
+      return await this.tradesService.logPurchase(purchaseData) };
+
   }
 
   // // @UseGuards(AuthGuard('local'))
@@ -46,4 +48,4 @@ export class TradesController {
   //         return this.authService.login(req.body)
   //     }
   // }
-}
+

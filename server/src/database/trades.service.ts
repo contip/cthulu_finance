@@ -36,7 +36,7 @@ export class TradesService {
       console.log("return triggered by the observable not being set");
       return null;
     }
-    stockObs.toPromise().then(async response => {
+    await stockObs.toPromise().then(async response => {
       /* if the response stock symbol != input symbol or dne, invalid */
       //console.log(response);
       if (
@@ -74,17 +74,18 @@ export class TradesService {
           .replace('T', ' '),
       };
       //console.log(tradeData);
-      this.tradesRepository.save(tradeData);
+      await this.tradesRepository.save(tradeData);
       /* subtract purchase amount from user cash */
-      this.userService.createUser({
+      await this.userService.createUser({
         id: user.id,
         cash: user.cash - transaction_price,
       });
      // console.log('======result of findoneID on userid is:==========');
      // console.log(await this.userService.findOneID(purchaseData.user_id));
       //return {bung: "work"};
-      let my_joint = await this.userService.findOneID(purchaseData.user_id);
-      return my_joint;
+      let bung = await this.userService.findOneID(purchaseData.user_id);
+      console.log(bung);
+      return await bung;
     });
 
     /* (possibly) add purchase details to user dto */
