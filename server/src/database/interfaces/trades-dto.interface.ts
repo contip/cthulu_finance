@@ -9,3 +9,9 @@ export interface tradesDto {
     shares: number;
     date: Date;
 }
+
+export interface purchaseDto {
+    user_id: number;
+    stock: string;
+    shares: number;
+}

@@ -11,6 +11,7 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
+  /* must include hashing of plaintext passwords... */
   createUser = async (regDto) => {
     return await this.userRepository.save(regDto);
   };
@@ -25,9 +26,14 @@ export class UserService {
   * if not, returns simple key value pair VALID: VALID
   */
   async findOne (username: string): Promise<userDto> {
-    return await this.userRepository.findOne({ username: username }) || { id: -1, username: '', hash: '', cash: 0 };
+    return await this.userRepository.findOne({ username: username }) || { id: -1, username: '', hash: '', cash: 0.00 };
   }
+
+  
     
+  async findOneID (user_id: number): Promise<userDto> {
+    return await this.userRepository.findOne({ id: user_id }) || null;
+  }
   
 
   async remove(id: string): Promise<void> {

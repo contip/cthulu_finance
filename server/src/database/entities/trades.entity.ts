@@ -1,15 +1,16 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { UserEntity } from './user.entity';
 
-/* mirrors the columns in the finance.db sqlite db.  Look for a way to set 
- *  each field as NOT NULL and also set the default cash value to 10000 */
+/* 'trades' table of the finance.db sqlite database, stores stock purchase
+    and sale data */
 @Entity({name: "trades"})
 export class Trades {
     @PrimaryGeneratedColumn()
     trade_id: number;
 
-    /* next column is userID from users table */
-    @ManyToOne(type => UserEntity, users => users.id)
+    /* link to id from users table (one user can have many 
+        transactions) */
+    @ManyToOne(type => UserEntity, users => users.trades)
     user_id: UserEntity;
 
     @Column("real")

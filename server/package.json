@@ -39,7 +39,7 @@
     "rxjs-compat": "^6.6.0",
     "sqlite": "^4.0.11",
     "sqlite3": "^5.0.0",
-    "typeorm": "^0.2.25"
+    "typeorm": "^0.3.0-alpha.24"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.0.0",

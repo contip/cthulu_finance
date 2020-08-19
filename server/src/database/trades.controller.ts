@@ -2,17 +2,31 @@ import { Controller, Request, Post, UseGuards, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/auth/auth.service';
 import { TradesService } from './trades.service';
+import { purchaseDto } from './interfaces/trades-dto.interface';
 
-@Controller('buy')  /* i.e. the URL the controller is handling */
+@Controller('buy') /* i.e. the URL the controller is handling */
 export class TradesController {
-  constructor(private tradesService: TradesService,) {}
+  constructor(private tradesService: TradesService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
   /* what is the return type of this?  boolean?  */
   secret(@Body() body: Body): any {
-      /* send the buy request to the trades service for processing */
-    return this.tradesService.logPurchase(body);
+    /* send the buy request to the trades service for processing */
+    /* perform basic validation here and then send purchase data to trades
+        service */
+    /* make sure when building POST requests to /buy, you include the
+        following key:value pairs in the body:
+        user_id: number, stock: string, shares: number */
+    if (!body['user_id'] || !body['stock'] || !body['shares']) {
+      return null;
+    }
+    let purchaseData: purchaseDto = {
+      user_id: body['user_id'],
+      stock: body['stock'],
+      shares: body['shares'],
+    };
+    return this.tradesService.logPurchase(purchaseData);
   }
 
   // // @UseGuards(AuthGuard('local'))
