@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, getConnection, createQueryBuilder } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 import { userDto } from './interfaces/user-dto.interface';
 
@@ -30,7 +30,15 @@ export class UserService {
     return await this.userRepository.findOne({ username: username }) || { id: -1, username: '', hash: '', cash: 0.00 };
   }
 
-  
+  async findOneHoldings (username: string): Promise<userDto> {
+    const holdings: any = await createQueryBuilder("usr")
+    .innerJoin("usr.trades", "trd")
+    .select(['usr.id', 'usr.username', 'trd.stock_name', 'COUNT(trd.stock_name)'])
+    .where('usr.username = :username', {username: username})
+    .groupBy('trd.stock_name')
+    .getOne();
+    console.log(holdings);
+  } 
     
   async findOneID (user_id: number): Promise<userDto> {
     return await this.userRepository.findOne({ id: user_id }) || null;

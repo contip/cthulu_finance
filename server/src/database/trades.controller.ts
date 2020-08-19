@@ -47,6 +47,8 @@ export class TradesController {
 
     return this.tradesService.logSale(saleData);
   }
+
+  
 }
 
 // // @UseGuards(AuthGuard('local'))

@@ -62,10 +62,29 @@ export class TradesService {
     userData.cash = userData.cash - transaction_price;
     await this.updateUser(userData);
     /* get updated user info and return it */
+    console.log(await this.getUserID(purchaseData.user_id));
     return await this.getUserID(purchaseData.user_id);
   };
 
+  /* BEFORE YOU CAN IMPLEMENT logSale, YOU MUST HAVE A METHOD TO RETURN A 
+    USER'S HOLDINGS / PORTFOLIO */
   logSale = async (saleData: tradeInputDto): Promise<userDto> => {
+    /* already verified that purchaseData input has user_id, stock, and shares
+      datamembers */
+    
+    /* get user data */
+    let userData = await this.getUserID(saleData.user_id);
+    if (!userData) {
+      return null;
+    }
+    /* make sure user has enough shares of given stock */
+    
+    /* get stock data */
+    /* build object to pass to trades db */
+    /* add trade to db */
+    /* update user's cash */
+    /* get updated user info and return it */
+    
 
 
     return;

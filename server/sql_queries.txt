@@ -1,0 +1,40 @@
+
+
+get sven's holdings by username:
+
+sqlite> SELECT username, id, stock_name, COUNT(stock_name) FROM trades JOIN users ON trades.userIdId = users.id WHERE username="sven" GROUP BY stock_name;
+sven|1|ADT, Inc.|47
+sven|1|Amazon.com, Inc.|1
+sven|1|Global Cord Blood Corp.|1
+sven|1|Netflix, Inc.|3
+sven|1|The Coca-Cola Co.|11
+
+using leftjoin
+
+sqlite> SELECT username, id, stock_name, COUNT(stock_name) FROM users LEFT JOIN trades on users.id = trades.userIdId WHERE username="sven" GROUP BY stock_name;
+sven|3||0
+sven|1|ADT, Inc.|47
+sven|1|Amazon.com, Inc.|1
+sven|1|Global Cord Blood Corp.|1
+sven|1|Netflix, Inc.|3
+sven|1|The Coca-Cola Co.|11
+
+
+get sven's holdings by user_id:
+
+sqlite> SELECT username, id, stock_name, COUNT(stock_name) FROM trades JOIN users ON trades.userIdId = users.id WHERE id=1 GROUP BY stock_name;
+sven|1|ADT, Inc.|47
+sven|1|Amazon.com, Inc.|1
+sven|1|Global Cord Blood Corp.|1
+sven|1|Netflix, Inc.|3
+sven|1|The Coca-Cola Co.|11
+
+
+
+sqlite> SELECT username, id, stock_name, COUNT(stock_name) FROM trades JOIN users ON trades.userIdId = users.id GROUP BY stock_name;
+
+sven|1|ADT, Inc.|47
+sven|1|Amazon.com, Inc.|1
+sven|1|Global Cord Blood Corp.|1
+sven|1|Netflix, Inc.|3
+sven|1|The Coca-Cola Co.|11

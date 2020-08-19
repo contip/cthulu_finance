@@ -11,7 +11,7 @@ export interface tradesDto {
     date: Date | string;
 };
 
-export interface purchaseDto {
+export interface tradeInputDto {
     user_id: number;
     stock: string;
     shares: number;
