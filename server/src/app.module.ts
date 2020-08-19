@@ -7,6 +7,8 @@ import { TradesModule } from './database/trades.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { TradesController } from './database/trades.controller';
+import { TradesService } from './database/trades.service';
+import { LookupModule } from './lookup/lookup.module';
 
 @Module({
   imports: [
@@ -15,8 +17,9 @@ import { TradesController } from './database/trades.controller';
     DatabaseModule,
     AuthModule,
     TradesModule,
+    LookupModule
   ],
-  controllers: [LookupController, TradesController],
-  providers: [AppService, LookupService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

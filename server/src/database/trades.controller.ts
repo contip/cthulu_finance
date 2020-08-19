@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/auth/auth.service';
 import { TradesService } from './trades.service';
 import { purchaseDto } from './interfaces/trades-dto.interface';
+import { userDto } from './interfaces/user-dto.interface';
 
 @Controller('buy') /* i.e. the URL the controller is handling */
 export class TradesController {
@@ -11,7 +12,7 @@ export class TradesController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   /* what is the return type of this?  boolean?  */
-  secret(@Body() body: Body): any {
+  async secret(@Body() body: Body): Promise<userDto> {
     /* send the buy request to the trades service for processing */
     /* perform basic validation here and then send purchase data to trades
         service */
@@ -26,7 +27,9 @@ export class TradesController {
       stock: body['stock'],
       shares: body['shares'],
     };
-    return this.tradesService.logPurchase(purchaseData);
+    let my_jawn = await this.tradesService.logPurchase(purchaseData);
+    console.log(my_jawn);
+    return my_jawn;
   }
 
   // // @UseGuards(AuthGuard('local'))

@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { nextTick } from 'process';
 
 let API_KEY = 'pk_3646d2b2860044c2b185c3c2bda19703';
 
@@ -17,7 +18,7 @@ export class LookupService {
 
   /* when called with string representing stock symbol to look up, submits
    *  API request to stock prices service, returns the mapped response */
-  get_quote(symbol: string): Observable<string> {
+  async get_quote(symbol: string): Promise<Observable<string>> {
     /* input string must be 1 to 4 chars long and only consist of 
             alphabetical letters (case insensitive) */
     if (

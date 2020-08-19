@@ -17,7 +17,10 @@ export class Trades {
     transaction_price: number;
 
     @Column()
-    stock: string;
+    stock_symbol: string;
+
+    @Column()
+    stock_name: string;
 
     @Column("real")
     stock_price: number;

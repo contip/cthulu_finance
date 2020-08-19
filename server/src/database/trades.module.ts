@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, HttpService } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Trades } from './entities/trades.entity';
 import { TradesService } from './trades.service';
@@ -14,7 +14,7 @@ import { LookupModule } from 'src/lookup/lookup.module';
     DatabaseModule,
     LookupModule,
   ],
-  exports: [TradesService],
+  exports: [TypeOrmModule, TradesService],
   providers: [TradesService],
   /* i might need a controller here to handle the post requests
         for buy / sell */
