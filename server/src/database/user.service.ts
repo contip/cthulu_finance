@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getConnection, createQueryBuilder } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 import { userDto } from './interfaces/user-dto.interface';
+import { Trades } from './entities/trades.entity';
 
 @Injectable()
 export class UserService {
@@ -30,14 +31,18 @@ export class UserService {
     return await this.userRepository.findOne({ username: username }) || { id: -1, username: '', hash: '', cash: 0.00 };
   }
 
-  async findOneHoldings (username: string): Promise<userDto> {
-    const holdings: any = await createQueryBuilder("usr")
-    .innerJoin("usr.trades", "trd")
-    .select(['usr.id', 'usr.username', 'trd.stock_name', 'COUNT(trd.stock_name)'])
-    .where('usr.username = :username', {username: username})
-    .groupBy('trd.stock_name')
+  async findOneIDHoldings (user_id: number): Promise<userDto> {
+    const holdings: any = await this.userRepository
+    .createQueryBuilder("users")
+    .innerJoinAndSelect("users.trades", "trd", )
+    // .innerJoin("users.trades", "trd")
+    // .select(['users.id', 'users.username', 'trd.stock_name', 'COUNT(trd.stock_name)'])
+    // .where('users.id = :id', {id: user_id})
+    // .orderBy('trd.stock_name')
+    .printSql()
     .getOne();
     console.log(holdings);
+    return holdings;
   } 
     
   async findOneID (user_id: number): Promise<userDto> {

@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { UserEntity } from './user.entity';
 
 /* 'trades' table of the finance.db sqlite database, stores stock purchase

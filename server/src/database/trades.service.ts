@@ -90,6 +90,9 @@ export class TradesService {
     return;
   }
 
+  getUserHoldings = async (user_id: number) => {
+    return await this.userService.findOneIDHoldings(user_id);
+  }
 
 
   /* helpers */

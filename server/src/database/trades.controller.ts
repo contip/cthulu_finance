@@ -48,6 +48,11 @@ export class TradesController {
     return this.tradesService.logSale(saleData);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/test')
+  async test(@Body() body: Body) {
+    return this.tradesService.getUserHoldings(body['user_id']);
+  }
   
 }
 
