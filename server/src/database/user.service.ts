@@ -27,6 +27,8 @@ export class UserService {
    * if so, returns that user
    * if not, returns simple key value pair VALID: VALID
    */
+  /* instead of returning a user with negative id to deal with client side..
+    you need to return an error here, and in many other places */
   async findOne(username: string): Promise<userDto> {
     return (
       (await this.userRepository.findOne({ username: username })) || {
@@ -38,28 +40,26 @@ export class UserService {
     );
   }
 
-  // async findOneIDHoldings (user_id: number): Promise<userDto> {
-  //   const holdings: any = await this.userRepository
-  //   .createQueryBuilder("users")
-  //   .innerJoinAndSelect("users.trades", "trd", )
-  //   // .innerJoin("users.trades", "trd")
-  //   // .select(['users.id', 'users.username', 'trd.stock_name', 'COUNT(trd.stock_name)'])
-  //   // .where('users.id = :id', {id: user_id})
-  //   // .orderBy('trd.stock_name')
-  //   .printSql()
-  //   .getOne();
-  //   console.log(holdings);
-  //   return holdings;
-  // }
-
-  findOneIDHoldings = async (user_id: number) => {
-    let holdings = await this.userRepository.query(`SELECT id, username, 
-    stock_name, stock_symbol, COUNT(stock_name) FROM users INNER JOIN trades 
-    ON users.id = trades.userIdId WHERE id = ${user_id} GROUP BY stock_name;`);
-    console.log(holdings);
-    return holdings;
+     totalFindOneID = async (user_id: number) => {
+       /* get the main user object, it if exists in db */
+       /* error handlings.... */
+       let userData = await this.findOneID(user_id);
+       userData.holdings = await this.findOneIDHoldings(user_id);
+       return userData;
   };
 
+  /* returns object w/ 0 or more entries, 1 for each company user has 
+   * in their portfolio
+   * object has keys stock_name, stock_symbol, 'Count(stock_name)' */
+     findOneIDHoldings = async (user_id: number) => {
+    return await this.userRepository.query(`SELECT stock_name, 
+    stock_symbol, COUNT(stock_name) FROM users INNER JOIN trades ON
+    users.id = trades.userIdId WHERE id = ${user_id} GROUP BY stock_name;`);
+   // console.log(holdings);
+  };
+
+/* returns object of type userDto, holding user login and financial info
+ *  object has keys: id, username, hash, cash, trades[] */
   async findOneID(user_id: number): Promise<userDto> {
     return (await this.userRepository.findOne({ id: user_id })) || null;
   }

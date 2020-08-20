@@ -46,8 +46,7 @@ export class TradesService {
       return null;
     }
     /* build object to pass to trades database (tradesDto) */
-    let tradeData: tradesDto|any = {
-      trade_id: null,
+    let tradeData: tradesDto | any = {
       user_id: userData.id,
       transaction_price: transaction_price,
       stock_symbol: purchaseData.stock,
@@ -57,7 +56,7 @@ export class TradesService {
       date: new Date(),
     };
     /* add the trade to the trades db */
-    await this.tradesRepository.save(tradeData)
+    await this.tradesRepository.save(tradeData);
     /* update user's cash in users table */
     userData.cash = userData.cash - transaction_price;
     await this.updateUser(userData);
@@ -71,31 +70,68 @@ export class TradesService {
   logSale = async (saleData: tradeInputDto): Promise<userDto> => {
     /* already verified that purchaseData input has user_id, stock, and shares
       datamembers */
-    
+
     /* get user data */
-    let userData = await this.getUserID(saleData.user_id);
-    if (!userData) {
+    let userData = await this.getTotalUserID(saleData.user_id);
+    if (!userData || !userData.holdings || userData.holdings.length === 0) {
+      /* these should return errors... */
       return null;
     }
-    /* make sure user has enough shares of given stock */
-    
-    /* get stock data */
-    /* build object to pass to trades db */
-    /* add trade to db */
-    /* update user's cash */
-    /* get updated user info and return it */
-    
 
+    let userShares: number;
+    /* make sure user has enough shares of given stock */
+    for (let i = 0; i < userData.holdings.length; i++) {
+      if (saleData.stock === userData.holdings[i]['stock_symbol']) {
+        userShares = userData.holdings[i]['COUNT(stock_name)'];
+        break;
+      }
+    }
+    if (!userShares || userShares < saleData.shares) {
+      /* this should return a specific error */
+      return null;
+    }
+    /* get stock data */
+    let stockData = await this.getStockData(saleData.stock);
+    if (
+      !stockData ||
+      !(await stockData['symbol']) ||
+      (await stockData['symbol']) != saleData.stock
+    ) {
+      return null;
+    }
+    /* build object to pass to trades db */
+    let tradeData: tradesDto | any = {
+      user_id: userData.id,
+      transaction_price: saleData.shares * await stockData['latestPrice'],
+      stock_symbol: saleData.stock,
+      stock_name: await stockData['companyName'],
+      stock_price: await stockData['latestPrice'],
+      shares: -saleData.shares,  /* set shares to negative to show sale */
+      date: new Date(),
+    };
+    /* add trade to db */
+    await this.tradesRepository.save(tradeData);
+    /* update user's cash, decrement their shares */
+    userData.cash = userData.cash + tradeData.transaction_price;
+    await this.updateUser(userData);
+    /* get updated user info and return it */
+    console.log(await this.getUserID(saleData.user_id));
+    return await this.getTotalUserID(saleData.user_id);
+    /* get updated user info and return it */
 
     return;
-  }
+  };
 
   getUserHoldings = async (user_id: number) => {
-    return await this.userService.findOneIDHoldings(user_id);
-  }
-
+    return await this.userService.totalFindOneID(user_id);
+  };
 
   /* helpers */
+
+  getTotalUserID = async (user_id: number): Promise<userDto> => {
+    return await this.userService.totalFindOneID(user_id);
+  };
+
   getUserID = async (user_id: number): Promise<userDto> => {
     return await this.userService.findOneID(user_id);
   };
@@ -107,9 +143,9 @@ export class TradesService {
     return (await this.lookupService.get_quote(symbol)).toPromise();
   };
 
-  updateUser = async (newUserData: userDto): Promise<object|null> => {
+  updateUser = async (newUserData: userDto): Promise<object | null> => {
     return await this.userService.createUser(newUserData);
-  }
+  };
 }
 
 //logSale

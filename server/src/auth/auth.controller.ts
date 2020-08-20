@@ -2,6 +2,7 @@ import { Controller, Request, Post, UseGuards, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 
+/* NEED A USERNAME AVAILABILITY CHECK HANDLER FOR USER REGISTRATION */
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) {}
