@@ -14,7 +14,7 @@ export class UserService {
 
   /* must include hashing of plaintext passwords... */
   /* fix variable name and add type */
-  createUser = async (regDto) => {
+  createUser = async regDto => {
     return await this.userRepository.save(regDto);
   };
 
@@ -22,33 +22,47 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  /* when user types username into registration field, it will automatically 
-  * call this function to see if a user with that name already exists in DB
-  * if so, returns that user
-  * if not, returns simple key value pair VALID: VALID
-  */
-  async findOne (username: string): Promise<userDto> {
-    return await this.userRepository.findOne({ username: username }) || { id: -1, username: '', hash: '', cash: 0.00 };
+  /* when user types username into registration field, it will automatically
+   * call this function to see if a user with that name already exists in DB
+   * if so, returns that user
+   * if not, returns simple key value pair VALID: VALID
+   */
+  async findOne(username: string): Promise<userDto> {
+    return (
+      (await this.userRepository.findOne({ username: username })) || {
+        id: -1,
+        username: '',
+        hash: '',
+        cash: 0.0,
+      }
+    );
   }
 
-  async findOneIDHoldings (user_id: number): Promise<userDto> {
-    const holdings: any = await this.userRepository
-    .createQueryBuilder("users")
-    .innerJoinAndSelect("users.trades", "trd", )
-    // .innerJoin("users.trades", "trd")
-    // .select(['users.id', 'users.username', 'trd.stock_name', 'COUNT(trd.stock_name)'])
-    // .where('users.id = :id', {id: user_id})
-    // .orderBy('trd.stock_name')
-    .printSql()
-    .getOne();
+  // async findOneIDHoldings (user_id: number): Promise<userDto> {
+  //   const holdings: any = await this.userRepository
+  //   .createQueryBuilder("users")
+  //   .innerJoinAndSelect("users.trades", "trd", )
+  //   // .innerJoin("users.trades", "trd")
+  //   // .select(['users.id', 'users.username', 'trd.stock_name', 'COUNT(trd.stock_name)'])
+  //   // .where('users.id = :id', {id: user_id})
+  //   // .orderBy('trd.stock_name')
+  //   .printSql()
+  //   .getOne();
+  //   console.log(holdings);
+  //   return holdings;
+  // }
+
+  findOneIDHoldings = async (user_id: number) => {
+    let holdings = await this.userRepository.query(`SELECT id, username, 
+    stock_name, stock_symbol, COUNT(stock_name) FROM users INNER JOIN trades 
+    ON users.id = trades.userIdId WHERE id = ${user_id} GROUP BY stock_name;`);
     console.log(holdings);
     return holdings;
-  } 
-    
-  async findOneID (user_id: number): Promise<userDto> {
-    return await this.userRepository.findOne({ id: user_id }) || null;
+  };
+
+  async findOneID(user_id: number): Promise<userDto> {
+    return (await this.userRepository.findOne({ id: user_id })) || null;
   }
-  
 
   async remove(id: string): Promise<void> {
     await this.userRepository.delete(id);
