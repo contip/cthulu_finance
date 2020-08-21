@@ -19,6 +19,8 @@ export class AuthService {
         return null;
     }
 
+    /* this lookup function must only return a boolean depending on whether
+     * or not user exists in db... NO other specific user info */
     async regLookup(username: string): Promise<userDto> {
         return await this.userService.totalFindOneName(username);
     }
