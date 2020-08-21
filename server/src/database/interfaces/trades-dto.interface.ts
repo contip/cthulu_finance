@@ -13,6 +13,6 @@ export interface tradesDto {
 
 export interface tradeInputDto {
     user_id: number;
-    stock: string;
+    stock_symbol: string;
     shares: number;
 }

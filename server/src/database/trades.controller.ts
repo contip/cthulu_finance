@@ -20,12 +20,12 @@ export class TradesController {
     /* make sure when building POST requests to /buy, you include the
         following key:value pairs in the body:
         user_id: number, stock: string, shares: number */
-    if (!body['user_id'] || !body['stock'] || !body['shares']) {
+    if (!body['user_id'] || !body['stock_symbol'] || !body['shares']) {
       return null;
     }
     let purchaseData: tradeInputDto = {
       user_id: body['user_id'],
-      stock: body['stock'],
+      stock_symbol: body['stock_symbol'],
       shares: body['shares'],
     };
     //console.log(await this.tradesService.logPurchase(purchaseData));
@@ -36,12 +36,12 @@ export class TradesController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/sell')
   async handleSell(@Body() body: Body): Promise<userDto> {
-    if (!body['user_id'] || !body['stock'] || !body['shares']) {
+    if (!body['user_id'] || !body['stock_symbol'] || !body['shares']) {
       return null;
     }
     let saleData: tradeInputDto = {
       user_id: body['user_id'],
-      stock: body['stock'],
+      stock_symbol: body['stock_symbol'],
       shares: body['shares'],
     };
 
@@ -49,9 +49,9 @@ export class TradesController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Post('/test')
+  @Post('/history')
   async test(@Body() body: Body) {
-    return this.tradesService.getUserHoldings(body['user_id']);
+    return this.tradesService.getUserHistory(body['user_id']);
   }
   
 }
