@@ -33,6 +33,8 @@ export class UserService {
    */
   /* instead of returning a user with negative id to deal with client side..
     you need to return an error here, and in many other places */
+
+/* 
   async findOne(username: string): Promise<userDto> {
     return (
       (await this.userRepository.findOne({ username: username })) || {
@@ -42,7 +44,14 @@ export class UserService {
         cash: 0.0,
       }
     );
-  }
+  } */
+  totalFindOneName = async (username: string): Promise<userDto> => {
+    let userData: userDto = await this.userRepository.findOne({
+      username: username,
+    });
+    userData['holdings'] = await this.findOneIDHoldings(userData.id);
+    return userData;
+  };
 
   totalFindOneID = async (user_id: number): Promise<userDto> => {
     /* get the main user object, it if exists in db */

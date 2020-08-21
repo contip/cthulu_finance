@@ -11,7 +11,7 @@ export class AuthService {
     ) {}
 
     async validateUser(username: string, pass: string): Promise<userDto> {
-        const user = await this.userService.findOne(username);
+        const user = await this.userService.totalFindOneName(username);
         if (user && user.hash === pass) {
             /* remember that i need to actually hash the passwords at some point */
             return user;
@@ -20,7 +20,7 @@ export class AuthService {
     }
 
     async regLookup(username: string): Promise<userDto> {
-        return await this.userService.findOne(username);
+        return await this.userService.totalFindOneName(username);
     }
 
     async registerUser(userDto: userDto): Promise<userDto> {
