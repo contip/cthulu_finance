@@ -4,6 +4,7 @@ import { userDto } from '../database/interfaces/user-dto.interface';
 import { JwtService } from '@nestjs/jwt';
 import { namePassDto } from './interfaces/register-dto';
 import { tradeInputDto } from 'src/database/interfaces/trades-dto.interface';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -12,11 +13,16 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  /* I NEED A VALIDATE USER FUNCTION THAT ACCEPTS A JWT INPUT AND RETURNS
-    AN ACTUAL USER (userDto) */
+  /* called from the local strategy (i.e. for login requests) */
+
+  /* update for hashing user pws */
   async validateUser(username: string, password: string): Promise<userDto> {
-    const user = await this.userService.totalFindOneName(username);
-    if (user && user.username === username && user.hash === password) {
+    const user = await this.userService.findByNameFull(username);
+    if (
+      user &&
+      user.username === username &&
+      (await bcrypt.compare(password, user.hash))
+    ) {
       /* remember that i need to actually hash the passwords at some point */
       return user;
     }
@@ -26,13 +32,37 @@ export class AuthService {
   /* this lookup function must only return a boolean depending on whether
    * or not user exists in db... NO other specific user info */
   async regLookup(username: string): Promise<userDto> {
-    return await this.userService.totalFindOneName(username);
+    return await this.userService.findByNameFull(username);
   }
 
-  async registerUser(userDto: userDto): Promise<userDto> {
-    let userData = await this.userService.createUser(userDto);
-    return userData;
+  /* what is the behavior if a user with an already existing username? */
+  async registerNewUser(payload: any): Promise<userDto> {
+    if (!payload || !payload.username || !payload.password) {
+      throw new HttpException(
+        'invalid registration input!',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    /* hash the password then forget it */
+    const hash = await bcrypt.hash(payload.password, 10);
+    payload.password = null;
+    const toSave = { username: payload.username, hash: hash };
 
+    /* try.. catch */
+    try {
+      return await this.userService.createUser(toSave);
+    } catch (error) {
+      if (error?.code == 'SQLITE_CONSTRAINT') {
+        throw new HttpException(
+          'User with that username already exists!',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw new HttpException(
+        'Error registering user!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   /* login needs to work like this:  first the overall login function 

@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { userDto } from 'src/database/interfaces/user-dto.interface';
 
 /* NEED A USERNAME AVAILABILITY CHECK HANDLER FOR USER REGISTRATION */
 @Controller('auth')
@@ -27,14 +28,16 @@ export class AuthController {
     return req.user;
   }
 
+  /* this should accept a post request with body containing only two entries:
+    username: string, password: string */
   // @UseGuards(AuthGuard('local'))
   @Post('/register')
-  async register(@Request() req) {
+  async register(@Body() body: Body): Promise<any> {
     // if (req.body.username != '' && req.body.hash === '') {
     //   console.log('we has receive a request with only the username');
     //   return this.authService.regLookup(req.body.username);
     // } else {
-    let userData = await this.authService.registerUser(req.body);
+    let userData = await this.authService.registerNewUser(body);
     return await this.authService.login(userData);
     }
   

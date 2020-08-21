@@ -138,22 +138,22 @@ export class TradesService {
   /* FORM OF DATA??? */
   getUserHistory = async (user_id: number): Promise<Array<portfolioDto>> => {
 
-    return await this.userService.findOneIDTransactions(user_id);
+    return await this.userService.getTransactionsById(user_id);
 
   }
 
 
   /* helpers */
   getUserHoldings = async (user_id: number) => {
-    return await this.userService.totalFindOneID(user_id);
+    return await this.userService.findByIdFull(user_id);
   };
 
   getTotalUserID = async (user_id: number): Promise<userDto> => {
-    return await this.userService.totalFindOneID(user_id);
+    return await this.userService.findByIdFull(user_id);
   };
 
   getUserID = async (user_id: number): Promise<userDto> => {
-    return await this.userService.findOneID(user_id);
+    return await this.userService.findById(user_id);
   };
 
   /* make sure to change promise type */

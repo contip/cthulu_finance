@@ -8,6 +8,7 @@ import {
   portfolioDto,
 } from './interfaces/user-dto.interface';
 import { Trades } from './entities/trades.entity';
+import { registerDto } from 'src/auth/interfaces/register-dto';
 
 @Injectable()
 export class UserService {
@@ -18,17 +19,24 @@ export class UserService {
 
   /* must include hashing of plaintext passwords... */
   /* fix variable name and add type */
-  createUser = async regDto => {
-    let newUser = await this.userRepository.save(regDto);
-    if (!newUser || newUser == null || newUser.length == 0 || Object.keys(newUser).length == 0) {
-      throw new HttpException("Error creating User!", HttpStatus.UNPROCESSABLE_ENTITY);
+  createUser = async (regData: registerDto | userDto) => {
+    let newUser = await this.userRepository.save(regData);
+    if (
+      !newUser ||
+      newUser == null ||
+      Object.keys(newUser).length == 0
+    ) {
+      throw new HttpException(
+        'Error creating User!',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
     return newUser;
   };
 
-  findAll(): Promise<UserEntity[]> {
-    return this.userRepository.find();
-  }
+  // findAll(): Promise<UserEntity[]> {
+  //   return this.userRepository.find();
+  // }
 
   /* when user types username into registration field, it will automatically
    * call this function to see if a user with that name already exists in DB
@@ -49,23 +57,23 @@ export class UserService {
       }
     );
   } */
-  totalFindOneName = async (username: string): Promise<userDto> => {
+  findByNameFull = async (username: string): Promise<userDto> => {
     let userData: userDto = await this.userRepository.findOne({
       username: username,
     });
-    userData['holdings'] = await this.findOneIDHoldings(userData.id);
+    userData['holdings'] = await this.getHoldingsById(userData.id);
     return userData;
   };
 
-  totalFindOneID = async (user_id: number): Promise<userDto> => {
+  findByIdFull = async (user_id: number): Promise<userDto> => {
     /* get the main user object, it if exists in db */
     /* error handlings.... */
-    let userData = await this.findOneID(user_id);
-    userData.holdings = await this.findOneIDHoldings(user_id);
+    let userData = await this.findById(user_id);
+    userData.holdings = await this.getHoldingsById(user_id);
     return userData;
   };
 
-  findOneIDTransactions = async (
+  getTransactionsById = async (
     user_id: number,
   ): Promise<Array<portfolioDto>> => {
     let transactions: Array<portfolioDto> = await this.userRepository
@@ -79,7 +87,7 @@ export class UserService {
   /* returns object w/ 0 or more entries, 1 for each company user has
    * in their portfolio
    * object has keys stock_name, stock_symbol, 'Count(stock_name)' */
-  findOneIDHoldings = async (user_id: number): Promise<Array<holdingDto>> => {
+  getHoldingsById = async (user_id: number): Promise<Array<holdingDto>> => {
     let holdings: Array<holdingDto> = await this.userRepository
       .query(`SELECT stock_name, 
     stock_symbol, SUM(shares) FROM users INNER JOIN trades ON
@@ -95,14 +103,16 @@ export class UserService {
 
   /* returns object of type userDto, holding user login and financial info
    *  object has keys: id, username, hash, cash, trades[] */
-  async findOneID(user_id: number): Promise<userDto> {
+  async findById(user_id: number): Promise<userDto> {
     return (await this.userRepository.findOne({ id: user_id })) || null;
   }
 
-  async remove(id: string): Promise<void> {
-    await this.userRepository.delete(id);
-  }
+  /* this is not being used */
+  // async remove(id: string): Promise<void> {
+  //   await this.userRepository.delete(id);
+  // }
 
+  /* i don't think this function is being used by anything */
   async findByPayload(payload: any): Promise<userDto> {
     const { username } = payload;
     return await this.userRepository.findOne({ username });
