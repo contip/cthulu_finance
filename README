@@ -14,5 +14,5 @@ the html layout of the main app page).
 
 current goal:
 
-continue w/ frontend auth -- add protected routes component to wrap other 
-routes
+Implement hashing of user pws, then clean up and document back-end code, then
+work on frontend
