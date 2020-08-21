@@ -1,4 +1,11 @@
-import { Controller, Request, Post, UseGuards, Body } from '@nestjs/common';
+import {
+  Controller,
+  Request,
+  Post,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/auth/auth.service';
 import { TradesService } from './trades.service';
@@ -13,60 +20,81 @@ export class TradesController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/buy')
   /* what is the return type of this?  boolean?  */
-  async handleBuy(@Body() body: Body): Promise<userDto> {
+  async handleBuy(@Request() req): Promise<userDto> {
     /* send the buy request to the trades service for processing */
     /* perform basic validation here and then send purchase data to trades
         service */
     /* make sure when building POST requests to /buy, you include the
         following key:value pairs in the body:
         user_id: number, stock: string, shares: number */
-    if (!body['user_id'] || !body['stock_symbol'] || !body['shares']) {
-      return null;
+    if (
+      !(req.body['user_id'] && req.body['stock_symbol'] && req.body['shares'])
+    ) {
+      throw new HttpException(
+        'Invalid Request!',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+    if (req.body['user_id'] != req.user.id) {
+      console.log(
+        'user id:',
+        req.user.id,
+        ' (jwt) is attempting to make',
+        'changes to user id:',
+        req.body['user_id'],
+      );
+
+      throw new HttpException('Unauthorized!', HttpStatus.UNAUTHORIZED);
     }
     let purchaseData: tradeInputDto = {
-      user_id: body['user_id'],
-      stock_symbol: body['stock_symbol'],
-      shares: body['shares'],
+      user_id: req.body['user_id'],
+      stock_symbol: req.body['stock_symbol'],
+      shares: req.body['shares'],
     };
     //console.log(await this.tradesService.logPurchase(purchaseData));
+
+    /* make sure user issuing request has JWT that matches the username / id */
 
     return this.tradesService.logPurchase(purchaseData);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('/sell')
-  async handleSell(@Body() body: Body): Promise<userDto> {
-    if (!body['user_id'] || !body['stock_symbol'] || !body['shares']) {
-      return null;
+  async handleSell(@Request() req): Promise<userDto> {
+    if (
+      !(req.body['user_id'] && req.body['stock_symbol'] && req.body['shares'])
+    ) {
+      throw new HttpException(
+        'Invalid Request!',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+    if (req.body['user_id'] != req.user.id) {
+      console.log(
+        'user id:',
+        req.user.id,
+        ' (jwt) is attempting to make',
+        'changes to user id:',
+        req.body['user_id'],
+      );
+      throw new HttpException('Unauthorized!', HttpStatus.UNAUTHORIZED);
     }
     let saleData: tradeInputDto = {
-      user_id: body['user_id'],
-      stock_symbol: body['stock_symbol'],
-      shares: body['shares'],
+      user_id: req.body['user_id'],
+      stock_symbol: req.body['stock_symbol'],
+      shares: req.body['shares'],
     };
-
+    console.log(
+      'i should be calling logSale in tradesService with this saleData:',
+      saleData,
+    );
     return this.tradesService.logSale(saleData);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('/history')
-  async test(@Body() body: Body) {
-    return this.tradesService.getUserHistory(body['user_id']);
+  async test(@Request() req) {
+    console.log('MY DUDE, VALIDATE JWT SHIT GIVES ME:', req.user);
+    return this.tradesService.getUserHistory(req.body['user_id']);
   }
-  
 }
-
-// // @UseGuards(AuthGuard('local'))
-// @Post('/register')
-// async register(@Request() req) {
-//     if (req.body.username != '' && req.body.hash === '')
-//     {
-//         console.log('we has receive a request with only the username')
-//         return this.authService.regLookup(req.body.username)
-
-//     }
-//     else {
-//         this.authService.registerUser(req.body);
-//         return this.authService.login(req.body)
-//     }
-// }

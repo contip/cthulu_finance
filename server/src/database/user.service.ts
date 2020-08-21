@@ -34,7 +34,7 @@ export class UserService {
   /* instead of returning a user with negative id to deal with client side..
     you need to return an error here, and in many other places */
 
-/* 
+  /* 
   async findOne(username: string): Promise<userDto> {
     return (
       (await this.userRepository.findOne({ username: username })) || {
@@ -68,7 +68,7 @@ export class UserService {
       .query(`SELECT date, 
     stock_symbol, stock_name, stock_price, shares, transaction_price FROM users 
     INNER JOIN trades ON users.id = trades.userIdId WHERE id=${user_id};`);
-    console.log(transactions);
+    //console.log(transactions);
     return transactions;
   };
 
@@ -99,7 +99,17 @@ export class UserService {
     await this.userRepository.delete(id);
   }
 
-  userExists = async (username: string): Promise<boolean> => {
-    return ((await this.totalFindOneName(username)).username === username);
+  async findByPayload(payload: any): Promise<userDto> {
+    const { username } = payload;
+    return await this.userRepository.findOne({ username });
   }
+
+  userExists = async (username: string): Promise<boolean> => {
+    let userData = await this.userRepository.findOne({ username: username });
+    if (userData == null) {
+      return false;
+    }
+    return true;
+    //return ((await this.totalFindOneName(username)).username === username);
+  };
 }

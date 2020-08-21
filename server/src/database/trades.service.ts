@@ -31,7 +31,7 @@ export class TradesService {
       console.log("return triggered by no or bad userData");
       return null;
     }
-    console.log(userData);
+    //console.log(userData);
     /* get stock data */
     let stockData = await this.getStockData(purchaseData.stock_symbol);
     if (
@@ -66,7 +66,7 @@ export class TradesService {
     userData.cash = userData.cash - transaction_price;
     await this.updateUser(userData);
     /* get updated user info and return it */
-    console.log(await this.getTotalUserID(purchaseData.user_id));
+    //console.log(await this.getTotalUserID(purchaseData.user_id));
     return await this.getTotalUserID(purchaseData.user_id);
   };
 
@@ -84,7 +84,7 @@ export class TradesService {
       return null;
     }
 
-    console.log(userData);
+    //console.log(userData);
     let userShares: number, i: number;
     /* make sure user has enough shares of given stock */
     for (i = 0; i < userData.holdings.length; i++) {
@@ -127,7 +127,7 @@ export class TradesService {
     await this.updateUser(userData);
     /* get updated user info and return it */
     console.log("return triggered after all helper function calls");
-    console.log(await this.getTotalUserID(saleData.user_id));
+    //console.log(await this.getTotalUserID(saleData.user_id));
     return await this.getTotalUserID(saleData.user_id);
     /* get updated user info and return it */
 
