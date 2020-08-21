@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Trades } from './entities/trades.entity';
 import { tradesDto, tradeInputDto } from './interfaces/trades-dto.interface';
-import { userDto } from './interfaces/user-dto.interface';
+import { userDto, portfolioDto } from './interfaces/user-dto.interface';
 import { async, of, interval, Observable } from 'rxjs';
 import { UserService } from './user.service';
 import { LookupService } from 'src/lookup/lookup.service';
@@ -136,7 +136,7 @@ export class TradesService {
 
   /* gets user transaction history from db and returns it */
   /* FORM OF DATA??? */
-  getUserHistory = async (user_id: number) => {
+  getUserHistory = async (user_id: number): Promise<Array<portfolioDto>> => {
 
     return await this.userService.findOneIDTransactions(user_id);
 

@@ -3,6 +3,7 @@ import { UserService } from '../database/user.service';
 import { userDto } from '../database/interfaces/user-dto.interface';
 import { JwtService } from '@nestjs/jwt';
 import { namePassDto } from './interfaces/register-dto';
+import { tradeInputDto } from 'src/database/interfaces/trades-dto.interface';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +30,9 @@ export class AuthService {
   }
 
   async registerUser(userDto: userDto): Promise<userDto> {
-    return this.userService.createUser(userDto);
+    let userData = await this.userService.createUser(userDto);
+    return userData;
+
   }
 
   /* login needs to work like this:  first the overall login function 
@@ -54,5 +57,32 @@ export class AuthService {
 
   async userExists(username: string): Promise<Boolean> {
     return this.userService.userExists(username);
+  }
+
+  async validateTrade(req: any): Promise<tradeInputDto> {
+    if (
+      !(req.body['user_id'] && req.body['stock_symbol'] && req.body['shares'])
+    ) {
+      throw new HttpException(
+        'Invalid Request!',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+    if (req.body['user_id'] != req.user.id) {
+      console.log(
+        'user id:',
+        req.user.id,
+        ' (jwt) is attempting to make',
+        'changes to user id:',
+        req.body['user_id'],
+      );
+      throw new HttpException('Unauthorized!', HttpStatus.UNAUTHORIZED);
+    }
+    let tradeData: tradeInputDto = {
+      user_id: req.body['user_id'],
+      stock_symbol: req.body['stock_symbol'],
+      shares: req.body['shares'],
+    };
+    return tradeData;
   }
 }

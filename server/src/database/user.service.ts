@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getConnection, createQueryBuilder } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
@@ -19,7 +19,11 @@ export class UserService {
   /* must include hashing of plaintext passwords... */
   /* fix variable name and add type */
   createUser = async regDto => {
-    return await this.userRepository.save(regDto);
+    let newUser = await this.userRepository.save(regDto);
+    if (!newUser || newUser == null || newUser.length == 0 || Object.keys(newUser).length == 0) {
+      throw new HttpException("Error creating User!", HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    return newUser;
   };
 
   findAll(): Promise<UserEntity[]> {

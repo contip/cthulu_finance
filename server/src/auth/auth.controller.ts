@@ -30,14 +30,14 @@ export class AuthController {
   // @UseGuards(AuthGuard('local'))
   @Post('/register')
   async register(@Request() req) {
-    if (req.body.username != '' && req.body.hash === '') {
-      console.log('we has receive a request with only the username');
-      return this.authService.regLookup(req.body.username);
-    } else {
-      this.authService.registerUser(req.body);
-      return this.authService.login(req.body);
+    // if (req.body.username != '' && req.body.hash === '') {
+    //   console.log('we has receive a request with only the username');
+    //   return this.authService.regLookup(req.body.username);
+    // } else {
+    let userData = await this.authService.registerUser(req.body);
+    return await this.authService.login(userData);
     }
-  }
+  
 
   /* /available route for checking username availability MUST be given
         POST request with single entry in body: { username: to_check } */
