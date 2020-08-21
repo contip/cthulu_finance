@@ -38,4 +38,8 @@ export class AuthService {
             userName: payload.username
         };
     }
+
+    async userExists(username: string): Promise<Boolean> {
+        return this.userService.userExists(username);
+    }
 }

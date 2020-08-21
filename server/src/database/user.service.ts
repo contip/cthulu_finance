@@ -98,4 +98,8 @@ export class UserService {
   async remove(id: string): Promise<void> {
     await this.userRepository.delete(id);
   }
+
+  userExists = async (username: string): Promise<boolean> => {
+    return ((await this.totalFindOneName(username)).username === username);
+  }
 }

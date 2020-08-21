@@ -1,4 +1,4 @@
-import { Controller, Request, Post, UseGuards, Get } from '@nestjs/common';
+import { Controller, Request, Post, UseGuards, Get, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 
@@ -33,4 +33,13 @@ export class AuthController {
             return this.authService.login(req.body)
         }
     }
+
+    /* /available route for checking username availability MUST be given
+        POST request with single entry in body: { username: to_check } */
+    @UseGuards(AuthGuard('jwt'))
+    @Post('/available')
+    async available(@Body() body: Body): Promise<Boolean> {
+        return await this.authService.userExists(body['username']);
+    }
+
 }
