@@ -62,7 +62,9 @@ export default class App extends React.Component<{}, appState> {
                 links */}
 
           <nav>
-              {this.state.currentUser && <Link to="/lookup">Bitch Members Only</Link>}
+            {this.state.currentUser && (
+              <Link to="/lookup">Bitch Members Only</Link>
+            )}
             {!this.state.currentUser && <Link to="/login">Bitch log in</Link>}
             {!this.state.currentUser && (
               <Link to="/register">Bitch register</Link>

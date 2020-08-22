@@ -98,4 +98,17 @@ export class AuthService {
     };
     return tradeData;
   }
+
+  /* retrieves user data by the JWT associated with request, used by frontend
+   *  to verify that stored JWT when deciding if user is logged in */
+  async getUserByToken(decoded: any): Promise<userDto> {
+    if (!(decoded.username && decoded.id)) {
+      throw new HttpException('Invalid!', HttpStatus.BAD_REQUEST);
+    }
+    let userData = await this.userService.findByIdFull(decoded.id);
+    if (!userData || userData.username.length < 1) {
+      throw new HttpException('Unauthorized!', HttpStatus.UNAUTHORIZED);
+    }
+    return userData;
+  }
 }
