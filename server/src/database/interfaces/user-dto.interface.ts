@@ -5,7 +5,7 @@ import { Trades } from '../entities/trades.entity';
 export interface userDto {
   id?: number;
   username: string;
-  hash: string;
+  hash?: string;
   cash?: number;
   holdings?: Array<holdingDto>;
   transactions?:Array<portfolioDto>;

@@ -17,10 +17,10 @@ export class UserEntity extends BaseEntity {
   username: string;
 
   /* TODO: implement hashing of plaintext passwords */
-  @Column()
+  @Column({ select: false })
   hash: string;
 
-  @Column('real', { default: 10000.00 })
+  @Column('real', { default: 10000.0 })
   cash: number;
 
   /* set one : many relationship for user id : transactions */

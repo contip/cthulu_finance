@@ -1,10 +1,11 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UserService } from '../database/user.service';
-import { userDto } from '../database/interfaces/user-dto.interface';
 import { JwtService } from '@nestjs/jwt';
-import { namePassDto } from './interfaces/register-dto';
-import { tradeInputDto } from 'src/database/interfaces/trades-dto.interface';
 import * as bcrypt from 'bcrypt';
+import { loginRegisterDto } from './interfaces/register-dto';
+import { userDto } from '../database/interfaces/user-dto.interface';
+import { tradeInputDto } from 'src/database/interfaces/trades-dto.interface';
+import { HASH_SALT } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -13,44 +14,36 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  /* called from the local strategy (i.e. for login requests) */
+  /* password-based user validation function, used by routes guarded with
+   * the 'local' strategy; returns user data if plaintext pw from req matches
+   * stored hash */
 
-  /* update for hashing user pws */
   async validateUser(username: string, password: string): Promise<userDto> {
-    const user = await this.userService.findByNameFull(username);
+    const user = await this.userService.findByNameAuth(username);
     if (
       user &&
       user.username === username &&
       (await bcrypt.compare(password, user.hash))
     ) {
-      /* remember that i need to actually hash the passwords at some point */
+      /* remove hash value from the user object now that it is verified */
+      delete user.hash;
       return user;
     }
     return null;
   }
 
-  /* this lookup function must only return a boolean depending on whether
-   * or not user exists in db... NO other specific user info */
-  async regLookup(username: string): Promise<userDto> {
-    return await this.userService.findByNameFull(username);
-  }
-
-  /* what is the behavior if a user with an already existing username? */
-  async registerNewUser(payload: any): Promise<userDto> {
-    if (!payload || !payload.username || !payload.password) {
-      throw new HttpException(
-        'invalid registration input!',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-    /* hash the password then forget it */
-    const hash = await bcrypt.hash(payload.password, 10);
-    payload.password = null;
-    const toSave = { username: payload.username, hash: hash };
-
-    /* try.. catch */
+  /* registers new user; recieves username and password from register
+   * controller, hashes and forgets pw, stores in db, returns user data */
+  async registerNewUser(regData: loginRegisterDto): Promise<userDto> {
+    const hash = await bcrypt.hash(regData.password, HASH_SALT);
+    regData.password = null;
+    const toSave = { username: regData.username, hash: hash };
+    /* createUser uses the typeorm save() function which should exclude
+      returning the default unselected hash column, but it doesn't */
     try {
-      return await this.userService.createUser(toSave);
+      let userData = await this.userService.createUser(toSave);
+      delete userData.hash;
+      return userData;
     } catch (error) {
       if (error?.code == 'SQLITE_CONSTRAINT') {
         throw new HttpException(
@@ -65,19 +58,9 @@ export class AuthService {
     }
   }
 
-  /* login needs to work like this:  first the overall login function 
-        checks that the username exists in the db (there's a function for that)
-        and get that user's ID
-        IF THIS IS OKAY, THEN login needs to sign a JWT and issue it */
-  /* this is where JWT signing takes place... needs fixing */
-  // add expiration
+  /* logs in user based on local strategy; issue JWT with username and id,
+   * as well as relevant user data including cash and holdings */
   async login(user: any) {
-    /* get the user's ID and generate them a token with username and id*/
-    // let userData = await this.userService.totalFindOneName(loginData.username);
-    // if (userData == null) {
-    //   throw new HttpException('forbidden bung', HttpStatus.FORBIDDEN);
-    // }
-
     const payload = { username: user.username, id: user.id };
     return {
       accessToken: this.jwtService.sign(payload),
@@ -85,10 +68,14 @@ export class AuthService {
     };
   }
 
+  /* queries users table, returns true or false if given user exists in table */
   async userExists(username: string): Promise<Boolean> {
     return this.userService.userExists(username);
   }
 
+  /* processes input request to ensure user in JWT is same user being modified
+   * by trade; if valid, passes along the properly formatted tradeInputDto,
+   * otherwise throw appropriate HttpException */
   async validateTrade(req: any): Promise<tradeInputDto> {
     if (
       !(req.body['user_id'] && req.body['stock_symbol'] && req.body['shares'])
@@ -99,14 +86,10 @@ export class AuthService {
       );
     }
     if (req.body['user_id'] != req.user.id) {
-      console.log(
-        'user id:',
-        req.user.id,
-        ' (jwt) is attempting to make',
-        'changes to user id:',
-        req.body['user_id'],
+      throw new HttpException(
+        'Unauthorized! Invalid JWT Credentials!',
+        HttpStatus.UNAUTHORIZED,
       );
-      throw new HttpException('Unauthorized!', HttpStatus.UNAUTHORIZED);
     }
     let tradeData: tradeInputDto = {
       user_id: req.body['user_id'],

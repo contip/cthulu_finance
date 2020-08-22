@@ -8,7 +8,7 @@ import {
   portfolioDto,
 } from './interfaces/user-dto.interface';
 import { Trades } from './entities/trades.entity';
-import { registerDto } from 'src/auth/interfaces/register-dto';
+import { loginRegisterDto } from 'src/auth/interfaces/register-dto';
 
 @Injectable()
 export class UserService {
@@ -19,13 +19,9 @@ export class UserService {
 
   /* must include hashing of plaintext passwords... */
   /* fix variable name and add type */
-  createUser = async (regData: registerDto | userDto) => {
+  createUser = async (regData: loginRegisterDto | userDto) => {
     let newUser = await this.userRepository.save(regData);
-    if (
-      !newUser ||
-      newUser == null ||
-      Object.keys(newUser).length == 0
-    ) {
+    if (!newUser || newUser == null || Object.keys(newUser).length == 0) {
       throw new HttpException(
         'Error creating User!',
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -65,6 +61,19 @@ export class UserService {
     return userData;
   };
 
+  findByNameAuth = async (username: string): Promise<userDto> => {
+    let userData: userDto = await this.userRepository.findOne(
+      {
+        username: username,
+      },
+      { select: [`username`, `hash`, `id`, `cash`] },
+    );
+    if (!userData || userData == null) {
+      return null;
+    }
+    userData['holdings'] = await this.getHoldingsById(userData.id);
+    return userData;
+  };
   findByIdFull = async (user_id: number): Promise<userDto> => {
     /* get the main user object, it if exists in db */
     /* error handlings.... */

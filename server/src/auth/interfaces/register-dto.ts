@@ -1,12 +1,5 @@
-/* the form of the data that will be passed when handling a user
- * registration */
-export interface registerDto {
+/* form of the data passed (as POST req body) for user login / registration */
+export interface loginRegisterDto {
     username: string;
     password: string;
 }
-
- // wrong..  auth/register route takes username and hash
-export interface namePassDto {
-    username: string;
-    password: string;
-};

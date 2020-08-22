@@ -14,5 +14,6 @@ the html layout of the main app page).
 
 current goal:
 
-Implement hashing of user pws, then clean up and document back-end code, then
-work on frontend
+-stop returning user hash from SQL queries unless it's specifically to authenticate user for registration or login
+-clean up and document back-end code
+-resume work on frontend

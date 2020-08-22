@@ -3,51 +3,59 @@ import {
   Request,
   Post,
   UseGuards,
-  Get,
   Body,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { userDto } from 'src/database/interfaces/user-dto.interface';
+import { loginRegisterDto } from './interfaces/register-dto';
+import { userNameConstraints } from './constants';
 
-/* NEED A USERNAME AVAILABILITY CHECK HANDLER FOR USER REGISTRATION */
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  /* login controller assumes post req with body containing entries for
+   * 'username' and 'password' */
   @UseGuards(AuthGuard('local'))
   @Post('/login')
-  async login(@Request() req) {
-      console.log("req.user is: ", req.user);
+  async login(@Request() req: any): Promise<any> {
+    /* passport automatically adds 'username' and 'password' fields from body
+     * of incoming request to req.user; this is sent to login service
+     * if either field missing or invalid, returns unauthorized */
     return this.authService.login(req.user);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('secretURL')
-  secret(@Request() req) {
-    return req.user;
-  }
-
-  /* this should accept a post request with body containing only two entries:
-    username: string, password: string */
-  // @UseGuards(AuthGuard('local'))
+  /* register controller is unguarded and assumes post req with body 
+   * containing entries for 'username' and 'password' */
   @Post('/register')
   async register(@Body() body: Body): Promise<any> {
-    // if (req.body.username != '' && req.body.hash === '') {
-    //   console.log('we has receive a request with only the username');
-    //   return this.authService.regLookup(req.body.username);
-    // } else {
-    let userData = await this.authService.registerNewUser(body);
-    return await this.authService.login(userData);
+    if (
+      !(body['username'] && body['password'] && Object.keys(body).length == 2)
+    ) {
+      throw new HttpException('Invalid request!', HttpStatus.BAD_REQUEST);
     }
-  
+    let regData: loginRegisterDto = {
+      username: body['username'],
+      password: body['password'],
+    };
+    let userData = await this.authService.registerNewUser(regData);
+    return await this.authService.login(userData);
+  }
 
-  /* /available route for checking username availability MUST be given
-        POST request with single entry in body: { username: to_check } */
-  //@UseGuards(AuthGuard('jwt'))
-  /* handle illegal entries (extra fields in req body, invalid symbols, etc) */
+  /* unguarded available controller accepts req with single field ('username')
+   * in body, returns true if username is available in db, false otherwise */
   @Post('/available')
   async available(@Body() body: Body): Promise<Boolean> {
+    /* impose restrictions on username length and legal chars */
+    if (
+      !body['username'] ||
+      body['username'].length > userNameConstraints.MAX_LENGTH ||
+      !body['username'].match(userNameConstraints.LEGAL_CHARS)
+    ) {
+      return false;
+    }
     return !(await this.authService.userExists(body['username']));
   }
 }
