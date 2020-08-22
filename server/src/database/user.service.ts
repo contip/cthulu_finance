@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getConnection, createQueryBuilder } from 'typeorm';
-import { UserEntity } from './entities/user.entity';
+import { UserEntity } from './entities/users.entity';
 import {
   userDto,
   holdingDto,

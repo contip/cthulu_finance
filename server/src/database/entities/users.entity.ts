@@ -7,23 +7,25 @@ import {
 } from 'typeorm';
 import { Trades } from './trades.entity';
 
-/* 'users' table from the finance.db sqlite database */
+/* schema of 'users' table of the server's sqlite database, stores user
+ * login info */
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  /* server does not handle user emails so usernames must be unique */
   @Column({ unique: true })
   username: string;
 
-  /* TODO: implement hashing of plaintext passwords */
+  /* user hash column not selected by default (bugged for save() method) */
   @Column({ select: false })
   hash: string;
 
   @Column('real', { default: 10000.0 })
   cash: number;
 
-  /* set one : many relationship for user id : transactions */
+  /* set one : many relationship for users : trades on id : userId */
   @OneToMany(
     type => Trades,
     trades => trades.user_id,

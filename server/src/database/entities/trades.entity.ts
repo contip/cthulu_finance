@@ -1,15 +1,15 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-import { UserEntity } from './user.entity';
+import { UserEntity } from './users.entity';
 
-/* 'trades' table of the finance.db sqlite database, stores stock purchase
-    and sale data */
+/* schema of 'trades' table of the server's sqlite database, stores stock
+ * purchase and sale data */
 @Entity({name: "trades"})
 export class Trades {
     @PrimaryGeneratedColumn()
     trade_id: number;
 
-    /* link to id from users table (one user can have many 
-        transactions) */
+    /* establish many-to-one relationship between trades and users (i.e. 
+     * one user can have many trades) on user id */
     @ManyToOne(type => UserEntity, users => users.trades)
     user_id: UserEntity;
 
