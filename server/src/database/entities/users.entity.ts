@@ -25,7 +25,7 @@ export class UserEntity extends BaseEntity {
   @Column('real', { default: 10000.0 })
   cash: number;
 
-  /* set one : many relationship for users : trades on id : userId */
+  /* set one : many relationship for users : trades on id == userId */
   @OneToMany(
     type => Trades,
     trades => trades.user_id,

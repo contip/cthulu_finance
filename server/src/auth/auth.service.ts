@@ -82,7 +82,7 @@ export class AuthService {
     ) {
       throw new HttpException(
         'Invalid Request!',
-        HttpStatus.EXPECTATION_FAILED,
+        HttpStatus.BAD_REQUEST,
       );
     }
     if (req.body['user_id'] != req.user.id) {

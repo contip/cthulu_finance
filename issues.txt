@@ -3,19 +3,7 @@
     then clicks out of the field, react will submit a POST request with
     a BLANK value for lookup request, throwing error server-side
     
-    ANY user possessing ANY legal JWT can freely do whatever they wish
-    server-side (including make purchases on behalf of others, etc..)
-    MUST make authentication system smarter
-	
-	returns success and JWT to client EVEN IF NO ENTRY WAS MADE TO THE DB
-	(i.e. the user was not actually registered)
-    
 -stock lookup/purchase/sell:
 	must consistently check that capitalization is handled FOR EVERY
 	COMPONENT IN THE APPLICATION
 	
-	lookup route currently only working for capital entries, returns null
-	on failure to lookup instead of HttpException
-	
-
-    

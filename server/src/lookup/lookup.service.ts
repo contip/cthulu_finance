@@ -1,23 +1,15 @@
-import {
-  Injectable,
-  HttpModule,
-  HttpService,
-  Get,
-  Body,
-  Res,
-} from '@nestjs/common';
+import { Injectable, HttpService, HttpException, HttpStatus } from '@nestjs/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { nextTick } from 'process';
+import { API_KEY } from './constants';
 
-let API_KEY = 'pk_3646d2b2860044c2b185c3c2bda19703';
 
 @Injectable()
 export class LookupService {
   constructor(private http: HttpService) {}
 
-  /* when called with string representing stock symbol to look up, submits
-   *  API request to stock prices service, returns the mapped response */
+  /* validates input string then submits as query to stock quote api
+   * returns response as an observable */
   async get_quote(symbol: string): Promise<Observable<object>> {
     /* input string must be 1 to 4 chars long and only consist of 
             alphabetical letters (case insensitive) */
@@ -27,9 +19,8 @@ export class LookupService {
       symbol.length > 4 ||
       !/^[a-zA-Z]+$/.test(symbol)
     ) {
-      return null;
+      throw new HttpException('Invalid Request!', HttpStatus.BAD_REQUEST);
     }
-
     return this.http
       .get(
         'https://cloud-sse.iexapis.com/stable/stock/' +

@@ -1,14 +1,13 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, getConnection, createQueryBuilder } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UserEntity } from './entities/users.entity';
+import { loginRegisterDto } from 'src/auth/interfaces/register-dto';
 import {
   userDto,
   holdingDto,
   portfolioDto,
 } from './interfaces/user-dto.interface';
-import { Trades } from './entities/trades.entity';
-import { loginRegisterDto } from 'src/auth/interfaces/register-dto';
 
 @Injectable()
 export class UserService {
@@ -17,51 +16,28 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  /* must include hashing of plaintext passwords... */
-  /* fix variable name and add type */
-  createUser = async (regData: loginRegisterDto | userDto) => {
+  /* creates or updates user with given data, depending on whether
+   * entry for that user already exists in users table */
+  async createUser(regData: loginRegisterDto | userDto) {
     let newUser = await this.userRepository.save(regData);
     if (!newUser || newUser == null || Object.keys(newUser).length == 0) {
-      throw new HttpException(
-        'Error creating User!',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      throw new HttpException('Invalid Request!', HttpStatus.BAD_REQUEST);
     }
     return newUser;
-  };
+  }
 
-  // findAll(): Promise<UserEntity[]> {
-  //   return this.userRepository.find();
-  // }
-
-  /* when user types username into registration field, it will automatically
-   * call this function to see if a user with that name already exists in DB
-   * if so, returns that user
-   * if not, returns simple key value pair VALID: VALID
-   */
-  /* instead of returning a user with negative id to deal with client side..
-    you need to return an error here, and in many other places */
-
-  /* 
-  async findOne(username: string): Promise<userDto> {
-    return (
-      (await this.userRepository.findOne({ username: username })) || {
-        id: -1,
-        username: '',
-        hash: '',
-        cash: 0.0,
-      }
-    );
-  } */
-  findByNameFull = async (username: string): Promise<userDto> => {
+  /* gets all data from users table for given username, plus holdings */
+  async findByNameFull(username: string): Promise<userDto> {
     let userData: userDto = await this.userRepository.findOne({
       username: username,
     });
     userData['holdings'] = await this.getHoldingsById(userData.id);
     return userData;
-  };
+  }
 
-  findByNameAuth = async (username: string): Promise<userDto> => {
+  /* gets all user data by username, and forces selection of the user hash
+   * column; only called by Auth Module for local passport strategy */
+  async findByNameAuth(username: string): Promise<userDto> {
     let userData: userDto = await this.userRepository.findOne(
       {
         username: username,
@@ -69,39 +45,37 @@ export class UserService {
       { select: [`username`, `hash`, `id`, `cash`] },
     );
     if (!userData || userData == null) {
-      return null;
+      return null; // okay to return null since auth will raise exception
     }
     userData['holdings'] = await this.getHoldingsById(userData.id);
     return userData;
-  };
-  findByIdFull = async (user_id: number): Promise<userDto> => {
+  }
+
+  /* returns all user data plus array of holdings, by input user id */
+  async findByIdFull(user_id: number): Promise<userDto> {
     /* get the main user object, it if exists in db */
-    /* error handlings.... */
     let userData = await this.findById(user_id);
     userData.holdings = await this.getHoldingsById(user_id);
     return userData;
-  };
+  }
 
-  getTransactionsById = async (
-    user_id: number,
-  ): Promise<Array<portfolioDto>> => {
+  /* from given user id, gets array of all user transactions; returns empty
+   * array if no user transactions exist */
+  async getTransactionsById(user_id: number): Promise<Array<portfolioDto>> {
     let transactions: Array<portfolioDto> = await this.userRepository
-      .query(`SELECT date, 
-    stock_symbol, stock_name, stock_price, shares, transaction_price FROM users 
-    INNER JOIN trades ON users.id = trades.userIdId WHERE id=${user_id};`);
-    //console.log(transactions);
+      .query(`SELECT date, stock_symbol, stock_name, stock_price, shares,
+      transaction_price FROM users INNER JOIN trades ON users.id = 
+      trades.userIdId WHERE id=${user_id};`);
     return transactions;
-  };
+  }
 
-  /* returns object w/ 0 or more entries, 1 for each company user has
-   * in their portfolio
-   * object has keys stock_name, stock_symbol, 'Count(stock_name)' */
-  getHoldingsById = async (user_id: number): Promise<Array<holdingDto>> => {
+  /* returns array of 0 or more objects, 1 for each company user has
+   * in their portfolio */
+  async getHoldingsById (user_id: number): Promise<Array<holdingDto>> {
     let holdings: Array<holdingDto> = await this.userRepository
       .query(`SELECT stock_name, 
     stock_symbol, SUM(shares) FROM users INNER JOIN trades ON
     users.id = trades.userIdId WHERE id = ${user_id} GROUP BY stock_name;`);
-    // console.log(holdings);
     /* rename autogenerated key name from 'SUM(shares)' to 'shares' */
     for (let i = 0; i < holdings.length; i++) {
       holdings[i]['shares'] = holdings[i]['SUM(shares)'];
@@ -110,29 +84,19 @@ export class UserService {
     return holdings;
   };
 
-  /* returns object of type userDto, holding user login and financial info
-   *  object has keys: id, username, hash, cash, trades[] */
+  /* from given user id, returns associated data from users table; does not 
+   * append holdings data */
   async findById(user_id: number): Promise<userDto> {
     return (await this.userRepository.findOne({ id: user_id })) || null;
   }
 
-  /* this is not being used */
-  // async remove(id: string): Promise<void> {
-  //   await this.userRepository.delete(id);
-  // }
-
-  /* i don't think this function is being used by anything */
-  async findByPayload(payload: any): Promise<userDto> {
-    const { username } = payload;
-    return await this.userRepository.findOne({ username });
-  }
-
-  userExists = async (username: string): Promise<boolean> => {
+  /* from given username, returns true if user exists in users table, false
+   * otherwise */
+  async userExists (username: string): Promise<boolean> {
     let userData = await this.userRepository.findOne({ username: username });
     if (userData == null) {
       return false;
     }
     return true;
-    //return ((await this.totalFindOneName(username)).username === username);
   };
 }
