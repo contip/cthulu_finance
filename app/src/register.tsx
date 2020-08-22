@@ -5,77 +5,84 @@ import { authService } from "./auth.service";
 
 interface IFormInput {
   username: string;
-  hash: string;
+  password: string;
   confirm: string;
   valid: boolean;
 }
 
+/* controls the registration form and handles submitting and receiving
+ * requests from the server for registering new users to the db */
 export default function Register() {
   let history = useHistory();
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [valid, setValid] = useState(false);
+  /* username availability notification (i.e. 'this name is available') hidden
+   * until user has changed username field, thereafter message shown */
   const [changed, setChanged] = useState(false);
   const { register, handleSubmit } = useForm<IFormInput>();
-  const updateUserName = async (text: string) => {
-    console.log('i have been called to update username state and it not workin');
-    await setUsername(text);
-  }
-  const onSubmit = async (data: IFormInput) => {
-    /* if the user is somehow already logged in, redirect their ass to the 
-      main app page */
+
+  /* make sure logged-in user is not attempting to register */
+  useEffect(() => {
     if (authService.currentUserValue) {
       alert("your ass is already logged in!  redirecting u");
       return history.push("/");
     }
-    /* if confirm password field doesn't match pw field, notify user and reset
-     * the passwod and confirm password field states */
-    if (data.confirm !== data.hash) {
-      alert("passwords don't matched!!");  // this should be a reusable error component
-      updateUserName('anusbreath')
-      console.log("current value of username state is:", username);
+  });
+
+  const onSubmit = async (data: IFormInput) => {
+    /* TODO: the following validation checks should go in a separate
+     * validateSubmit function */
+    if (!valid) {
+      alert("pls entered a valid username!");
+      setUsername("");
       return;
-    } else {
-      if (valid) {
-        if (data.confirm === "" || data.hash === "") {
-          alert("all fields are required!");
+    }
+    if (!data.username || !data.password || !data.confirm) {
+      alert("all field must be fill in!!!");
+      return;
+    }
+    if (data.confirm !== data.password) {
+      alert("passwords don't matched!!");
+      setPassword("");
+      setConfirm("");
+      return;
+    }
+    /* server expects only 'username' and 'password' fields in req body, so
+     * strip confirm field (pw already confirmed) */
+    const { confirm, ...toSubmit } = data;
+    alert("A form was submitted: " + JSON.stringify(toSubmit));
+    /* TODO: server api urls should be defined in a constant */
+    await fetch("http://localhost:6969/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(toSubmit),
+    })
+      .then((response) => {
+        if (response.status == 400) {
+          // bad request error code
+          /* this should never be reachable due to validation checks */
+          alert("Error!  Registration attempt unsuccessful!");
           return;
         }
-        // console.log(JSON.stringify(data));
-        // console.log(data.confirm);
-        alert("A form was submitted: " + JSON.stringify(data));
-        await fetch("http://localhost:6969/auth/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        })
-          .then((response) => response.json())
-          .then(async (response) => {
-            await authService.newUser(response);
-            //currentUserSubject.next(user);
-            //sessionStorage.setItem("token", response.access_token);
-            //console.log(sessionStorage);
-            history.push("/");
-          });
-      } else {
-        alert("u must enter valid user name!");
-        return;
-      }
-    }
+        response.json();
+      })
+      .then(async (response) => {
+        /* TODO: make this a try... catch, that way if the authservice 
+         authentication somehow fails, we can reload the registration page */
+        await authService.newUser(response);
+        history.push("/");
+      });
   };
 
-  const userNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log('i am in the user name change handler');
-    // console.log(event);
-    setUsername(event.target.value);
-    setChanged(false);
-    console.log(username);
-  };
-
-  /* prevent from sending requests if form is empty */
+  /* queries server to determine whether or not current username state is a
+   * valid username for new user */
   const userNameCheck = async (event: any) => {
+    /* if form is empty, do nothing */
+    if (!username) {
+      return;
+    }
     await fetch("http://localhost:6969/auth/available", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -83,36 +90,39 @@ export default function Register() {
     })
       .then((response) => response.json())
       .then((response) => {
-        console.log(response);
-        if (response) {
-          setValid(true);
-        } else {
-          setValid(false);
-        }
-        setChanged(true);
+        /* response from /auth/available is a boolean, therefore set the valid
+         * state according to received response */
+        setValid(response);
+        setChanged(true);  /* continue to display the availability notifier */
       });
   };
 
+  /* updates component username state whenever username form input is updated */
+  const userNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    /* TODO: the setter functions for updating username, password, and confirm
+     * state should be combined into one general setter function */
+    setUsername(event.target.value);
+    /* make availability notification disappear while user is typing */
+    setChanged(false);
+  };
 
+  /* updates component password state whenever form input is changed */
   const userPassChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("i am in the user pass change handler");
-    console.log(event);
     setPassword(event.target.value);
-    console.log(password);
   };
 
+  /* updates component confirm state whenever form input is changed */
   const confirmChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("i am in the confirm pass change handler");
-    console.log(event);
     setConfirm(event.target.value);
-    console.log(confirm);
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input
         name="username"
         placeholder="User Name"
-        ref={register({ required: true, maxLength: 20 })}
+        value={username}
+        ref={register({ maxLength: 20 })}
         onChange={userNameChange}
         onBlur={userNameCheck}
       />
@@ -123,6 +133,7 @@ export default function Register() {
           name="password"
           type="password"
           placeholder="Password"
+          value={password}
           ref={register({ pattern: /^[A-Za-z]+$/i })}
           onChange={userPassChange}
         />
@@ -132,6 +143,7 @@ export default function Register() {
           name="confirm"
           type="password"
           placeholder="Password (again)"
+          value={confirm}
           ref={register({
             pattern: /^[A-Za-z]+$/i,
           })}
