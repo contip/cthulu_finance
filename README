@@ -14,6 +14,6 @@ the html layout of the main app page).
 
 current goal:
 
--stop returning user hash from SQL queries unless it's specifically to authenticate user for registration or login
+***combine users and trades modules into a single database module***
 -clean up and document back-end code
 -resume work on frontend

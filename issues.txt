@@ -14,5 +14,8 @@
 	must consistently check that capitalization is handled FOR EVERY
 	COMPONENT IN THE APPLICATION
 	
+	lookup route currently only working for capital entries, returns null
+	on failure to lookup instead of HttpException
+	
 
     
