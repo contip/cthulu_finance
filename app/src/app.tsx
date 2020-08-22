@@ -61,6 +61,8 @@ export default class App extends React.Component<{}, appState> {
           {/* if user is logged in, don't display the login and register 
                 links */}
 
+          {/* navbar should be its own component which also has access to auth
+           state and can therefore determine what links to show in nav */}
           <nav>
             {this.state.currentUser && (
               <Link to="/lookup">Bitch Members Only</Link>

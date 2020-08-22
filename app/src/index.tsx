@@ -2,9 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import Lookup from './lookup-api';
 import App from './app';
-import Login from './login';
 
 // ReactDOM.render(
 //   <div>

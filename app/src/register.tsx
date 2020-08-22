@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { authService } from "./auth.service";
@@ -14,11 +14,15 @@ export default function Register() {
   let history = useHistory();
 
   const [username, setUsername] = useState("");
-  const [hash, setHash] = useState("");
+  const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [valid, setValid] = useState(false);
   const [changed, setChanged] = useState(false);
   const { register, handleSubmit } = useForm<IFormInput>();
+  const updateUserName = async (text: string) => {
+    console.log('i have been called to update username state and it not workin');
+    await setUsername(text);
+  }
   const onSubmit = async (data: IFormInput) => {
     /* if the user is somehow already logged in, redirect their ass to the 
       main app page */
@@ -26,13 +30,17 @@ export default function Register() {
       alert("your ass is already logged in!  redirecting u");
       return history.push("/");
     }
+    /* if confirm password field doesn't match pw field, notify user and reset
+     * the passwod and confirm password field states */
     if (data.confirm !== data.hash) {
-      alert("passwords don't matched!!");
+      alert("passwords don't matched!!");  // this should be a reusable error component
+      updateUserName('anusbreath')
+      console.log("current value of username state is:", username);
       return;
     } else {
       if (valid) {
         if (data.confirm === "" || data.hash === "") {
-          alert("u must entered a pw!!!");
+          alert("all fields are required!");
           return;
         }
         // console.log(JSON.stringify(data));
@@ -66,30 +74,31 @@ export default function Register() {
     console.log(username);
   };
 
+  /* prevent from sending requests if form is empty */
   const userNameCheck = async (event: any) => {
-    await fetch("http://localhost:6969/auth/register", {
+    await fetch("http://localhost:6969/auth/available", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: username, hash: "" }),
+      body: JSON.stringify({ username: username }),
     })
       .then((response) => response.json())
       .then((response) => {
-        /* i think this qualifies as a magic string */
-        if (response.id === -1) {
+        console.log(response);
+        if (response) {
           setValid(true);
-          setChanged(true);
         } else {
           setValid(false);
-          setChanged(true);
         }
+        setChanged(true);
       });
   };
+
 
   const userPassChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log("i am in the user pass change handler");
     console.log(event);
-    setHash(event.target.value);
-    console.log(hash);
+    setPassword(event.target.value);
+    console.log(password);
   };
 
   const confirmChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,7 +120,7 @@ export default function Register() {
         {valid && changed && <p>this user name is available lol </p>}
         {!valid && changed && <p>this user name is NOT available lol </p>}
         <input
-          name="hash"
+          name="password"
           type="password"
           placeholder="Password"
           ref={register({ pattern: /^[A-Za-z]+$/i })}
