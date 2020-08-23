@@ -11,12 +11,30 @@ const currentUserSubject = new BehaviorSubject(
 
 /* TODO: also define an interface for user objects (i.e. exactly what is stored
  * in localstorage), and put them in a separate interfaces file/folder */
+ export interface IUser {
+   accessToken: string;
+   userData: IUserData
+ }
+
+ export interface IUserData {
+   id: number;
+   username: string;
+   cash: number;
+   holdings: Array<IUserHolding> 
+ }
+
+ export interface IUserHolding {
+   stock_name: string;
+   stock_symbol: string;
+   shares: number
+ }
 
 export const authService = {
   login,
   logout,
   authHeader,
   newUser,
+  updateUserData,
   currentUser: currentUserSubject.asObservable(),
   get currentUserValue() {
     return currentUserSubject.value;
@@ -77,7 +95,21 @@ function logout(): void {
   /* somehow let the app know to re-render the LOGIN page */
 }
 
-//async function updateUserData()
+async function updateUserData(): Promise<void> {
+  let response = await fetch("http://localhost:6969/auth/users", {
+    method: "GET",
+    headers: authHeader(),
+  });
+  if (response.status == 401) {
+    logout();
+    return;
+  }
+  let userData = await response.json();
+  localStorage.setItem("currentUser", JSON.stringify(userData));
+  /* update the user data globally? */
+  currentUserSubject.next(userData);
+  return; 
+}
 
 async function newUser(res: any) {
   /* if a new user has registered, this logs them in and sets state */
