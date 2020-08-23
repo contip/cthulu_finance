@@ -73,10 +73,10 @@ export default class App extends React.Component<{}, appState> {
             )}
           </nav>
           <Switch>
+            <PrivateRoute exact path="/" component={Home} />
             <Route exact path="/login" component={LoginForm} />
             <Route exact path="/register" component={Register} />
             <PrivateRoute exact path="/lookup" component={Lookup} />
-            <PrivateRoute exact path="/" component={Home} />
           </Switch>
         </div>
       </Router>

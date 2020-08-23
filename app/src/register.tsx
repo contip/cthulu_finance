@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { authService } from "./auth.service";
 
-interface IFormInput {
+interface IRegisterInput {
   username: string;
   password: string;
   confirm: string;
@@ -21,17 +21,17 @@ export default function Register() {
   /* username availability notification (i.e. 'this name is available') hidden
    * until user has changed username field, thereafter message shown */
   const [changed, setChanged] = useState(false);
-  const { register, handleSubmit } = useForm<IFormInput>();
+  const { register, handleSubmit } = useForm<IRegisterInput>();
 
-  /* make sure logged-in user is not attempting to register */
+  /* if registration successful or if logged-in user attempts to access
+   * page, redirects them to the root (home) route */
   useEffect(() => {
     if (authService.currentUserValue) {
-      alert("your ass is already logged in!  redirecting u");
       return history.push("/");
     }
   });
 
-  const onSubmit = async (data: IFormInput) => {
+  const onSubmit = async (data: IRegisterInput) => {
     /* TODO: the following validation checks should go in a separate
      * validateSubmit function */
     if (!valid) {
@@ -54,26 +54,16 @@ export default function Register() {
     const { confirm, ...toSubmit } = data;
     alert("A form was submitted: " + JSON.stringify(toSubmit));
     /* TODO: server api urls should be defined in a constant */
-    await fetch("http://localhost:6969/auth/register", {
+    let response = await fetch("http://localhost:6969/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(toSubmit),
-    })
-      .then((response) => {
-        if (response.status == 400) {
-          // bad request error code
-          /* this should never be reachable due to validation checks */
-          alert("Error!  Registration attempt unsuccessful!");
-          return;
-        }
-        response.json();
-      })
-      .then(async (response) => {
-        /* TODO: make this a try... catch, that way if the authservice 
-         authentication somehow fails, we can reload the registration page */
-        await authService.newUser(response);
-        history.push("/");
-      });
+    });
+    if (response.status == 400) {
+      alert("Error!  Registration attempt unsuccessful!");
+      return;
+    }
+    await authService.newUser(await response.json());
   };
 
   /* queries server to determine whether or not current username state is a
@@ -83,18 +73,13 @@ export default function Register() {
     if (!username) {
       return;
     }
-    await fetch("http://localhost:6969/auth/available", {
+    let response = await fetch("http://localhost:6969/auth/available", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: username }),
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        /* response from /auth/available is a boolean, therefore set the valid
-         * state according to received response */
-        setValid(response);
-        setChanged(true);  /* continue to display the availability notifier */
-      });
+    });
+    setValid(await response.json());
+    setChanged(true);
   };
 
   /* updates component username state whenever username form input is updated */

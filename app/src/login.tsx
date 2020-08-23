@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { authService } from "./auth.service";
 import { useHistory } from "react-router-dom";
 
-interface IFormInput {
+export interface ILoginInput {
   username: string;
   password: string;
 }
@@ -12,8 +12,8 @@ export default function LoginForm() {
   let [currentUser, setCurrentUser] = useState<string | null>();
   let history = useHistory();
 
-  const { register, handleSubmit } = useForm<IFormInput>();
-  const onSubmit = async (data: IFormInput) => {
+  const { register, handleSubmit } = useForm<ILoginInput>();
+  const onSubmit = async (data: ILoginInput) => {
     /* on submit i want to make sure the fields in the form aren't blank, then
      * i want to submit the data in those fields to server/auth/login
      * on success i want to redirect to the USER OVERVIEW page

@@ -1,19 +1,16 @@
+import React from "react";
 import { BehaviorSubject } from "rxjs";
 import { report } from "process";
+import { ILoginInput } from "./login";
 
-// const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
-//  localStorage.clear();
+/* current user data (jwt token value and user data) stored as a subscribable
+ * rxjs BehaviorSubject */
 const currentUserSubject = new BehaviorSubject(
   JSON.parse(localStorage.getItem("currentUser")!)
 );
 
-// console.log(currentUserSubject.value);
-// console.log(currentUserSubject);
-// console.log(localStorage.getItem('currentUser'));
-interface IFormInput {
-  username: string;
-  password: string;
-}
+/* TODO: also define an interface for user objects (i.e. exactly what is stored
+ * in localstorage), and put them in a separate interfaces file/folder */
 
 export const authService = {
   login,
@@ -26,7 +23,7 @@ export const authService = {
   },
 };
 
-async function login(data: IFormInput) {
+async function login(data: ILoginInput) {
   await fetch("http://localhost:6969/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -50,7 +47,7 @@ async function login(data: IFormInput) {
         // })
         // console.log(response);
         let user = response;
-        // console.log(JSON.stringify(user));
+        console.log(JSON.stringify(user));
         localStorage.setItem("currentUser", JSON.stringify(user));
         currentUserSubject.next(user);
         // authService.currentUser.subscribe({
@@ -80,21 +77,29 @@ function logout(): void {
   /* somehow let the app know to re-render the LOGIN page */
 }
 
+//async function updateUserData()
+
 async function newUser(res: any) {
   /* if a new user has registered, this logs them in and sets state */
 
-  let user = res;
-  localStorage.setItem("currentUser", JSON.stringify(user));
-  currentUserSubject.next(user);
+  if (!res.accessToken || !res.userData) {
+    alert("error registering user!");
+    return logout();
+  }
+  localStorage.setItem("currentUser", JSON.stringify(res));
+  currentUserSubject.next(res);
 }
 
-function authHeader() {
+function authHeader(): { "Content-Type": string; Authorization: string } | {} {
   /* returns HTTP authorization header containing the JWT auth token of
    * the currently logged-in user.  if user isn't logged in, returns an
    * empty object instead */
   const currentUser = authService.currentUserValue;
   if (currentUser && currentUser.accessToken) {
-    return { Authorization: `Bearer ${currentUser.accessToken}` };
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${currentUser.accessToken}`,
+    };
   } else {
     return {};
   }
