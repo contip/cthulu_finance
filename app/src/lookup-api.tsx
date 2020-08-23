@@ -26,7 +26,7 @@ export default class LookupApi extends React.Component<{}, LookUpState> {
   handleSubmit = async (event: React.MouseEvent) => {
     alert("A form was submitted: " + JSON.stringify(this.state.name));
     /* definitely store the server URL in a constant somewhere */
-    let header = authService.authHeader();
+    let header = await authService.authHeader();
     await fetch("http://localhost:6969/lookup", {
       method: "POST",
       headers: header,

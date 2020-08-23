@@ -96,9 +96,11 @@ function logout(): void {
 }
 
 async function updateUserData(): Promise<void> {
+  console.log("bitch i'm being called");
+  let header = await authHeader();
   let response = await fetch("http://localhost:6969/auth/users", {
     method: "GET",
-    headers: authHeader(),
+    headers: header,
   });
   if (response.status == 401) {
     logout();
@@ -122,7 +124,7 @@ async function newUser(res: any) {
   currentUserSubject.next(res);
 }
 
-function authHeader(): { "Content-Type": string; Authorization: string } | {} {
+async function authHeader(): Promise<{ "Content-Type": string; Authorization: string } | {}> {
   /* returns HTTP authorization header containing the JWT auth token of
    * the currently logged-in user.  if user isn't logged in, returns an
    * empty object instead */
