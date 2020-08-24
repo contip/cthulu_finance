@@ -2,6 +2,7 @@ import React, { useState, useEffect, FormEvent } from "react";
 import LookupApi2, { stockData } from "./lookup-api2";
 import { TextField, Button } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
+import BootstrapTable from "react-bootstrap-table-next";
 
 export default function Lookup2() {
   let [lookupInput, setLookupInput] = useState<string>("");
@@ -29,6 +30,10 @@ export default function Lookup2() {
         return null;
     }
     return response;
+
+  }
+
+  function displayStockTable(res: stockData) {
 
   }
 

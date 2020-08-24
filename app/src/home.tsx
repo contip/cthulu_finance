@@ -1,7 +1,6 @@
 import React, { ReactElement } from "react";
 import { authService, IUserHolding, IUserData } from "./auth.service";
 /* i shouldn't be directly linking css file like this... right? */
-import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import BootstrapTable from "react-bootstrap-table-next";
 
 interface IUserHoldingPrices extends IUserHolding {

@@ -14,6 +14,7 @@ import PrivateRoute from "./components/protected-route";
 import Lookup from "./lookup";
 import { Home } from "./home";
 import Lookup2 from "./lookup2";
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 interface appState {
   currentUser: object | null;
@@ -57,6 +58,8 @@ export default class App extends React.Component<{}, appState> {
     //     );
     // }
     return (
+       <React.Fragment>
+      <CssBaseline />
       <Router>
         <div>
           {/* if user is logged in, don't display the login and register 
@@ -85,6 +88,7 @@ export default class App extends React.Component<{}, appState> {
           </Switch>
         </div>
       </Router>
+      </React.Fragment>
     );
   }
 }
