@@ -7,3 +7,7 @@
 	must consistently check that capitalization is handled FOR EVERY
 	COMPONENT IN THE APPLICATION
 	* sell requests fail for lowercase stock symbols
+	
+	invalid lookups (valid strings but not valid stock symbols) return
+	500 internal server errors from the server instead of 400 bad request
+	or XXX not found

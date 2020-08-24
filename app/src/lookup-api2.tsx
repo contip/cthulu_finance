@@ -14,15 +14,17 @@ export interface stockData {
   highTime: Date;
 }
 
+
 async function LookupApi2(stock_symbol: string): Promise<stockData | null> {
-	let header = await authService.authHeader();
+  let header = await authService.authHeader();
 	let response = await fetch("http://localhost:6969/lookup", {
 		method: "POST",
 		headers: header,
-		body: stock_symbol,
-	});
+		body: JSON.stringify({name: stock_symbol}) ,
+});
+  /* only possible error is not found (i.e. user entered invalid symbol) */
 	if (response.status >= 400) {
-		alert("stock lookup error!");
+		//alert("stock lookup error!");
 		return null;
 	}
     let body: any = await response.json();
@@ -39,3 +41,5 @@ async function LookupApi2(stock_symbol: string): Promise<stockData | null> {
     console.log(stockData);
     return stockData;
 }
+
+export default LookupApi2;

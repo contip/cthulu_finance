@@ -13,6 +13,7 @@ import Register from "./register";
 import PrivateRoute from "./components/protected-route";
 import Lookup from "./lookup";
 import { Home } from "./home";
+import Lookup2 from "./lookup2";
 
 interface appState {
   currentUser: object | null;
@@ -65,7 +66,10 @@ export default class App extends React.Component<{}, appState> {
            state and can therefore determine what links to show in nav */}
           <nav>
             {this.state.currentUser && (
-              <Link to="/lookup">Bitch Members Only</Link>
+              <div>
+                <Link to="/lookup">Bitch Members Only</Link>
+                <Link to="/lookup2">Look Up a Dang Stock!</Link>
+              </div>
             )}
             {!this.state.currentUser && <Link to="/login">Bitch log in</Link>}
             {!this.state.currentUser && (
@@ -77,6 +81,7 @@ export default class App extends React.Component<{}, appState> {
             <Route exact path="/login" component={LoginForm} />
             <Route exact path="/register" component={Register} />
             <PrivateRoute exact path="/lookup" component={Lookup} />
+            <PrivateRoute exact path="/lookup2" component={Lookup2} />
           </Switch>
         </div>
       </Router>

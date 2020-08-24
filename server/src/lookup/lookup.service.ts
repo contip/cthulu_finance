@@ -21,13 +21,18 @@ export class LookupService {
     ) {
       throw new HttpException('Invalid Request!', HttpStatus.BAD_REQUEST);
     }
-    return this.http
+
+
+          let response = this.http
       .get(
         'https://cloud-sse.iexapis.com/stable/stock/' +
           symbol +
           '/quote?token=' +
           API_KEY,
       )
-      .pipe(map(response => response.data));
+    if (!response) {console.log('bung')}
+
+      return response.pipe(map(response => response.data));
+    }
+    
   }
-}
