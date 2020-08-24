@@ -33,9 +33,8 @@ export default function Lookup2() {
       return null;
     }
     console.log(response);
-    /* convert the Date objects to strings before setting state */
-    /* this is really bad */
 
+  
     setStockData(response);
     buildColumnNames();
     setDidSearch(true);
@@ -76,7 +75,7 @@ export default function Lookup2() {
     return;
   }
 
-  function displayStockTable(res: stockData) {}
+  function prepTableData(res: stockData) {}
 
   return (
     <>

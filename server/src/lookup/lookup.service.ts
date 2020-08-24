@@ -1,8 +1,12 @@
-import { Injectable, HttpService, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpService,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { API_KEY } from './constants';
-
 
 @Injectable()
 export class LookupService {
@@ -22,17 +26,17 @@ export class LookupService {
       throw new HttpException('Invalid Request!', HttpStatus.BAD_REQUEST);
     }
 
-
-          let response = this.http
-      .get(
-        'https://cloud-sse.iexapis.com/stable/stock/' +
-          symbol +
-          '/quote?token=' +
-          API_KEY,
-      )
-    if (!response) {console.log('bung')}
-
-      return response.pipe(map(response => response.data));
+    let response = this.http.get(
+      'https://cloud-sse.iexapis.com/stable/stock/' +
+        symbol +
+        '/quote?token=' +
+        API_KEY,
+    );
+    /* TODO: better error handling for the returned observable */
+    if (!response) {
+      throw new HttpException("Error contacting quote service!", HttpStatus.SERVICE_UNAVAILABLE)
     }
-    
+
+    return response.pipe(map(response => response.data));
   }
+}
