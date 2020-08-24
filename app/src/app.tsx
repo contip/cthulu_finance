@@ -13,8 +13,8 @@ import Register from "./register";
 import PrivateRoute from "./components/protected-route";
 import Lookup from "./lookup";
 import { Home } from "./home";
-import Lookup2 from "./lookup2";
 import CssBaseline from '@material-ui/core/CssBaseline';
+import LogoutButton from "./logout";
 
 interface appState {
   currentUser: object | null;
@@ -70,8 +70,9 @@ export default class App extends React.Component<{}, appState> {
           <nav>
             {this.state.currentUser && (
               <div>
-                <Link to="/lookup">Bitch Members Only</Link>
                 <Link to="/lookup2">Look Up a Dang Stock!</Link>
+                <Link to="/logout">Log out my dude</Link>
+
               </div>
             )}
             {!this.state.currentUser && <Link to="/login">Bitch log in</Link>}
@@ -83,8 +84,9 @@ export default class App extends React.Component<{}, appState> {
             <PrivateRoute exact path="/" component={Home} />
             <Route exact path="/login" component={LoginForm} />
             <Route exact path="/register" component={Register} />
-            <PrivateRoute exact path="/lookup" component={Lookup} />
-            <PrivateRoute exact path="/lookup2" component={Lookup2} />
+            <PrivateRoute exact path="/lookup2" component={Lookup} />
+            <PrivateRoute exact path="/logout" component={LogoutButton} />
+
           </Switch>
         </div>
       </Router>

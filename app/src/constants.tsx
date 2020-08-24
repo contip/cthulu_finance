@@ -1,4 +1,4 @@
-export const LookupColumnsMap: Object = {
+export const LookupColumnsMap: any = {
         companyName: "Company Name",
         symbol: "Trade Symbol",
         latestPrice: "Current Price",

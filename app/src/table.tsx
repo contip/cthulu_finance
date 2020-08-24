@@ -10,14 +10,13 @@ export default function Table(tableCols: Array<tableCol>|any,
     data: Array<any>, title: string, options?: any) {
 
         
-        console.log(options);
+        // console.log(options);
+        console.log('the tableCols array i received is:', tableCols);
+        console.log('the data array i received is:', data);
         return(
             <div className={title}>
                 <MaterialTable
-                options={{paging: false,
-                    showSelectAllCheckbox: false,
-                    search: false,
-                    sorting: false}}
+                options={options}
                 columns={tableCols}
                 data={data}
                 title={title}

@@ -1,73 +1,66 @@
 import * as React from "react";
 import { authService } from "./auth.service";
+import { LookupColumnsMap } from "./constants";
 
-type LookUpProps = {
-  actionURL: string;
-};
-
-type LookUpState = {
-  name: { name: string };
-  lookupResponse: { company: string; price: number; symbol: string };
-};
-
-export default class LookupApi extends React.Component<{}, LookUpState> {
-  constructor(props: LookUpProps) {
-    super(props);
-    this.state = {
-      name: { name: "" },
-      lookupResponse: { company: "", price: 0, symbol: "" },
-    };
-  }
-
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ name: { name: event.target.value } });
-  };
-
-  handleSubmit = async (event: React.MouseEvent) => {
-    alert("A form was submitted: " + JSON.stringify(this.state.name));
-    /* definitely store the server URL in a constant somewhere */
-    let header = await authService.authHeader();
-    await fetch("http://localhost:6969/lookup", {
-      method: "POST",
-      headers: header,
-      body: JSON.stringify(this.state.name),
-    })
-      .then((response) => response.json())
-      .then((response) =>
-        this.setState({
-          lookupResponse: {
-            company: response.companyName,
-            price: response.latestPrice,
-            symbol: response.symbol,
-          },
-        })
-      );
-  };
-
-  render() {
-    return (
-      <div className="lookup">
-        <p>
-          <input
-            type="text"
-            value={this.state.name.name}
-            name="name"
-            onChange={this.handleChange}
-          />
-          <button onClick={this.handleSubmit}>Get Quote!</button>
-        </p>
-        <p>
-          {this.state.lookupResponse.company !== "" && (
-            <p>
-              company: {this.state.lookupResponse.company}
-              <p>
-                price: {this.state.lookupResponse.price}
-                <p>label: {this.state.lookupResponse.symbol}</p>
-              </p>
-            </p>
-          )}
-        </p>
-      </div>
-    );
-  }
+export interface stockData {
+  companyName: string;
+  symbol: string;
+  latestPrice: number;
+  previousClose?: number;
+  low?: number;
+  lowTime?: string;
+  high?: number;
+  highTime?: string;
+  week52Low?: number;
+  week52High?: number;
+  [key: string]: string | number | undefined;
 }
+
+async function LookupApi(stock_symbol: string): Promise<stockData | null> {
+  let header = await authService.authHeader();
+  let response = await fetch("http://localhost:6969/lookup", {
+    method: "POST",
+    headers: header,
+    body: JSON.stringify({ name: stock_symbol }),
+  });
+  /* only possible error is not found (i.e. user entered invalid symbol) */
+  if (response.status >= 400) {
+    //alert("stock lookup error!");
+    return null;
+  }
+  let body: any = await response.json();
+  console.log(body);
+  /* the API used for stock quotes sometimes does not return data for certain
+   * fields (i.e. no recent min price, or no yearly max), therefore exclude any
+   * null fields in the response body */
+  let payloadBuilder: any = {};
+  Object.keys(LookupColumnsMap).forEach(element => {
+    if (body[element]) {
+      if (element == "lowTime" || element == "highTime") {
+      /* api sometimes includes min/max dates without the associated min/max
+       * price.. in this case, discard the date */
+        if (!body[element.substr(0, element.indexOf("T"))]) {
+          delete body[element];
+        } else {
+          /* if both date and min/max present, make date into readable format */
+          payloadBuilder[element] = new Intl.DateTimeFormat("en-Us", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric"
+        }).format(body[element]);
+      }
+        } else {
+          payloadBuilder[element] = body[element]
+        }
+      }
+    }
+  );
+  /* recast the response body as a stockData type and return it */
+  let stockData: stockData = payloadBuilder;
+  return stockData;
+}
+
+export default LookupApi;
