@@ -26,7 +26,9 @@ const currentUserSubject = new BehaviorSubject(
  export interface IUserHolding {
    stock_name: string;
    stock_symbol: string;
-   shares: number
+   shares: number;
+   price?: number;
+   value?: number;
  }
 
 export const authService = {

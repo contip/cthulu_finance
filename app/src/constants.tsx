@@ -10,3 +10,11 @@ export const LookupColumnsMap: any = {
         week52Low: "Yearly Low",
         week52High: "Yearly High",
 }
+
+export const HoldingsColumnsMap: any = {
+        stock_name: "Stock Name",
+        stock_symbol: "Stock Symbol",
+        shares: "Shares Owned",
+        price: "Current Price",
+        value: "Current Value",
+}

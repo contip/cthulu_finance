@@ -1,6 +1,7 @@
 import * as React from "react";
 import { authService } from "./auth.service";
 import { LookupColumnsMap } from "./constants";
+import { exception } from "console";
 
 export interface stockData {
   companyName: string;
@@ -16,7 +17,7 @@ export interface stockData {
   [key: string]: string | number | undefined;
 }
 
-async function LookupApi(stock_symbol: string): Promise<stockData | null> {
+async function LookupApi(stock_symbol: string): Promise<stockData> {
   let header = await authService.authHeader();
   let response = await fetch("http://localhost:6969/lookup", {
     method: "POST",
@@ -26,10 +27,12 @@ async function LookupApi(stock_symbol: string): Promise<stockData | null> {
   /* only possible error is not found (i.e. user entered invalid symbol) */
   if (response.status >= 400) {
     //alert("stock lookup error!");
-    return null;
+    //return null;
+    alert('implement error handling u noob');
+  
   }
   let body: any = await response.json();
-  console.log(body);
+  //console.log(body);
   /* the API used for stock quotes sometimes does not return data for certain
    * fields (i.e. no recent min price, or no yearly max), therefore exclude any
    * null fields in the response body */
