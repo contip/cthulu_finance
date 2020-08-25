@@ -1,5 +1,6 @@
 import React, { ReactElement } from "react";
-import { authService, IUserHolding, IUserData } from "./auth.service";
+import { authService } from "./auth.service";
+import { IUserHolding, IUserData } from "./interfaces";
 /* i shouldn't be directly linking css file like this... right? */
 import BootstrapTable from "react-bootstrap-table-next";
 import LookupApi from "./lookup-api";

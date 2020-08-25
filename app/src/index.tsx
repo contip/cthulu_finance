@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import App from './app';
+import App2 from './app2';
 
 // ReactDOM.render(
 //   <div>
@@ -13,7 +14,7 @@ import App from './app';
 // );
 ReactDOM.render(
   <div>
-  <App />
+  <App2 />
   </div>, document.getElementById('root') as HTMLElement
 );
 
