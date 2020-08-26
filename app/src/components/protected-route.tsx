@@ -18,7 +18,8 @@ const PrivateRoute: React.FC<{
       )
     ? false
     : true;
-
+  
+    if (!authenticated) authService.logout();
   return authenticated ? (
     <Route path={props.path} exact={props.exact} component={props.component} />
   ) : (

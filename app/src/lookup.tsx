@@ -88,16 +88,13 @@ export default function Lookup() {
         stockData &&
         stockData.companyName &&
         columnData &&
-        Table(
-          columnData,
-          [stockData],
-          `Quote Results for ${stockData.symbol}`,
+        Table({tableCols: columnData, data: [stockData], title: `Quote Results for ${stockData.symbol}`, options:
           {
             paging: false,
             showSelectAllCheckbox: false,
             search: false,
             sorting: false,
-          }
+          }}
         )}
     </>
   );

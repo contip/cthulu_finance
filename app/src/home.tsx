@@ -3,6 +3,7 @@ import React, {
   useState,
   useEffect,
   useLayoutEffect,
+  Suspense,
 } from "react";
 import { authService } from "./auth.service";
 import { IUserHolding, IUserData } from "./interfaces";
@@ -11,18 +12,18 @@ import BootstrapTable from "react-bootstrap-table-next";
 import LookupApi, { stockData } from "./lookup-api";
 import Table, { tableCol } from "./table";
 import { HoldingsColumnsMap } from "./constants";
+import SelectInput from "@material-ui/core/Select/SelectInput";
 
 export function Home(user: any) {
   let [userData, setUserData] = useState<IUserData>(user);
   let [userHoldings, setUserHoldings] = useState<Array<IUserHolding>>([{stock_name: "", stock_symbol: "", shares: 0, price: 0, value: 0}]);
   let [searching, setSearching] = useState<boolean>(false);
-  let [okayRender, setOkayRender] = useState<boolean>(false);
 
 
   useEffect(() => {
     let mounted = true;
     if (!searching) {
-      bulkLookup(userData.holdings).then(updatedArray => {
+      bulkLookup(user.holdings).then(updatedArray => {
         if (mounted){
           console.log('updated array i received is', updatedArray);
         setUserHoldings(updatedArray)
@@ -31,10 +32,9 @@ export function Home(user: any) {
     }
     return () => {
       mounted = false;
-      setOkayRender(true);
       //setSearching(false);
     }
-  }, [userHoldings])
+  }, [])
 
     function buildProps() {
     /* table columns */
@@ -62,7 +62,7 @@ export function Home(user: any) {
       console.log('the props object is', props);
       console.log('stringified version of data is', JSON.stringify(props.data), 'the non-strigified version is', props.data);
       
-      return Table(props.tableCols, props.data, props.title, props.options);
+      return Table(props);
     }
 
   }
@@ -75,6 +75,7 @@ export function Home(user: any) {
         LookupApi(holding.stock_symbol).then((response: stockData) => {
         holding.price = response.latestPrice;
         holding.value = holding.shares * holding.price;
+        
         })
       });
     }
@@ -91,14 +92,14 @@ export function Home(user: any) {
 
 
 return(
-  <>
-<div>{okayRender  && buildProps()}
+  <Suspense fallback={<h2>bitch loading...</h2>}>
+<div>{userHoldings && userHoldings[0].price && buildProps()}
 {console.log("state of userHoldings is", userHoldings && userHoldings[0])}
 </div>
 {/* <div>
   {Table(cols, data, 'bung')}
 </div> */}
-</>)
+</Suspense>)
 
 }
 

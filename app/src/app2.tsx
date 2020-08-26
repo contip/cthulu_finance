@@ -10,6 +10,7 @@ import Lookup from "./lookup";
 import { Home } from "./home";
 import LogoutButton from "./logout";
 import { IUser } from './interfaces';
+import Home2 from './home2';
 
 export default function App2() {
     let [currentUser, setCurrentUser] = useState<IUser | null>(null);
