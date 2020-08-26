@@ -7,7 +7,7 @@ export interface tableCol {
 }
 
 export default function Table(tableCols: Array<tableCol>|any, 
-    data: Array<any>, title: string, options?: any) {
+    data: Array<any>|any, title: string, options?: any) {
 
         
         // console.log(options);

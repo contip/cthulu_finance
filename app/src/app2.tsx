@@ -16,7 +16,8 @@ export default function App2() {
 
     useEffect(() => {
         authService.currentUser.subscribe((user) => setCurrentUser(user));
-    });
+    }, [currentUser]);
+
     
     return (
  <React.Fragment>
@@ -43,7 +44,7 @@ export default function App2() {
           </nav>
           <Switch>
             <PrivateRoute exact path="/" component={() => <Home
-              name="bung"/>} />
+              {...currentUser?.userData}/>} />
             <Route exact path="/login" component={LoginForm} />
             <Route exact path="/register" component={Register} />
             <PrivateRoute exact path="/lookup2" component={Lookup} />

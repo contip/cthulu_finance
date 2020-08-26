@@ -51,6 +51,7 @@ export default function LoginForm() {
     }
   };
 
+  /* change input to TextFields and impose validation using library */
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>

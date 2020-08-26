@@ -17,6 +17,6 @@ export interface IUserHolding {
   stock_name: string;
   stock_symbol: string;
   shares: number;
-  price?: number;
-  value?: number;
+  price: number;
+  value: number;
 }
