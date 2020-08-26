@@ -76,6 +76,7 @@ function logout(): void {
 }
 
 async function updateUserData(): Promise<void> {
+  /* gets price data for user portfolio, updates localstorage with fresh JWT */
   console.log("bitch i'm being called");
   let header = await authHeader();
   let response = await fetch("http://localhost:6969/auth/users", {

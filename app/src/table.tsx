@@ -11,7 +11,7 @@ export default function Table(props: {tableCols: Array<tableCol>|any,
         
         // console.log(options);
         console.log('the tableCols array i received is:', props.tableCols);
-        console.log('the data array i received is:', props.data);
+        console.log('the data array i received is:', Object.keys(props.data));
         return(
             <div className={props.title}>
                 <MaterialTable

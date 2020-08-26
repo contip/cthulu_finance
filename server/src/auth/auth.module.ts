@@ -7,15 +7,17 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
+import { LookupModule } from 'src/lookup/lookup.module';
 
 @Module({
   imports: [
     forwardRef(() => DatabaseModule),
-    PassportModule, 
+    PassportModule,
     JwtModule.register({
       secret: jwtConstants.SECRET,
-      signOptions: {expiresIn: jwtConstants.EXPIRY},
+      signOptions: { expiresIn: jwtConstants.EXPIRY },
     }),
+    forwardRef(() => LookupModule),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],

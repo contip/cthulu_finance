@@ -36,7 +36,7 @@ export class AuthController {
    * valid jwt credentials */
   @UseGuards(AuthGuard('jwt'))
   @Get('/users')
-  async users(@Request() req: any): Promise<userDto|HttpException> {
+  async users(@Request() req: any): Promise<any|HttpException> {
     return await this.authService.getUserByToken(req.user);
   }
   

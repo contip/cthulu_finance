@@ -6,12 +6,14 @@ import { loginRegisterDto } from './interfaces/register-dto';
 import { userDto } from '../database/interfaces/user-dto.interface';
 import { tradeInputDto } from 'src/database/interfaces/trades-dto.interface';
 import { HASH_SALT } from './constants';
+import { LookupService } from 'src/lookup/lookup.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private lookupService: LookupService,
   ) {}
 
   /* password-based user validation function, used by routes guarded with
@@ -101,7 +103,7 @@ export class AuthService {
 
   /* retrieves user data by the JWT associated with request, used by frontend
    *  to verify that stored JWT when deciding if user is logged in */
-  async getUserByToken(decoded: any): Promise<userDto> {
+  async getUserByToken(decoded: any) {
     if (!(decoded.username && decoded.id)) {
       throw new HttpException('Invalid!', HttpStatus.BAD_REQUEST);
     }
@@ -109,6 +111,22 @@ export class AuthService {
     if (!userData || userData.username.length < 1) {
       throw new HttpException('Unauthorized!', HttpStatus.UNAUTHORIZED);
     }
-    return userData;
+    /* from userData, iterate thru their holdings if any... for each, call
+     * the lookup api and get the price, add it to the holding object, then
+     * calculate the total value (based on shares) and also add it */
+    if (userData.holdings && userData.holdings.length > 0) {
+      for (let i = 0; i < userData.holdings.length; i++) {
+        let response = await (await this.lookupService.get_quote(userData.holdings[i].stock_symbol)).toPromise();
+        userData.holdings[i].price = response.latestPrice;
+        userData.holdings[i].value = response.latestPrice * userData.holdings[i].shares;
+      }
+    }
+    const payload = { username: userData.username, id: userData.id };
+    return {
+      accessToken: this.jwtService.sign(payload),
+      userData: userData,
+    };
   }
 }
+
+

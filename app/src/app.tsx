@@ -1,64 +1,26 @@
-import * as React from "react";
+import React, { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'
 import { authService } from "./auth.service";
+import PrivateRoute from "./components/protected-route";
+import CssBaseline from '@material-ui/core/CssBaseline';
 import "./index.css";
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Switch,
-  useHistory,
-} from "react-router-dom";
 import LoginForm from "./login";
 import Register from "./register";
-import PrivateRoute from "./components/protected-route";
 import Lookup from "./lookup";
-import { Home } from "./home";
-import CssBaseline from '@material-ui/core/CssBaseline';
 import LogoutButton from "./logout";
+import { IUser } from './interfaces';
+import Home from './home';
 
-interface appState {
-  currentUser: object | null;
-}
-export default class App extends React.Component<{}, appState> {
-  constructor(props: any) {
-    super(props);
+export default function App2() {
+    let [currentUser, setCurrentUser] = useState<IUser | null>(null);
 
-    this.state = {
-      currentUser: null,
-    };
-  }
+    useEffect(() => {
+        authService.currentUser.subscribe((user) => setCurrentUser(user));
+    }, [currentUser]);
 
-  componentDidMount() {
-    authService.currentUser.subscribe((x) => this.setState({ currentUser: x }));
-  }
-
-  // logout() {
-  //     authService.logout();
-  //     //this.props.history.push('/login');
-  // }
-
-  render() {
-    // /* every time rendering happens, is when the check to see if user
-    //  * is logged in or not should occur */
-    // console.log(this.state.currentUser);
-    // if (!this.state.currentUser) {
-    //         console.log('bitch i should be showing login');
-    //     return (
-    //         <div>
-    //             <Login />
-    //         </div>
-    //     )
-    // }
-    // else {
-    //     return (
-    //         <div>
-    //             <Lookup />
-    //             <Logout />
-    //         </div>
-    //     );
-    // }
+    
     return (
-       <React.Fragment>
+ <React.Fragment>
       <CssBaseline />
       <Router>
         <div>
@@ -68,20 +30,22 @@ export default class App extends React.Component<{}, appState> {
           {/* navbar should be its own component which also has access to auth
            state and can therefore determine what links to show in nav */}
           <nav>
-            {this.state.currentUser && (
+            {currentUser && (
               <div>
                 <Link to="/lookup2">Look Up a Dang Stock!</Link>
                 <Link to="/logout">Log out my dude</Link>
 
               </div>
             )}
-            {!this.state.currentUser && <Link to="/login">Bitch log in</Link>}
-            {!this.state.currentUser && (
+            {!currentUser && <Link to="/login">Bitch log in</Link>}
+            {!currentUser && (
               <Link to="/register">Bitch register</Link>
             )}
           </nav>
           <Switch>
-            {/*<PrivateRoute exact path="/" component={Home} /> */}
+            {/* <PrivateRoute exact path="/" component={() => <Home2
+              {...currentUser?.userData}/>} /> */}
+            <PrivateRoute exact path="/" component={Home} />
             <Route exact path="/login" component={LoginForm} />
             <Route exact path="/register" component={Register} />
             <PrivateRoute exact path="/lookup2" component={Lookup} />
@@ -91,8 +55,10 @@ export default class App extends React.Component<{}, appState> {
         </div>
       </Router>
       </React.Fragment>
-    );
-  }
-}
 
-export { App };
+
+
+    )
+
+
+}
