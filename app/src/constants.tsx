@@ -16,7 +16,16 @@ export const HoldingsColumnsMap: any = {
         stock_symbol: "Stock Symbol",
         shares: "Shares Owned",
         price: "Current Price",
-        value: "Current Value",
+        value: "Total",
+}
+
+export const HistoryColumnsMap: any = {
+        date: "Transaction Date",
+        stock_name: "Stock Name", 
+        stock_symbol: "Stock Symbol",
+        stock_price: "Price at Transaction Time",
+        shares: "Shares",
+        transaction_price: "Total Transaction Amount",
 }
 
 export const CurrencyOptions = {

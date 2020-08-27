@@ -12,6 +12,7 @@ import { IUser } from './interfaces';
 import Home from './home';
 import Buy from './buy';
 import Sell from './sell';
+import History from './history';
 
 export default function App() {
     let [currentUser, setCurrentUser] = useState<IUser | null>(null);
@@ -38,6 +39,7 @@ export default function App() {
                 <Link to="/lookup">Look Up a Dang Stock!</Link>
                 <Link to="/buy">Purchase</Link>
                 <Link to="/sell">Sell a dang thing</Link>
+                <Link to="/history">Get ur dang transaction history</Link>
                 <Link to="/logout">Log out my dude</Link>
               </div>
             )}
@@ -54,6 +56,7 @@ export default function App() {
             <Route exact path="/register" component={Register} />
             <PrivateRoute exact path="/buy" component={Buy} />
             <PrivateRoute exact path="/sell" component={Sell} />
+            <PrivateRoute exact path="/history" component={History} />
             <PrivateRoute exact path="/lookup" component={Lookup} />
             <PrivateRoute exact path="/logout" component={LogoutButton} />
 
