@@ -10,8 +10,10 @@ import Lookup from "./lookup";
 import LogoutButton from "./logout";
 import { IUser } from './interfaces';
 import Home from './home';
+import Buy from './buy';
+import Sell from './sell';
 
-export default function App2() {
+export default function App() {
     let [currentUser, setCurrentUser] = useState<IUser | null>(null);
 
     useEffect(() => {
@@ -32,9 +34,11 @@ export default function App2() {
           <nav>
             {currentUser && (
               <div>
-                <Link to="/lookup2">Look Up a Dang Stock!</Link>
+                <Link to="/">Home</Link>
+                <Link to="/lookup">Look Up a Dang Stock!</Link>
+                <Link to="/buy">Purchase</Link>
+                <Link to="/sell">Sell a dang thing</Link>
                 <Link to="/logout">Log out my dude</Link>
-
               </div>
             )}
             {!currentUser && <Link to="/login">Bitch log in</Link>}
@@ -48,7 +52,9 @@ export default function App2() {
             <PrivateRoute exact path="/" component={Home} />
             <Route exact path="/login" component={LoginForm} />
             <Route exact path="/register" component={Register} />
-            <PrivateRoute exact path="/lookup2" component={Lookup} />
+            <PrivateRoute exact path="/buy" component={Buy} />
+            <PrivateRoute exact path="/sell" component={Sell} />
+            <PrivateRoute exact path="/lookup" component={Lookup} />
             <PrivateRoute exact path="/logout" component={LogoutButton} />
 
           </Switch>

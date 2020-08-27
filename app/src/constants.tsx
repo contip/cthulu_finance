@@ -18,3 +18,8 @@ export const HoldingsColumnsMap: any = {
         price: "Current Price",
         value: "Current Value",
 }
+
+export const CurrencyOptions = {
+        price: {currencySetting: true},
+        value: {currencySetting: true},
+}
