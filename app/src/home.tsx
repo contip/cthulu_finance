@@ -17,10 +17,11 @@ Object.keys(HoldingsColumnsMap).forEach((key) => {
   }
 });
 
-export default function Home() {
+export default function Home(props: any) {
   let [userHoldings, setUserHoldings] = useState<Array<IUserHolding> | null>(
     null
   );
+  console.log(props)
 
   useEffect(() => {
     authService.updateUserData().then(() => {

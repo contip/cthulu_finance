@@ -49,9 +49,7 @@ export default function App() {
             )}
           </nav>
           <Switch>
-            {/* <PrivateRoute exact path="/" component={() => <Home2
-              {...currentUser?.userData}/>} /> */}
-            <PrivateRoute exact path="/" component={Home} />
+            <PrivateRoute exact path="/" component={Home} {...currentUser} />
             <Route exact path="/login" component={LoginForm} />
             <Route exact path="/register" component={Register} />
             <PrivateRoute exact path="/buy" component={Buy} />
