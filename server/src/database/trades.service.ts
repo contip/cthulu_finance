@@ -100,6 +100,10 @@ export class TradesService {
     /* update user's cash, decrement their shares */
     userData.cash = userData.cash + tradeData.transaction_price;
     userData.holdings[i].shares -= saleData.shares;
+    /* if shares have reduced to 0, remove item from holdings */
+    if (userData.holdings[i].shares == 0) {
+      userData.holdings.splice(i, 1);
+    }
     await this.updateUser(userData);
     /* get updated user info and return it */
     return await this.getUserById(saleData.user_id);

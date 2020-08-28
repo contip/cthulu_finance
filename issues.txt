@@ -1,13 +1,16 @@
 -user registration:
-    if user goes to registration page and clicks in the input field
-    then clicks out of the field, react will submit a POST request with
-    a BLANK value for lookup request, throwing error server-side
     
 -stock lookup/purchase/sell:
 	must consistently check that capitalization is handled FOR EVERY
 	COMPONENT IN THE APPLICATION
 	* sell requests fail for lowercase stock symbols
 	
-	invalid lookups (valid strings but not valid stock symbols) return
-	500 internal server errors from the server instead of 400 bad request
-	or XXX not found
+    if user sells all of their shares of a certain stock, the stock still
+    appears in their holdings, with 0 shares.  must add logic to DB
+    sales function on backend to check whether sale reduces shares held
+    to 0; if so, that entry in the holdings array must be removed
+
+-history / lookup pages (frontend)
+    dates are given in form 2020-08-27 16:46:48.475
+        remove the unnecessary milliseconds
+        possibly use string split to make two columns, one for date & time
