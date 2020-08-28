@@ -4,6 +4,7 @@ import Table, { tableCol } from "./table";
 import { HoldingsColumnsMap } from "./constants";
 import { authService } from "./auth.service";
 import { Tab } from "@material-ui/core";
+import { Z_FIXED } from "zlib";
 
 /* TODO: implement stronger typing and document code */
 /* TODO: make sure that currencies have $ symbol and are rounded to 2
@@ -11,7 +12,7 @@ import { Tab } from "@material-ui/core";
 
 const tableCols: Array<tableCol | any> = [];
 Object.keys(HoldingsColumnsMap).forEach((key) => {
-  tableCols.push({ title: HoldingsColumnsMap[key], field: key });
+  tableCols.push({ title: HoldingsColumnsMap[key], field: key, width: 250});
   if (key == "price" || key == "value") {
     tableCols[tableCols.length - 1]["type"] = "currency";
   }
@@ -58,6 +59,7 @@ export default function Home(props: any) {
             paging: false,
             showSelectAllCheckbox: false,
             search: false,
+            // tableLayout: "fixed"
           },
         }}
       />
