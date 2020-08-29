@@ -29,3 +29,11 @@ export interface IUserTransaction {
   shares: number;
   total: number;
 }
+
+export interface ITrade {
+  user_id: number;
+  stock_symbol: string;
+  shares: number;
+  type: "buy"|"sell";
+}
+

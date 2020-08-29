@@ -4,6 +4,7 @@ import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { authService } from "./auth.service";
 import { useHistory } from "react-router-dom";
 import { useSnackbar } from 'notistack';
+import SweetAlert from 'react-bootstrap-sweetalert';
 
 export default function Buy(props: any) {
   let [stockInput, setStockInput] = useState<string>("");
@@ -13,6 +14,12 @@ export default function Buy(props: any) {
   let [loading, setLoading] = useState<boolean>(false);
   let history = useHistory();
   let {enqueueSnackbar, closeSnackbar} = useSnackbar();
+  let [confirm, setConfirm] = useState(false);
+
+
+  function handleConfirm() {
+    setConfirm(true);
+  }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.name == "stock_symbol") {
@@ -23,7 +30,17 @@ export default function Buy(props: any) {
     return;
   }
 
+  function handleClose() {
+    setConfirm(false);
+    setSharesInput("");
+    setStockInput("");
+    enqueueSnackbar("Purchase Cancelled!", {variant: "info"})
+  }
+
   async function handleSubmit() {
+    /* first, bring up the confirm dialog */
+    // AlertDialog({title: "really do this?", description: "bung?", handleClose, buttonTitles: {accept: "yes", decline: "no"}} )
+      setConfirm(false);
       setLoading(true);
     let response: any = await fetch("http://localhost:6969/trades/buy", {
       method: "POST",
@@ -67,8 +84,23 @@ export default function Buy(props: any) {
 
   return (
     <>
+    <div>
+      {confirm && <SweetAlert
+  warning
+  showCancel
+  onConfirm={handleSubmit}
+  confirmBtnText="Buy the thing"
+  confirmBtnBsStyle="danger"
+  title="Is your ass certain?"
+  onCancel={handleClose}
+  focusCancelBtn
+>
+  Does your ass want to buy 69 shares of BUNG for $59.59???? lol
+</SweetAlert>}
+    </div>
+
       <ValidatorForm
-        onSubmit={handleSubmit}
+        onSubmit={handleConfirm}
         onError={(errors) => {
           console.log(errors);
         }}
