@@ -19,6 +19,7 @@
     "all": "0.0.0",
     "jwt-decode": "^2.2.0",
     "material-table": "^1.69.0",
+    "notistack": "^1.0.0",
     "react": "^16.13.1",
     "react-art": "^16.13.1",
     "react-bootstrap-table-next": "^4.0.3",

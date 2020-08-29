@@ -3,6 +3,7 @@ import { Button } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { authService } from "./auth.service";
 import { useHistory } from "react-router-dom";
+import { useSnackbar } from 'notistack';
 
 export default function Buy(props: any) {
   let [stockInput, setStockInput] = useState<string>("");
@@ -11,6 +12,7 @@ export default function Buy(props: any) {
   let [validSharesInput, setValidSharesInput] = useState<boolean>(true);
   let [loading, setLoading] = useState<boolean>(false);
   let history = useHistory();
+  let {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.name == "stock_symbol") {
@@ -49,6 +51,7 @@ export default function Buy(props: any) {
             authService.logout();
         }
         else if (response.status == 201) {
+            enqueueSnackbar("bunghilda", {variant: "success", autoHideDuration: 4000})
             alert('purchase successful!');
             return history.push('/')
         }
