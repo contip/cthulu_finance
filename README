@@ -14,4 +14,9 @@ the html layout of the main app page).
 
 current goal:
 
-.-resume work on frontend
+-remaining feature additions:
+    -notification / alert system
+    
+-essential code improvements (combining redundant functions)
+-design
+-code cleanup and documentation

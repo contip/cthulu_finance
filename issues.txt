@@ -5,11 +5,6 @@
 	COMPONENT IN THE APPLICATION
 	* sell requests fail for lowercase stock symbols
 	
-    if user sells all of their shares of a certain stock, the stock still
-    appears in their holdings, with 0 shares.  must add logic to DB
-    sales function on backend to check whether sale reduces shares held
-    to 0; if so, that entry in the holdings array must be removed
-
 -history / lookup pages (frontend)
     dates are given in form 2020-08-27 16:46:48.475
         remove the unnecessary milliseconds
