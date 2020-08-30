@@ -9,3 +9,7 @@
     dates are given in form 2020-08-27 16:46:48.475
         remove the unnecessary milliseconds
         possibly use string split to make two columns, one for date & time
+
+
+-home page:
+    grand total is only adding entries in table, not adding user cash

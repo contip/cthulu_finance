@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import LookupApi from "./lookup-api";
 import { Button } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import Table, { tableCol } from "./table";
-import { LookupColumnsMap } from "./constants";
-import { IStockData } from "./interfaces";
+import { LookupColumnsMap, Urls } from "./constants";
+import { IStockData, ILookupCall } from "./interfaces";
+import { useSnackbar } from "notistack";
+import ApiCall from "./api";
 
 export default function Lookup() {
   let [lookupInput, setLookupInput] = useState<string>("");
   let [validInput, setValidInput] = useState<boolean>(true);
-  let [changed, setChanged] = useState<boolean>(false);
   let [stockData, setStockData] = useState<IStockData>({
     companyName: "",
     symbol: "",
@@ -17,31 +17,76 @@ export default function Lookup() {
   });
   let [columnData, setColumnData] = useState<Array<any> | null>(null);
   let [didSearch, setDidSearch] = useState<boolean>(false);
+  let { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setChanged(true);
     setLookupInput(event.target.value);
     return;
   }
 
-  async function handleSubmit(): Promise<void | null> {
+  // async function handleSubmit(): Promise<void | null> {
+  //   /* purge anything in stockData / columnData state before submission */
+  //   setStockData({ companyName: "", symbol: "", latestPrice: NaN });
+  //   setColumnData(null);
+  //   let response = await LookupApi(lookupInput);
+  //   if (response.code) {
+  //     enqueueSnackbar(response.message, { variant: "error" });
+  //     setLookupInput("");
+  //   }
+  //   console.log("setting stock data in lookup state to:", response);
+  //   setLookupInput("");
+  //   setStockData(response);
+  //   // buildColumnNames();
+  //   prepTableData(response);
+  //   setDidSearch(true);
+  //   return;
+  // }
+
+  async function handleSubmit() {
     /* purge anything in stockData / columnData state before submission */
     setStockData({ companyName: "", symbol: "", latestPrice: NaN });
     setColumnData(null);
-    let response = await LookupApi(lookupInput);
-    if (!response) {
-      alert(`Error retrieving stock quote!  Are you sure ${lookupInput}
-        is a valid stock symbol?`);
-      return null;
-    }
-    console.log("setting stock data in lookup state to:", response);
+    let payload: ILookupCall = {url: Urls.lookup, auth: true, body: {name: lookupInput}};
+    let response = await ApiCall(payload);
+    if (response.code) {
+      enqueueSnackbar(response.message, { variant: "error" });
+      setLookupInput("");
+    } else {
+      let bunghilda: any = {};
+      Object.keys(LookupColumnsMap).forEach((element) => {
+        if (response[element]) {
+          if (element == "lowTime" || element == "highTime") {
+            /* api sometimes includes min/max dates without the associated min/max
+             * price.. in this case, discard the date */
+            if (!response[element.substr(0, element.indexOf("T"))]) {
+              delete response[element];
+            } else {
+              /* if both date and min/max present, make date into readable format */
+              bunghilda[element] = new Intl.DateTimeFormat("en-Us", {
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+              }).format(response[element]);
+            }
+          } else {
+            bunghilda[element] = response[element];
+          }
+        }
+      });
+
     setLookupInput("");
-    setStockData(response);
+    setStockData(bunghilda as IStockData);
     // buildColumnNames();
-    prepTableData(response);
+    prepTableData(bunghilda as IStockData);
     setDidSearch(true);
-    return;
+    return;}
   }
+
+
+
 
   function prepTableData(response: IStockData): void {
     let tableCols: Array<tableCol> = [];
@@ -82,7 +127,7 @@ export default function Lookup() {
 
         {
           /* hide submit button unless text input is valid */
-          changed && validInput && <Button type="submit">Submit</Button>
+          validInput && lookupInput.length > 0 && <Button type="submit">Submit</Button>
         }
       </ValidatorForm>
       {didSearch &&

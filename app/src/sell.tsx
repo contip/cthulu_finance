@@ -7,46 +7,53 @@ import {
 } from "react-material-ui-form-validator";
 import { authService } from "./auth.service";
 import { useHistory } from "react-router-dom";
-import { IUserData, IUserHolding } from "./interfaces";
+import { IUserData, IUserHolding, ITradeCall } from "./interfaces";
+import { Urls } from "./constants";
+import ApiCall from "./api";
+import SweetAlert from "react-bootstrap-sweetalert";
+import { useSnackbar } from "notistack";
 
 export default function Sell(props: any) {
   let [numShares, setNumShares] = useState<number>(0);
   let [select, setSelect] = useState<string>("");
   let [validShares, setValidShares] = useState<boolean>(true);
-  let [loading, setLoading] = useState<boolean>(false);
+  let { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  let [confirm, setConfirm] = useState(false);
   let history = useHistory();
 
   let userData: IUserData = authService.currentUserValue.userData;
-
+  function handleConfirm() {
+    setConfirm(true);
+  }
   async function handleSubmit() {
-    setLoading(true);
-
-    let response: any = await fetch("http://localhost:6969/trades/sell", {
-      method: "POST",
-      headers: await authService.authHeader(),
-      body: JSON.stringify({
+    setConfirm(false);
+    let payload: ITradeCall = {
+      url: Urls.sell,
+      auth: true,
+      body: {
         user_id: authService.currentUserValue.userData.id,
         stock_symbol: select,
         shares: numShares,
-      }),
-    });
-    if (response.status == 400) {
-      alert("sale not made!  not enough stocks!!");
-      setNumShares(0);
+      },
+    };
+    let response = await ApiCall(payload);
+    if (response.code) {
+      enqueueSnackbar(response.message, { variant: "error" });
       setSelect("");
-      setLoading(false);
-    } else if (response.status == 401) {
-      alert("authentication error!  logging you out");
-      authService.logout();
-    } else if (response.status == 201) {
-      alert("sale successful!");
-      history.push("/");
+      setNumShares(0);
     } else {
-      alert("error contacting server!  pls tried again");
-      setNumShares(0);
-      setSelect("");
-      setLoading(false);
+      enqueueSnackbar("well, bunghilda, it was a success", {
+        variant: "success",
+      });
+      history.push("/");
     }
+  }
+
+  function handleCloseAlert() {
+    setConfirm(false);
+    setSelect("");
+    setNumShares(0);
+    enqueueSnackbar("Sale Cancelled!", { variant: "info" });
   }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -82,13 +89,29 @@ export default function Sell(props: any) {
     return 0;
   }
 
-  if (loading) {
-    return <h1>tp is loading for your bunghole</h1>;
-  }
+  // if (loading) {
+  //   return <h1>tp is loading for your bunghole</h1>;
+  // }
   return (
     <>
+          <div>
+        {confirm && (
+          <SweetAlert
+            warning
+            showCancel
+            onConfirm={handleSubmit}
+            confirmBtnText="SELL THE THING"
+            confirmBtnBsStyle="danger"
+            title="Is your ass for sure?"
+            onCancel={handleCloseAlert}
+            focusCancelBtn
+          >
+            Does your ass want to sell 69 shares of BUNG for $59.59???? lol
+          </SweetAlert>
+        )}
+      </div>
       <ValidatorForm
-        onSubmit={handleSubmit}
+        onSubmit={handleConfirm}
         onError={(errors) => {
           console.log(errors);
         }}
