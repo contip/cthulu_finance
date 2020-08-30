@@ -1,141 +1,101 @@
-import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import React, { useState } from 'react';
+import { authService } from './auth.service';
 import { useHistory } from "react-router-dom";
-import { authService } from "./auth.service";
+import { Button } from "@material-ui/core";
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
+import { Urls } from "./constants";
+import ApiCall from "./api";
+import { useSnackbar } from "notistack";
+import { IAuthCall } from './interfaces';
 
-interface IRegisterInput {
-  username: string;
-  password: string;
-  confirm: string;
-  valid: boolean;
-}
-
-/* controls the registration form and handles submitting and receiving
- * requests from the server for registering new users to the db */
 export default function Register() {
+  let [nameInput, setNameInput] = useState<string>("");
+  let [passInput, setPassInput] = useState<string>("");
+  let [confirmPassInput, setConfirmPassInput] = useState<string>("");
+  let [validName, setValidName] = useState<boolean>(false);
+  let [validPass, setValidPass] = useState<boolean>(false);
+  let [validConfirm, setValidConfirm] = useState<boolean>(false);
+  let {enqueueSnackbar, closeSnackbar} = useSnackbar();
   let history = useHistory();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [valid, setValid] = useState(false);
-  /* username availability notification (i.e. 'this name is available') hidden
-   * until user has changed username field, thereafter message shown */
-  const [changed, setChanged] = useState(false);
-  const { register, handleSubmit } = useForm<IRegisterInput>();
 
-  /* if registration successful or if logged-in user attempts to access
-   * page, redirects them to the root (home) route */
-  useEffect(() => {
-    if (authService.currentUserValue) {
-      return history.push("/");
+  async function handleSubmit() {
+
+  }
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    switch (event.target.name) {
+      case "username":
+        setNameInput(event.target.value);
+        break;
+      case "password":
+        setPassInput(event.target.value);
+        break;
+      default:  /* otherwise it is the confirm pass input */
+        setConfirmPassInput(event.target.value)
+        break;
     }
-  });
+  }
 
-  const onSubmit = async (data: IRegisterInput) => {
-    /* TODO: the following validation checks should go in a separate
-     * validateSubmit function */
-    if (!valid) {
-      alert("pls entered a valid username!");
-      setUsername("");
-      return;
-    }
-    if (!data.username || !data.password || !data.confirm) {
-      alert("all field must be fill in!!!");
-      return;
-    }
-    if (data.confirm !== data.password) {
-      alert("passwords don't matched!!");
-      setPassword("");
-      setConfirm("");
-      return;
-    }
-    /* server expects only 'username' and 'password' fields in req body, so
-     * strip confirm field (pw already confirmed) */
-    const { confirm, ...toSubmit } = data;
-    alert("A form was submitted: " + JSON.stringify(toSubmit));
-    /* TODO: server api urls should be defined in a constant */
-    let response = await fetch("http://localhost:6969/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(toSubmit),
-    });
-    if (response.status == 400) {
-      alert("Error!  Registration attempt unsuccessful!");
-      return;
-    }
-    await authService.newUser(await response.json());
-  };
+  async function handleBlur(event: React.ChangeEvent<HTMLInputElement>) {
+    /* call api function for username availability check */
+    let payload: IAuthCall = {url: Urls.available, auth:false, body: {username: nameInput}};
+    let response = await ApiCall(payload);
+    setValidName(response);
+  }
 
-  /* queries server to determine whether or not current username state is a
-   * valid username for new user */
-  const userNameCheck = async (event: any) => {
-    /* if form is empty, do nothing */
-    if (!username) {
-      return;
-    }
-    let response = await fetch("http://localhost:6969/auth/available", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: username }),
-    });
-    setValid(await response.json());
-    setChanged(true);
-  };
+  return(
+    <div id="RegisterForm">
+      <ValidatorForm
+        onSubmit={handleSubmit}
+        onError={(errors) => {
+          console.log(errors);
+        }}
+      >
+        <TextValidator
+          label="Username"
+          onChange={handleChange}
+          name="username"
+          validatorListener={setValidName}
+          value={nameInput}
+          validators={[
+            "required",
+            "matchRegexp:^[A-Za-z0-9]+$",
+            "maxStringLength:15",
+          ]}
+          errorMessages={[
+            "this field is required!",
+            "alphabetical letters and digits only!",
+            "15 character maximum!",
+          ]}
+          variant="outlined"
+        />
 
-  /* updates component username state whenever username form input is updated */
-  const userNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    /* TODO: the setter functions for updating username, password, and confirm
-     * state should be combined into one general setter function */
-    setUsername(event.target.value);
-    /* make availability notification disappear while user is typing */
-    setChanged(false);
-  };
-
-  /* updates component password state whenever form input is changed */
-  const userPassChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-  };
-
-  /* updates component confirm state whenever form input is changed */
-  const confirmChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirm(event.target.value);
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input
-        name="username"
-        placeholder="User Name"
-        value={username}
-        ref={register({ maxLength: 20 })}
-        onChange={userNameChange}
-        onBlur={userNameCheck}
-      />
-      <p>
-        {valid && changed && <p>this user name is available lol </p>}
-        {!valid && changed && <p>this user name is NOT available lol </p>}
-        <input
+        <TextValidator
+          label="Password"
+          onChange={handleChange}
           name="password"
           type="password"
-          placeholder="Password"
-          value={password}
-          ref={register({ pattern: /^[A-Za-z]+$/i })}
-          onChange={userPassChange}
+          validatorListener={setValidPass}
+          value={passInput}
+          validators={[
+            "required",
+            "matchRegexp:^[A-Za-z0-9!@#$%^&*]+$",
+            "maxStringLength:19",
+          ]}
+          errorMessages={[
+            "this field is required!",
+            "only letters, digits, and '!@#$%^&*' are allowed!",
+            "19 character maximum!",
+          ]}
+          variant="outlined"
         />
-      </p>
-      <p>
-        <input
-          name="confirm"
-          type="password"
-          placeholder="Password (again)"
-          value={confirm}
-          ref={register({
-            pattern: /^[A-Za-z]+$/i,
-          })}
-          onChange={confirmChange}
-        />
-      </p>
-      <input type="submit" value="Register!" />
-    </form>
-  );
+        {validName &&
+          validPass &&
+          nameInput.length > 0 &&
+          passInput.length > 0 && <Button type="submit">Submit</Button>}
+      </ValidatorForm>
+    </div>
+  )
+
+
 }
