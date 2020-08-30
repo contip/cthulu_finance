@@ -3,39 +3,46 @@ import { authService } from "./auth.service";
 import { useHistory } from "react-router-dom";
 import { Button } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { IAuthCall, ICallError, IUser } from "./interfaces";
+import { IAuthCall } from "./interfaces";
 import { Urls } from "./constants";
 import ApiCall from "./api";
+import { useSnackbar } from "notistack";
+
 
 export default function LoginForm() {
   let [nameInput, setNameInput] = useState<string>("");
   let [passInput, setPassInput] = useState<string>("");
-  // let [validName, setValidName] = useState<boolean>(false);
-  // let [validPass, setValidPass] = useState<boolean>(false);
+  let [validName, setValidName] = useState<boolean>(false);
+  let [validPass, setValidPass] = useState<boolean>(false);
+  let {enqueueSnackbar, closeSnackbar} = useSnackbar();
   let history = useHistory();
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.name === "username") {
       setNameInput(event.target.value);
-    }
-    else {
+    } else {
       setPassInput(event.target.value);
     }
   }
 
-  async function handleSubmit() {  /* needs no parameters since can use state */
-    let payload: IAuthCall = {url: Urls.login, auth: false, body: {
-      username: nameInput,
-      password: passInput,
-    }};
+  async function handleSubmit() {
+    let payload: IAuthCall = {
+      url: Urls.login,
+      auth: false,
+      body: { username: nameInput, password: passInput },
+    };
     let response = await ApiCall(payload);
-    /* already checked for 401.. if invalid, already will have redirected */
-    
-
+    if (response.code) {
+      enqueueSnackbar(response.message, {variant: "error"})
+      setNameInput("");
+      setPassInput("");
+    }
+    else {
+      authService.login(response)
+      history.push("/");
+    }
   }
 
-
-  /* change input to TextFields and impose validation using library */
   return (
     <div id="LoginForm">
       <ValidatorForm
@@ -48,7 +55,7 @@ export default function LoginForm() {
           label="Username"
           onChange={handleChange}
           name="username"
-          // validatorListener={setValidName} // if input is currently invalid and displaying error message, set invalid state
+          validatorListener={setValidName}
           value={nameInput}
           validators={[
             "required",
@@ -68,7 +75,7 @@ export default function LoginForm() {
           onChange={handleChange}
           name="password"
           type="password"
-          // validatorListener={setValidPass} // if input is currently invalid and displaying error message, set invalid state
+          validatorListener={setValidPass}
           value={passInput}
           validators={[
             "required",
@@ -82,27 +89,11 @@ export default function LoginForm() {
           ]}
           variant="outlined"
         />
-        <Button type="submit">Submit</Button>
-
+        {validName &&
+          validPass &&
+          nameInput.length > 0 &&
+          passInput.length > 0 && <Button type="submit">Submit</Button>}
       </ValidatorForm>
     </div>
-    // <div>
-    //   <form onSubmit={handleSubmit(onSubmit)}>
-    //     <input
-    //       name="username"
-    //       placeholder="User Name"
-    //       ref={register({ required: true, maxLength: 20 })}
-    //     />
-    //     <p>
-    //       <input
-    //         name="password"
-    //         type="password"
-    //         placeholder="Password"
-    //         ref={register({ required: true, pattern: /^[A-Za-z]+$/i })}
-    //       />
-    //     </p>
-    //     <input type="submit" value="Login!" />
-    //   </form>
-    // </div>
   );
 }
