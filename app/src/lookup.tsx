@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import LookupApi, { stockData } from "./lookup-api";
+import LookupApi from "./lookup-api";
 import { Button } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import Table, { tableCol } from "./table";
 import { LookupColumnsMap } from "./constants";
+import { IStockData } from "./interfaces";
 
 export default function Lookup() {
   let [lookupInput, setLookupInput] = useState<string>("");
   let [validInput, setValidInput] = useState<boolean>(true);
   let [changed, setChanged] = useState<boolean>(false);
-  let [stockData, setStockData] = useState<stockData>({
+  let [stockData, setStockData] = useState<IStockData>({
     companyName: "",
     symbol: "",
     latestPrice: NaN,
@@ -42,7 +43,7 @@ export default function Lookup() {
     return;
   }
 
-  function prepTableData(response: stockData): void {
+  function prepTableData(response: IStockData): void {
     let tableCols: Array<tableCol> = [];
     Object.keys(response).forEach((key) => {
       console.log("currently processing key:", key);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, Suspense } from "react";
-import { IUserHolding } from "./interfaces";
+import { IUserHolding, IUserHoldingFull } from "./interfaces";
 import Table, { tableCol } from "./table";
 import { HoldingsColumnsMap } from "./constants";
 import { authService } from "./auth.service";
@@ -19,7 +19,7 @@ Object.keys(HoldingsColumnsMap).forEach((key) => {
 });
 
 export default function Home(props: any) {
-  let [userHoldings, setUserHoldings] = useState<Array<IUserHolding> | null>(
+  let [userHoldings, setUserHoldings] = useState<Array<IUserHoldingFull> | null>(
     null
   );
   console.log(props)
