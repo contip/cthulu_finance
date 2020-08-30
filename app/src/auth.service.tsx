@@ -1,7 +1,7 @@
 import React from "react";
 import { BehaviorSubject } from "rxjs";
 import { report } from "process";
-import { ILoginInput } from "./login";
+import { ILoginInput } from "./interfaces";
 
 /* current user data (jwt token value and user data) stored as a subscribable
  * rxjs BehaviorSubject */

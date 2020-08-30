@@ -1,3 +1,14 @@
+/* temp... */
+export interface ILoginInput {
+  username: string;
+  password: string;
+}
+
+export interface ICallError {
+  code: number;
+  message: string;
+}
+
 /* outgoing api calls to the server */
 
 /* every call will need a url and boolean specifying whether or not to include

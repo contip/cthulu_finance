@@ -3,12 +3,15 @@ import { authService } from "./auth.service";
 import { useHistory } from "react-router-dom";
 import { Button } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
+import { IAuthCall, ICallError, IUser } from "./interfaces";
+import { Urls } from "./constants";
+import ApiCall from "./api";
 
 export default function LoginForm() {
   let [nameInput, setNameInput] = useState<string>("");
   let [passInput, setPassInput] = useState<string>("");
-  let [validName, setValidName] = useState<boolean>(false);
-  let [validPass, setValidPass] = useState<boolean>(false);
+  // let [validName, setValidName] = useState<boolean>(false);
+  // let [validPass, setValidPass] = useState<boolean>(false);
   let history = useHistory();
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -20,46 +23,17 @@ export default function LoginForm() {
     }
   }
 
-  function handleSubmit() {  /* needs no parameters since can use state */
+  async function handleSubmit() {  /* needs no parameters since can use state */
+    let payload: IAuthCall = {url: Urls.login, auth: false, body: {
+      username: nameInput,
+      password: passInput,
+    }};
+    let response = await ApiCall(payload);
+    /* already checked for 401.. if invalid, already will have redirected */
+    
 
   }
-  const onSubmit = async (data: ILoginInput) => {
-    /* on submit i want to make sure the fields in the form aren't blank, then
-     * i want to submit the data in those fields to server/auth/login
-     * on success i want to redirect to the USER OVERVIEW page
-     * on failure i want to alert INVALID USERNAME / PASSWORD and then reload the login page
-     */
 
-    /* if the user is somehow already logged in, redirect their ass to the 
-      main app page */
-    if (authService.currentUserValue) {
-      alert("your ass is already logged in!  redirecting u");
-      return history.push("/");
-    }
-    /* before submitting, check if either of the input fields are blank */
-    if (data.username === "" || data.password === "") {
-      alert("user name / password cannot be blank!");
-      return;
-    } else {
-      /* if the username and password fields are filled out, submit the post request to auth/login */
-      /* call the login function of authservice) */
-      await authService.login(data);
-      if (authService.currentUserValue !== null) {
-        console.log(
-          "the current user been set and is: " +
-            JSON.stringify(authService.currentUserValue)
-        );
-        console.log(
-          "localstorage.getitem(currentuser) is:" +
-            localStorage.getItem("currentUser")
-        );
-        history.push("/");
-      } else {
-        console.log("current user aint been set and is: " + currentUser);
-        setCurrentUser(null);
-      }
-    }
-  };
 
   /* change input to TextFields and impose validation using library */
   return (
@@ -74,7 +48,7 @@ export default function LoginForm() {
           label="Username"
           onChange={handleChange}
           name="username"
-          validatorListener={setValidName} // if input is currently invalid and displaying error message, set invalid state
+          // validatorListener={setValidName} // if input is currently invalid and displaying error message, set invalid state
           value={nameInput}
           validators={[
             "required",
@@ -94,7 +68,7 @@ export default function LoginForm() {
           onChange={handleChange}
           name="password"
           type="password"
-          validatorListener={setValidPass} // if input is currently invalid and displaying error message, set invalid state
+          // validatorListener={setValidPass} // if input is currently invalid and displaying error message, set invalid state
           value={passInput}
           validators={[
             "required",
@@ -108,6 +82,7 @@ export default function LoginForm() {
           ]}
           variant="outlined"
         />
+        <Button type="submit">Submit</Button>
 
       </ValidatorForm>
     </div>
