@@ -1,18 +1,28 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
 import { authService } from "./auth.service";
 import { useHistory } from "react-router-dom";
-
-export interface ILoginInput {
-  username: string;
-  password: string;
-}
+import { Button } from "@material-ui/core";
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 
 export default function LoginForm() {
-  let [currentUser, setCurrentUser] = useState<string | null>();
+  let [nameInput, setNameInput] = useState<string>("");
+  let [passInput, setPassInput] = useState<string>("");
+  let [validName, setValidName] = useState<boolean>(false);
+  let [validPass, setValidPass] = useState<boolean>(false);
   let history = useHistory();
 
-  const { register, handleSubmit } = useForm<ILoginInput>();
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    if (event.target.name === "username") {
+      setNameInput(event.target.value);
+    }
+    else {
+      setPassInput(event.target.value);
+    }
+  }
+
+  function handleSubmit() {  /* needs no parameters since can use state */
+
+  }
   const onSubmit = async (data: ILoginInput) => {
     /* on submit i want to make sure the fields in the form aren't blank, then
      * i want to submit the data in those fields to server/auth/login
@@ -53,23 +63,71 @@ export default function LoginForm() {
 
   /* change input to TextFields and impose validation using library */
   return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <input
+    <div id="LoginForm">
+      <ValidatorForm
+        onSubmit={handleSubmit}
+        onError={(errors) => {
+          console.log(errors);
+        }}
+      >
+        <TextValidator
+          label="Username"
+          onChange={handleChange}
           name="username"
-          placeholder="User Name"
-          ref={register({ required: true, maxLength: 20 })}
+          validatorListener={setValidName} // if input is currently invalid and displaying error message, set invalid state
+          value={nameInput}
+          validators={[
+            "required",
+            "matchRegexp:^[A-Za-z0-9]+$",
+            "maxStringLength:15",
+          ]}
+          errorMessages={[
+            "this field is required!",
+            "alphabetical letters and digits only!",
+            "15 character maximum!",
+          ]}
+          variant="outlined"
         />
-        <p>
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            ref={register({ required: true, pattern: /^[A-Za-z]+$/i })}
-          />
-        </p>
-        <input type="submit" value="Login!" />
-      </form>
+
+        <TextValidator
+          label="Password"
+          onChange={handleChange}
+          name="password"
+          type="password"
+          validatorListener={setValidPass} // if input is currently invalid and displaying error message, set invalid state
+          value={passInput}
+          validators={[
+            "required",
+            "matchRegexp:^[A-Za-z0-9!@#$%^&*]+$",
+            "maxStringLength:19",
+          ]}
+          errorMessages={[
+            "this field is required!",
+            "only letters, digits, and '!@#$%^&*' are allowed!",
+            "19 character maximum!",
+          ]}
+          variant="outlined"
+        />
+
+      </ValidatorForm>
     </div>
+    // <div>
+    //   <form onSubmit={handleSubmit(onSubmit)}>
+    //     <input
+    //       name="username"
+    //       placeholder="User Name"
+    //       ref={register({ required: true, maxLength: 20 })}
+    //     />
+    //     <p>
+    //       <input
+    //         name="password"
+    //         type="password"
+    //         placeholder="Password"
+    //         ref={register({ required: true, pattern: /^[A-Za-z]+$/i })}
+    //       />
+    //     </p>
+    //     <input type="submit" value="Login!" />
+    //   </form>
+    // </div>
   );
 }

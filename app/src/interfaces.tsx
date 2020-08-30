@@ -1,13 +1,3 @@
-/* TODO: also define an interface for user objects (i.e. exactly what is stored
- * in localstorage), and put them in a separate interfaces file/folder */
-
-
-
-
-
-
-
-
 /* outgoing api calls to the server */
 
 /* every call will need a url and boolean specifying whether or not to include

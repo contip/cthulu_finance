@@ -25,7 +25,11 @@ export default function App() {
   return (
     <React.Fragment>
       <CssBaseline />
-      <SnackbarProvider maxSnack={3} anchorOrigin={{horizontal: "center", vertical: "bottom"}}>
+      <SnackbarProvider
+        maxSnack={3}
+        autoHideDuration={4000}
+        anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+      >
         <Router>
           <div>
             {/* if user is logged in, don't display the login and register 
