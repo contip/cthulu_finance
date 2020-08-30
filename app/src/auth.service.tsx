@@ -78,7 +78,7 @@ async function updateUserData(): Promise<void> {
   return; 
 }
 
-async function newUser(res: any) {
+function newUser(res: any) {
   /* if a new user has registered, this logs them in and sets state */
 
   if (!res.accessToken || !res.userData) {

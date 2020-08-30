@@ -1,20 +1,18 @@
 import React, { useState } from "react";
 import { authService } from "./auth.service";
 import { useHistory } from "react-router-dom";
-import { Button } from "@material-ui/core";
-import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { IAuthCall } from "./interfaces";
 import { Urls } from "./constants";
 import ApiCall from "./api";
 import { useSnackbar } from "notistack";
-
+import InputForm from "./input-form";
 
 export default function LoginForm() {
   let [nameInput, setNameInput] = useState<string>("");
   let [passInput, setPassInput] = useState<string>("");
   let [validName, setValidName] = useState<boolean>(false);
   let [validPass, setValidPass] = useState<boolean>(false);
-  let {enqueueSnackbar, closeSnackbar} = useSnackbar();
+  let { enqueueSnackbar, closeSnackbar } = useSnackbar();
   let history = useHistory();
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -33,67 +31,65 @@ export default function LoginForm() {
     };
     let response = await ApiCall(payload);
     if (response.code) {
-      enqueueSnackbar(response.message, {variant: "error"})
+      enqueueSnackbar(response.message, { variant: "error" });
       setNameInput("");
       setPassInput("");
-    }
-    else {
-      authService.login(response)
+    } else {
+      authService.login(response);
       history.push("/");
     }
   }
 
   return (
     <div id="LoginForm">
-      <ValidatorForm
-        onSubmit={handleSubmit}
-        onError={(errors) => {
-          console.log(errors);
-        }}
-      >
-        <TextValidator
-          label="Username"
-          onChange={handleChange}
-          name="username"
-          validatorListener={setValidName}
-          value={nameInput}
-          validators={[
-            "required",
-            "matchRegexp:^[A-Za-z0-9]+$",
-            "maxStringLength:15",
-          ]}
-          errorMessages={[
-            "this field is required!",
-            "alphabetical letters and digits only!",
-            "15 character maximum!",
-          ]}
-          variant="outlined"
-        />
+      <InputForm
+        {...{
+          onSubmit: handleSubmit,
+          buttonValidators: [
+            validName,
+            validPass,
+            nameInput.length > 0 && passInput.length > 0,
+          ],
+          inputs: [
+            {
+              label: "Username",
+              value: nameInput,
+              onChange: handleChange,
+              name: "username",
+              validatorListener: setValidName,
+              validators: [
+                "required",
+                "matchRegexp:^[A-Za-z0-9]+$",
+                "maxStringLength:15",
+              ],
+              errorMessages: [
+                "this field is required!",
+                "alphabetical letters and digits only!",
+                "15 character maximum!",
+              ],
+            },
 
-        <TextValidator
-          label="Password"
-          onChange={handleChange}
-          name="password"
-          type="password"
-          validatorListener={setValidPass}
-          value={passInput}
-          validators={[
-            "required",
-            "matchRegexp:^[A-Za-z0-9!@#$%^&*]+$",
-            "maxStringLength:19",
-          ]}
-          errorMessages={[
-            "this field is required!",
-            "only letters, digits, and '!@#$%^&*' are allowed!",
-            "19 character maximum!",
-          ]}
-          variant="outlined"
-        />
-        {validName &&
-          validPass &&
-          nameInput.length > 0 &&
-          passInput.length > 0 && <Button type="submit">Submit</Button>}
-      </ValidatorForm>
+            {
+              label: "Password",
+              type: "password",
+              value: passInput,
+              onChange: handleChange,
+              name: "password",
+              validatorListener: setValidPass,
+              validators: [
+                "required",
+                "matchRegexp:^[A-Za-z0-9!@#$%^&*]+$",
+                "maxStringLength:19",
+              ],
+              errorMessages: [
+                "this field is required!",
+                "only letters, digits, and '!@#$%^&*' are allowed!",
+                "19 character maximum!",
+              ],
+            },
+          ],
+        }}
+      ></InputForm>
     </div>
   );
 }
