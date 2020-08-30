@@ -1,14 +1,8 @@
-import React from "react";
 import {
-  IUserTransaction,
   IAuthCall,
   ITradeCall,
   ILookupCall,
-  ICallError,
-  IStockData,
-  IUser,
 } from "./interfaces";
-import { Urls } from "./constants";
 import { authService } from "./auth.service";
 
 export default async function ApiCall(
@@ -22,7 +16,7 @@ export default async function ApiCall(
     body: JSON.stringify(payload.body),
   });
   if (response.status >= 400) {
-    /* make sure to always return a message from nest */ 
+    /* server will always return an appropriate message in response body */
     return {code: response.status, message: (await response.json()).message }
   } else {
     return await response.json();

@@ -3,7 +3,7 @@ import { authService } from "./auth.service";
 import { useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import SweetAlert from "react-bootstrap-sweetalert";
-import { ITradeCall } from "./interfaces";
+import { ITradeCall, ILookupCall } from "./interfaces";
 import { Urls } from "./constants";
 import ApiCall from "./api";
 import InputForm from "./input-form";
@@ -14,10 +14,30 @@ export default function Buy(props: any) {
   let [sharesInput, setSharesInput] = useState<string>("");
   let [validSharesInput, setValidSharesInput] = useState<boolean>(true);
   let [confirm, setConfirm] = useState(false);
+  let [lookupPrice, setLookupPrice] = useState(0);
   let { enqueueSnackbar, closeSnackbar } = useSnackbar();
   let history = useHistory();
 
-  function handleConfirm() {
+  async function handleConfirm() {
+    let payload: ILookupCall = {
+      url: Urls.lookup,
+      auth: true,
+      body: {
+        name: stockInput,
+      },
+    };
+    let response = await ApiCall(payload);
+    if (response.code) {
+      enqueueSnackbar(response.message, { variant: "error" });
+      setStockInput("");
+      setSharesInput("");
+    } else if (authService.currentUserValue.userData.cash - (response.latestPrice * parseInt(sharesInput)) < 0) {
+        enqueueSnackbar("Error: Not Enough Cash!", {variant: "error"})
+      setStockInput("");
+      setSharesInput("");
+      } else {
+      setLookupPrice(response.latestPrice);
+    }
     setConfirm(true);
   }
 
@@ -31,9 +51,8 @@ export default function Buy(props: any) {
   }
 
   async function handleSubmit() {
-    /* first, bring up the confirm dialog */
-    // AlertDialog({title: "really do this?", description: "bung?", handleClose, buttonTitles: {accept: "yes", decline: "no"}} )
     setConfirm(false);
+
     let payload: ITradeCall = {
       url: Urls.buy,
       auth: true,
@@ -49,11 +68,10 @@ export default function Buy(props: any) {
       setStockInput("");
       setSharesInput("");
     } else {
-      enqueueSnackbar("bunghilda", {
+      enqueueSnackbar("Purchase Successful!", {
         variant: "success",
         autoHideDuration: 4000,
       });
-      alert("purchase successful!");
       history.push("/");
     }
   }
@@ -68,18 +86,19 @@ export default function Buy(props: any) {
   return (
     <>
       <div>
-        {confirm && (
+        {confirm && lookupPrice > 0 && (
           <SweetAlert
             warning
             showCancel
             onConfirm={handleSubmit}
-            confirmBtnText="Buy the thing"
+            confirmBtnText="Purchase!"
             confirmBtnBsStyle="danger"
-            title="Is your ass certain?"
+            title="Confirm Purchase"
             onCancel={handleCloseAlert}
             focusCancelBtn
           >
-            Does your ass want to buy 69 shares of BUNG for $59.59???? lol
+            Buy {sharesInput} {parseInt(sharesInput) > 1 ? "shares" : "share"} of {stockInput} for $
+            {(parseInt(sharesInput) * lookupPrice).toFixed(2)}???
           </SweetAlert>
         )}
       </div>
@@ -90,6 +109,7 @@ export default function Buy(props: any) {
             validStockInput,
             validSharesInput,
             parseInt(sharesInput) > 0,
+            stockInput.length > 0,
           ],
           inputs: [
             {

@@ -5,6 +5,8 @@ import { HoldingsColumnsMap } from "./constants";
 import { authService } from "./auth.service";
 import { Tab } from "@material-ui/core";
 import { Z_FIXED } from "zlib";
+import Buy from "./buy";
+import { render } from "@testing-library/react";
 
 /* TODO: implement stronger typing and document code */
 /* TODO: make sure that currencies have $ symbol and are rounded to 2
@@ -12,17 +14,17 @@ import { Z_FIXED } from "zlib";
 
 const tableCols: Array<tableCol | any> = [];
 Object.keys(HoldingsColumnsMap).forEach((key) => {
-  tableCols.push({ title: HoldingsColumnsMap[key], field: key, width: 250});
+  tableCols.push({ title: HoldingsColumnsMap[key], field: key, width: 250 });
   if (key == "price" || key == "value") {
     tableCols[tableCols.length - 1]["type"] = "currency";
   }
 });
 
 export default function Home(props: any) {
-  let [userHoldings, setUserHoldings] = useState<Array<IUserHoldingFull> | null>(
-    null
-  );
-  console.log(props)
+  let [userHoldings, setUserHoldings] = useState<Array<
+    IUserHoldingFull
+  > | null>(null);
+  console.log("the state of userHoldings is...", userHoldings);
 
   useEffect(() => {
     authService.updateUserData().then(() => {
@@ -40,7 +42,6 @@ export default function Home(props: any) {
         sum += userHoldings[i].value;
       }
     }
-    console.log(sum);
     return sum;
   }
 
@@ -53,8 +54,39 @@ export default function Home(props: any) {
         {...{
           tableCols: tableCols,
           data: userHoldings,
+          actions: [
+            {
+              icon: "save",
+              tooltip: "save user",
+              onClick: (event: any, rowData: any) => {
+                return (
+                  <React.Fragment>
+                    <Buy props={rowData} />
+                  </React.Fragment>
+                );
+              },
+            },
+          ],
           title:
             authService.currentUserValue.userData.username + "'s Portfolio",
+          detailPanel: [
+            {
+              tooltip: "bung",
+              render: (rowData: any) => {
+                return (
+                  // <iframe
+                  //   width="100%"
+                  //   height="315"
+                  //   src="/buy"
+                  //   allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                  // />
+                  <>
+                  <Buy />
+                  </>
+                );
+              },
+            },
+          ],
           options: {
             paging: false,
             showSelectAllCheckbox: false,
@@ -70,8 +102,11 @@ export default function Home(props: any) {
             { title: "bung", field: "total", type: "currency" },
           ],
           data: [
-            { words: "Your Cash", total: authService.currentUserValue.userData.cash },
-            { total: getTotal() },
+            {
+              words: "Your Cash",
+              total: authService.currentUserValue.userData.cash,
+            },
+            { total: getTotal() + authService.currentUserValue.userData.cash },
           ],
           title: "bung",
           options: {
@@ -80,9 +115,17 @@ export default function Home(props: any) {
             search: false,
             header: false,
             showTitle: false,
+            toolbar: false,
           },
         })}
       </>
     </React.Fragment>
   );
 }
+
+// function inLineBuy() {
+//   return (rowData: any) => { return (
+//     <Buy />
+//     )
+//   }
+// }

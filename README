@@ -13,6 +13,8 @@ everything from scratch and use none of the CS50 code (except for, perhaps,
 the html layout of the main app page).
 
 current goal:
+-implement quick buy / sell from landing page; persistently display 
+    username and cash
 
 -remaining feature additions:
     -notification / alert system

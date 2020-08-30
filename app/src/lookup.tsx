@@ -6,6 +6,7 @@ import { LookupColumnsMap, Urls } from "./constants";
 import { IStockData, ILookupCall } from "./interfaces";
 import { useSnackbar } from "notistack";
 import ApiCall from "./api";
+import InputForm from "./input-form";
 
 export default function Lookup() {
   let [lookupInput, setLookupInput] = useState<string>("");
@@ -24,24 +25,6 @@ export default function Lookup() {
     return;
   }
 
-  // async function handleSubmit(): Promise<void | null> {
-  //   /* purge anything in stockData / columnData state before submission */
-  //   setStockData({ companyName: "", symbol: "", latestPrice: NaN });
-  //   setColumnData(null);
-  //   let response = await LookupApi(lookupInput);
-  //   if (response.code) {
-  //     enqueueSnackbar(response.message, { variant: "error" });
-  //     setLookupInput("");
-  //   }
-  //   console.log("setting stock data in lookup state to:", response);
-  //   setLookupInput("");
-  //   setStockData(response);
-  //   // buildColumnNames();
-  //   prepTableData(response);
-  //   setDidSearch(true);
-  //   return;
-  // }
-
   async function handleSubmit() {
     /* purge anything in stockData / columnData state before submission */
     setStockData({ companyName: "", symbol: "", latestPrice: NaN });
@@ -52,7 +35,7 @@ export default function Lookup() {
       enqueueSnackbar(response.message, { variant: "error" });
       setLookupInput("");
     } else {
-      let bunghilda: any = {};
+      let lookupData: any = {};
       Object.keys(LookupColumnsMap).forEach((element) => {
         if (response[element]) {
           if (element == "lowTime" || element == "highTime") {
@@ -62,7 +45,7 @@ export default function Lookup() {
               delete response[element];
             } else {
               /* if both date and min/max present, make date into readable format */
-              bunghilda[element] = new Intl.DateTimeFormat("en-Us", {
+              lookupData[element] = new Intl.DateTimeFormat("en-Us", {
                 year: "numeric",
                 month: "numeric",
                 day: "numeric",
@@ -72,27 +55,26 @@ export default function Lookup() {
               }).format(response[element]);
             }
           } else {
-            bunghilda[element] = response[element];
+            lookupData[element] = response[element];
           }
         }
       });
-
     setLookupInput("");
-    setStockData(bunghilda as IStockData);
-    // buildColumnNames();
-    prepTableData(bunghilda as IStockData);
+    setStockData(lookupData as IStockData);
+    prepTableData(lookupData as IStockData);
     setDidSearch(true);
     return;}
   }
 
-
-
-
   function prepTableData(response: IStockData): void {
-    let tableCols: Array<tableCol> = [];
+    let tableCols: any = [];
     Object.keys(response).forEach((key) => {
-      console.log("currently processing key:", key);
-      tableCols.push({ title: LookupColumnsMap[key], field: key });
+      tableCols.push(
+        { title: LookupColumnsMap[key], field: key });
+        if (LookupColumnsMap[key].split(" ").slice(-1)[0] === "Price") { 
+          tableCols[tableCols.length - 1]["type"] = "currency";
+        }
+
     });
     setColumnData(tableCols);
   }
@@ -100,36 +82,24 @@ export default function Lookup() {
   return (
     <>
       <p />
-      <ValidatorForm
-        onSubmit={handleSubmit} // only submits when all validations are passed
-        onError={(errors) => {
-          console.log(errors);
-        }}
-      >
-        <TextValidator
-          label="Stock Symbol"
-          onChange={handleChange}
-          name="name" // server expects request in form "name": "<val>"
-          validatorListener={setValidInput} // if input is currently invalid and displaying error message, set invalid state
-          value={lookupInput}
-          validators={[
+      <InputForm
+      {... {onSubmit: handleSubmit, buttonValidators: [validInput, lookupInput.length > 0], inputs: [
+        {
+          label: "Stock Symbol", value: lookupInput, onChange: handleChange, name: "name", validatorListener: setValidInput, validators: [
             "required",
             "matchRegexp:^[A-Za-z]+$",
             "maxStringLength:4",
-          ]}
-          errorMessages={[
+          ], errorMessages: [
             "this field is required!",
             "alphabetical letters only!",
             "stock symbols have a 4 character maximum!",
-          ]}
-          variant="outlined"
-        />
-
-        {
-          /* hide submit button unless text input is valid */
-          validInput && lookupInput.length > 0 && <Button type="submit">Submit</Button>
+          ]
         }
-      </ValidatorForm>
+      ]}}></InputForm>
+
+
+
+
       {didSearch &&
         stockData &&
         stockData.companyName &&
