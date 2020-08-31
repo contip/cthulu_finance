@@ -6,14 +6,14 @@ import SweetAlert from "react-bootstrap-sweetalert";
 import { Urls } from "./constants";
 import ApiCall from "./api";
 import InputForm from "./input-form";
-import { ILookupCall } from "./interfaces";
+import { ILookupCall, ITradeCall } from "./interfaces";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import Alert from "./alert";
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+import FormLabel from "@material-ui/core/FormLabel";
 
 export default function QuickTrade(rowData: any) {
   /* inline, single-field quicktrade form for users to buy/sell */
@@ -66,7 +66,31 @@ export default function QuickTrade(rowData: any) {
   }, []);
 
   //TODO
-  function handleSubmit() {
+  async function handleSubmit() {
+    setConfirm(false);
+    let payload: ITradeCall = {
+      url: tradeType === "buy" ? Urls.buy : Urls.sell,
+      auth: true,
+      body: {
+        user_id: authService.currentUserValue.userData.id,
+        stock_symbol: rowData.stock_symbol,
+        shares: parseInt(sharesInput),
+      },
+    };
+    let response = await ApiCall(payload);
+    if (response.code) {
+      enqueueSnackbar(response.message, { variant: "error" });
+      setSharesInput("");
+    } else {
+      enqueueSnackbar(
+        tradeType === "buy" ? "Purchase Successful!" : "Sale Successful!",
+        {
+          variant: "success",
+        }
+      );
+      history.go(0);
+    }
+
     return;
   }
   function handleCloseAlert() {
@@ -78,20 +102,14 @@ export default function QuickTrade(rowData: any) {
     return;
   }
   function handleConfirm() {
-    enqueueSnackbar(
-      tradeType === "buy" ? "Purchase Cancelled!" : "Sale Cancelled!",
-      { variant: "info" }
-    );
-    alert('bung')
     setConfirm(true);
 
     return;
   }
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    if (event.target.name === "shares"){
-    
-  // alertSystem({onConfirm: handleConfirm, confirmBtnText: "slit", title: "bung", onCancel: ()=>{}, message: "bunghilda"})
-    setSharesInput(event.target.value);
+    if (event.target.name === "shares") {
+      // alertSystem({onConfirm: handleConfirm, confirmBtnText: "slit", title: "bung", onCancel: ()=>{}, message: "bunghilda"})
+      setSharesInput(event.target.value);
     } else {
       setTradeType(event.target.value);
       setSharesInput("");
@@ -101,13 +119,19 @@ export default function QuickTrade(rowData: any) {
 
   return (
     <>
-
-        <FormControl component="fieldset">
-      <FormLabel component="legend">QuickTrade</FormLabel>
-      <RadioGroup aria-label="tradeType" name="typeSelect" value={tradeType} onChange={handleChange}>
-        <FormControlLabel value="buy" control={<Radio />} label="Buy" /><FormControlLabel value="sell" control={<Radio />} label="Sell" />
-      </RadioGroup>
-    </FormControl>
+      <FormControl component="fieldset">
+        <FormLabel component="legend">QuickTrade</FormLabel>
+        <RadioGroup
+          aria-label="tradeType"
+          name="typeSelect"
+          value={tradeType}
+          onChange={handleChange}
+          row
+        >
+          <FormControlLabel value="buy" control={<Radio />} label="Buy" />
+          <FormControlLabel value="sell" control={<Radio />} label="Sell" />
+        </RadioGroup>
+      </FormControl>
       {confirm && (
         <SweetAlert
           warning
@@ -119,16 +143,13 @@ export default function QuickTrade(rowData: any) {
           onCancel={handleCloseAlert}
           focusCancelBtn
         >
-          {tradeType.charAt(0).toUpperCase() + tradeType.slice(1)}{" "}
-          {sharesInput} {parseInt(sharesInput) > 1 ? "shares" : "share"} of{" "}
+          {tradeType.charAt(0).toUpperCase() + tradeType.slice(1)} {sharesInput}{" "}
+          {parseInt(sharesInput) > 1 ? "shares" : "share"} of{" "}
           {rowData.stock_name} for $
           {(parseInt(sharesInput) * lookupPrice).toFixed(2)}???
         </SweetAlert>
       )}
-      <h1>{rowData.stock_symbol}</h1>
-      <h2>{lookupPrice}</h2>
-      {/* {alertSystem({onConfirm: ()=>{}, confirmBtnText: "CORNHOLIO", title: "bung", onCancel: handleCloseAlert, message: "bunghilda"})} */}
-      <h5>{tradeType}</h5>
+
       <InputForm
         {...{
           onSubmit: handleConfirm,
@@ -177,6 +198,21 @@ export default function QuickTrade(rowData: any) {
           ],
         }}
       />
+
+      <div id="tradeInfo">
+        <h3>
+          {rowData.stock_name} ({rowData.stock_symbol}) current price: $
+          {lookupPrice.toFixed(2)}
+        </h3>
+        <h3>
+          {validSharesInput &&
+            sharesInput !== "" &&
+            sharesInput !== "0" &&
+            `${tradeType === "buy" ? "Purchase" : "Sale"} price: ${(
+              lookupPrice * parseInt(sharesInput)
+            ).toFixed(2)}`}
+        </h3>
+      </div>
     </>
   );
 }
