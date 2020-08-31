@@ -7,7 +7,8 @@ import { Tab } from "@material-ui/core";
 import { Z_FIXED } from "zlib";
 import Buy from "./buy";
 import { render } from "@testing-library/react";
-import { css, jsx } from '@emotion/core'
+import QuickTrade from "./quick-trade";
+import FullWidthTabs from "./select-menu";
 
 
 /* TODO: implement stronger typing and document code */
@@ -76,12 +77,8 @@ export default function Home(props: any) {
               tooltip: "bung",
               render: (rowData: any) => {
                 return (
-                  <div
-                    css={css`
-                    
-                    }
-
-                  <Buy />
+                  <div>
+                  <FullWidthTabs {...rowData} />
                   </div>
                 );
               },
