@@ -7,6 +7,8 @@ import { Tab } from "@material-ui/core";
 import { Z_FIXED } from "zlib";
 import Buy from "./buy";
 import { render } from "@testing-library/react";
+import { css, jsx } from '@emotion/core'
+
 
 /* TODO: implement stronger typing and document code */
 /* TODO: make sure that currencies have $ symbol and are rounded to 2
@@ -74,15 +76,13 @@ export default function Home(props: any) {
               tooltip: "bung",
               render: (rowData: any) => {
                 return (
-                  // <iframe
-                  //   width="100%"
-                  //   height="315"
-                  //   src="/buy"
-                  //   allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                  // />
-                  <>
+                  <div
+                    css={css`
+                    
+                    }
+
                   <Buy />
-                  </>
+                  </div>
                 );
               },
             },

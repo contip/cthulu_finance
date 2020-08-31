@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { authService } from "./auth.service";
 import { useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import SweetAlert from "react-bootstrap-sweetalert";
-import { ITradeCall, ILookupCall } from "./interfaces";
+import { ITradeCall, ILookupCall, IStockData } from "./interfaces";
 import { Urls } from "./constants";
 import ApiCall from "./api";
 import InputForm from "./input-form";
+import { ValidatorForm } from "react-material-ui-form-validator";
 
 export default function Buy(props: any) {
   let [stockInput, setStockInput] = useState<string>("");
@@ -14,31 +15,57 @@ export default function Buy(props: any) {
   let [sharesInput, setSharesInput] = useState<string>("");
   let [validSharesInput, setValidSharesInput] = useState<boolean>(true);
   let [confirm, setConfirm] = useState(false);
-  let [lookupPrice, setLookupPrice] = useState(0);
+  let [lookupData, setLookupData] = useState({} as IStockData);
   let { enqueueSnackbar, closeSnackbar } = useSnackbar();
   let history = useHistory();
 
-  async function handleConfirm() {
-    let payload: ILookupCall = {
-      url: Urls.lookup,
-      auth: true,
-      body: {
-        name: stockInput,
-      },
-    };
-    let response = await ApiCall(payload);
-    if (response.code) {
-      enqueueSnackbar(response.message, { variant: "error" });
-      setStockInput("");
-      setSharesInput("");
-    } else if (authService.currentUserValue.userData.cash - (response.latestPrice * parseInt(sharesInput)) < 0) {
-        enqueueSnackbar("Error: Not Enough Cash!", {variant: "error"})
-      setStockInput("");
-      setSharesInput("");
-      } else {
-      setLookupPrice(response.latestPrice);
+  //   useEffect(() => {
+  //     if (blurring) {
+  // }
+
+  //     return () => {
+  //       ValidatorForm.removeValidationRule('isLookupMatch');
+  //     }
+  //   }, [])
+  function handleConfirm() {
+    /* because of the way validator works, it's technically possible for
+     * user to submit invalid requests by doing a valid blur, entering an
+     * invalid symbol, and attempting to purchase before rerender...
+     * therefore, need another lookup check */
+
+    handleBlur().then(() => {
+      if (lookupData.latestPrice > 0 && stockInput.toUpperCase() === lookupData.symbol) {
+        setConfirm(true);
+      }
+    });
+  }
+  ValidatorForm.addValidationRule("maxPurchase", (value: any) => {
+    if (
+      parseInt(value) * lookupData.latestPrice >
+      authService.currentUserValue.userData.cash
+    ) {
+      return false;
     }
-    setConfirm(true);
+    return true;
+  });
+
+  async function handleBlur(event?: React.ChangeEvent<HTMLInputElement> | any) {
+    if (stockInput.length > 0) {
+      let payload: ILookupCall = {
+        url: Urls.lookup,
+        auth: true,
+        body: {
+          name: stockInput,
+        },
+      };
+      let response = await ApiCall(payload);
+      if (response.code) {
+        enqueueSnackbar(response.message, { variant: "info" });
+        setLookupData({} as IStockData);
+      } else {
+        setLookupData(response);
+      }
+    }
   }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -86,7 +113,7 @@ export default function Buy(props: any) {
   return (
     <>
       <div>
-        {confirm && lookupPrice > 0 && (
+        {confirm && (
           <SweetAlert
             warning
             showCancel
@@ -97,8 +124,9 @@ export default function Buy(props: any) {
             onCancel={handleCloseAlert}
             focusCancelBtn
           >
-            Buy {sharesInput} {parseInt(sharesInput) > 1 ? "shares" : "share"} of {stockInput} for $
-            {(parseInt(sharesInput) * lookupPrice).toFixed(2)}???
+            Buy {sharesInput} {parseInt(sharesInput) > 1 ? "shares" : "share"}{" "}
+            of {stockInput} for $
+            {(parseInt(sharesInput) * lookupData.latestPrice).toFixed(2)}???
           </SweetAlert>
         )}
       </div>
@@ -108,6 +136,7 @@ export default function Buy(props: any) {
           buttonValidators: [
             validStockInput,
             validSharesInput,
+            lookupData.companyName != undefined,
             parseInt(sharesInput) > 0,
             stockInput.length > 0,
           ],
@@ -116,6 +145,7 @@ export default function Buy(props: any) {
               label: "Stock Symbol",
               value: stockInput,
               onChange: handleChange,
+              onBlur: handleBlur as any,
               name: "stock_symbol",
               validatorListener: setValidStockInput,
               validators: [
@@ -140,16 +170,30 @@ export default function Buy(props: any) {
                 "required",
                 "matchRegexp:^[0-9]+$",
                 "maxStringLength:5",
+                "maxPurchase",
               ],
               errorMessages: [
                 "this field is required!",
                 "numerical digits only!",
                 "maximum purchase amount: 99,999 shares!",
+                "price exceeds your current total cash!",
               ],
             },
           ],
         }}
       ></InputForm>
+      <div id="PurchaseInfo">
+        {lookupData.companyName &&
+          `${
+            lookupData.companyName
+          } Trading Price: $${lookupData.latestPrice.toFixed(2)}`}
+        <p />
+        {parseInt(sharesInput) > 0 &&
+          lookupData.latestPrice > 0 &&
+          `Purchase Price: $${(
+            parseInt(sharesInput) * lookupData.latestPrice
+          ).toFixed(2)}`}
+      </div>
     </>
   );
 }

@@ -7,7 +7,13 @@ import {
 } from "react-material-ui-form-validator";
 import { authService } from "./auth.service";
 import { useHistory } from "react-router-dom";
-import { IUserData, IUserHolding, ITradeCall } from "./interfaces";
+import {
+  IUserData,
+  IUserHolding,
+  ITradeCall,
+  ILookupCall,
+  IStockData,
+} from "./interfaces";
 import { Urls } from "./constants";
 import ApiCall from "./api";
 import SweetAlert from "react-bootstrap-sweetalert";
@@ -19,6 +25,7 @@ export default function Sell(props: any) {
   let [validShares, setValidShares] = useState<boolean>(true);
   let { enqueueSnackbar, closeSnackbar } = useSnackbar();
   let [confirm, setConfirm] = useState(false);
+  let [lookupData, setLookupData] = useState({} as IStockData);
   let history = useHistory();
 
   let userData: IUserData = authService.currentUserValue.userData;
@@ -56,10 +63,19 @@ export default function Sell(props: any) {
     enqueueSnackbar("Sale Cancelled!", { variant: "info" });
   }
 
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.name == "stock_symbol") {
       setSelect(event.target.value);
       setNumShares(0);
+      let payload: ILookupCall = {
+        url: Urls.lookup,
+        auth: true,
+        body: {
+          name: event.target.value /* can't be invalid... */,
+        },
+      };
+      let response = await ApiCall(payload);
+      setLookupData(response);
     } else {
       setNumShares(parseInt(event.target.value));
     }
@@ -94,7 +110,7 @@ export default function Sell(props: any) {
   // }
   return (
     <>
-          <div>
+      <div>
         {confirm && (
           <SweetAlert
             warning
@@ -151,6 +167,18 @@ export default function Sell(props: any) {
 
         {numShares > 0 && validShares && <Button type="submit">Submit</Button>}
       </ValidatorForm>
+      <div id="SaleInfo">
+        {select !== "" &&
+          lookupData.latestPrice > 0 &&
+          `${
+            lookupData.companyName
+          } Trading Price: $${lookupData.latestPrice.toFixed(2)}`}
+        <p />
+        {numShares > 0 &&
+          select !== "" &&
+          lookupData.latestPrice &&
+          `Sale Price: $${(numShares * lookupData.latestPrice).toFixed(2)}`}
+      </div>
     </>
   );
 }
