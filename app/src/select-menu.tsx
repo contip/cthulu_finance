@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SwipeableViews from 'react-swipeable-views';
 import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -7,6 +7,8 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import QuickTrade from './quick-trade';
+import SweetAlert from 'react-bootstrap-sweetalert';
+import  Alert  from './alert';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -28,7 +30,7 @@ function TabPanel(props: TabPanelProps) {
     >
       {value === index && (
         <Box p={3}>
-          <Typography>{children}</Typography>
+          <Typography component="div">{children}</Typography>
         </Box>
       )}
     </div>
@@ -53,6 +55,7 @@ export default function FullWidthTabs(props: any) {
   const classes = useStyles();
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
+  let [sweetAlert, setSweetAlert] = useState(false);
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
@@ -61,9 +64,24 @@ export default function FullWidthTabs(props: any) {
   const handleChangeIndex = (index: number) => {
     setValue(index);
   };
+  // function AlertWrapper(props: any) {
+  //   // setSweetAlert(true);
+  //   return (
 
+  //     <Alert {...props}></Alert>
+  //   )
+  // }
+
+  
   return (
+  
     <div className={classes.root}>
+
+    {/* { sweetAlert && <AlertWrapper {...props}> 
+      </AlertWrapper>} */}
+
+
+
       <AppBar position="static" color="default">
         <Tabs
           value={value}
@@ -75,7 +93,6 @@ export default function FullWidthTabs(props: any) {
         >
           <Tab label="Item One" {...a11yProps(0)} />
           <Tab label="Item Two" {...a11yProps(1)} />
-          <Tab label="Item Three" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
       <SwipeableViews
@@ -84,15 +101,11 @@ export default function FullWidthTabs(props: any) {
         onChangeIndex={handleChangeIndex}
       >
         <TabPanel value={value} index={0} dir={theme.direction}>
-          <QuickTrade {...props}/>
+          {value === 0 && <QuickTrade {...props} alert={Alert} type="buy"/>}
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          Item Two
-          <QuickTrade {...props}/>
-        </TabPanel>
-        <TabPanel value={value} index={2} dir={theme.direction}>
-          Item Three
+          {value === 1 && <QuickTrade {...props} alert={Alert} type="sell"/>}
         </TabPanel>
       </SwipeableViews>
-    </div>
+          </div>
   );}

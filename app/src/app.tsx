@@ -14,6 +14,7 @@ import Buy from "./buy";
 import Sell from "./sell";
 import History from "./history";
 import { SnackbarProvider } from "notistack";
+import FullWidthTabs from "./select-menu";
 
 export default function App() {
   let [currentUser, setCurrentUser] = useState<IUser | null>(null);

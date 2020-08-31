@@ -57,19 +57,6 @@ export default function Home(props: any) {
         {...{
           tableCols: tableCols,
           data: userHoldings,
-          actions: [
-            {
-              icon: "save",
-              tooltip: "save user",
-              onClick: (event: any, rowData: any) => {
-                return (
-                  <React.Fragment>
-                    <Buy props={rowData} />
-                  </React.Fragment>
-                );
-              },
-            },
-          ],
           title:
             authService.currentUserValue.userData.username + "'s Portfolio",
           detailPanel: [
@@ -78,7 +65,7 @@ export default function Home(props: any) {
               render: (rowData: any) => {
                 return (
                   <div>
-                  <FullWidthTabs {...rowData} />
+                  <QuickTrade {...rowData} />
                   </div>
                 );
               },
