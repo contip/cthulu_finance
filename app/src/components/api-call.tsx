@@ -2,7 +2,7 @@ import {
   IAuthCall,
   ITradeCall,
   ILookupCall,
-} from "./interfaces";
+} from "../data/interfaces";
 import { authService } from "./auth.service";
 
 export default async function ApiCall(

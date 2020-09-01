@@ -1,34 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { authService } from "./auth.service";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import SweetAlert from "react-bootstrap-sweetalert";
-import { Urls } from "./constants";
-import ApiCall from "./api";
+import { Urls } from "../data/constants";
+import ApiCall from "./api-call";
 import InputForm from "./input-form";
-import { ILookupCall, ITradeCall } from "./interfaces";
+import { ILookupCall, ITradeCall } from "../data/interfaces";
 import { ValidatorForm } from "react-material-ui-form-validator";
-import Alert from "./alert";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 
-export default function QuickTrade(rowData: any) {
+export default function Trade(rowData: any) {
   /* inline, single-field quicktrade form for users to buy/sell */
   /* we ALREADY KNOW that the given symbol from rowData is a valid stock
    * that is already owned by user, therefore we ONLY have to worry about
    * the dang price */
   let [lookupPrice, setLookupPrice] = useState<number>(0);
-  let [tradeType, setTradeType] = useState("buy");
+  let [tradeType, setTradeType] = useState(rowData.type);
   let [sharesInput, setSharesInput] = useState<string>("");
   let [validSharesInput, setValidSharesInput] = useState<boolean>(false);
   let [confirm, setConfirm] = useState(false);
   let { enqueueSnackbar, closeSnackbar } = useSnackbar();
   let history = useHistory();
-
-  // let alertSystem = rowData.alert;
+  let location = useLocation();
 
   if (tradeType === "buy") {
     ValidatorForm.addValidationRule("maxPurchase", (value: any) => {
@@ -44,7 +42,8 @@ export default function QuickTrade(rowData: any) {
 
   /* prevent stale purchase / sale requests by always fetching latest price */
   useEffect(() => {
-    let mounted = true;
+    // let mounted = true;
+    if (location.pathname === "/") {
     let payload: ILookupCall = {
       url: Urls.lookup,
       auth: true,
@@ -59,10 +58,13 @@ export default function QuickTrade(rowData: any) {
       } else {
         setLookupPrice(response.latestPrice);
       }
-    });
-    return () => {
-      mounted = false;
-    };
+    });} else {
+      setLookupPrice(rowData.latestPrice)
+
+    }
+    // return () => {
+    //   // mounted = false;
+    // };
   }, []);
 
   //TODO
@@ -88,7 +90,13 @@ export default function QuickTrade(rowData: any) {
           variant: "success",
         }
       );
-      history.go(0);
+      if (location.pathname === "/") {
+        history.go(0);
+      }
+      else {
+        history.push("/");
+      }
+      
     }
 
     return;
@@ -119,6 +127,7 @@ export default function QuickTrade(rowData: any) {
 
   return (
     <>
+    {(location.pathname === "/"  || location.pathname === "/lookup") &&
       <FormControl component="fieldset">
         <FormLabel component="legend">QuickTrade</FormLabel>
         <RadioGroup
@@ -131,7 +140,7 @@ export default function QuickTrade(rowData: any) {
           <FormControlLabel value="buy" control={<Radio />} label="Buy" />
           <FormControlLabel value="sell" control={<Radio />} label="Sell" />
         </RadioGroup>
-      </FormControl>
+      </FormControl>}
       {confirm && (
         <SweetAlert
           warning
@@ -208,7 +217,7 @@ export default function QuickTrade(rowData: any) {
           {validSharesInput &&
             sharesInput !== "" &&
             sharesInput !== "0" &&
-            `${tradeType === "buy" ? "Purchase" : "Sale"} price: ${(
+            `${tradeType === "buy" ? "Purchase" : "Sale"} price: $${(
               lookupPrice * parseInt(sharesInput)
             ).toFixed(2)}`}
         </h3>

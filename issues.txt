@@ -1,11 +1,4 @@
--user registration:
-    
 -stock lookup/purchase/sell:
 	must consistently check that capitalization is handled FOR EVERY
 	COMPONENT IN THE APPLICATION
 	* sell requests fail for lowercase stock symbols
-	
--history / lookup pages (frontend)
-
--home page:
-    grand total is only adding entries in table, not adding user cash

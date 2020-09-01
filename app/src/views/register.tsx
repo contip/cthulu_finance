@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { authService } from "./auth.service";
+import { authService } from "../components/auth.service";
 import { useHistory } from "react-router-dom";
-import { Urls } from "./constants";
-import ApiCall from "./api";
+import { Urls } from "../data/constants";
+import ApiCall from "../components/api-call";
 import { useSnackbar } from "notistack";
-import { IAuthCall } from "./interfaces";
-import InputForm from "./input-form";
+import { IAuthCall } from "../data/interfaces";
+import InputForm from "../components/input-form";
 
 export default function Register() {
   let [nameInput, setNameInput] = useState<string>("");

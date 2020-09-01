@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { authService } from "./auth.service";
+import { authService } from "../components/auth.service";
 import { useHistory } from 'react-router-dom';
-import Table, { tableCol } from "./table";
-import { HistoryColumnsMap, Urls } from './constants';
-import { IUserTransaction, ITradeCall } from './interfaces';
-import ApiCall from './api';
+import Table from "../components/table";
+import { HistoryColumnsMap, Urls } from '../data/constants';
+import { IUserTransaction, ITradeCall, tableCol } from '../data/interfaces';
+import ApiCall from '../components/api-call';
 import { useSnackbar } from 'notistack';
 
 

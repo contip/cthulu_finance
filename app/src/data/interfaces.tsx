@@ -9,7 +9,10 @@ export interface ICallError {
   message: string;
 }
 
-/* outgoing api calls to the server */
+export interface tableCol {
+  title: string;
+  field: string;
+}
 
 /* every call will need a url and boolean specifying whether or not to include
  * jwt authentication */

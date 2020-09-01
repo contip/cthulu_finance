@@ -1,14 +1,9 @@
-import React, { useState, useEffect, useLayoutEffect, Suspense } from "react";
-import { IUserHolding, IUserHoldingFull } from "./interfaces";
-import Table, { tableCol } from "./table";
-import { HoldingsColumnsMap } from "./constants";
-import { authService } from "./auth.service";
-import { Tab } from "@material-ui/core";
-import { Z_FIXED } from "zlib";
-import Buy from "./buy";
-import { render } from "@testing-library/react";
-import QuickTrade from "./quick-trade";
-import FullWidthTabs from "./select-menu";
+import React, { useState, useEffect } from "react";
+import { IUserHoldingFull, tableCol } from "../data/interfaces";
+import Table  from "../components/table";
+import { HoldingsColumnsMap } from "../data/constants";
+import { authService } from "../components/auth.service";
+import Trade from "../components/trade";
 
 
 /* TODO: implement stronger typing and document code */
@@ -23,7 +18,7 @@ Object.keys(HoldingsColumnsMap).forEach((key) => {
   }
 });
 
-export default function Home(props: any) {
+export default function Home() {
   let [userHoldings, setUserHoldings] = useState<Array<
     IUserHoldingFull
   > | null>(null);
@@ -65,7 +60,7 @@ export default function Home(props: any) {
               render: (rowData: any) => {
                 return (
                   <div>
-                  <QuickTrade {...rowData} />
+                  <Trade {...rowData} />
                   </div>
                 );
               },

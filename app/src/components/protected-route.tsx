@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-import { authService } from "../auth.service";
+import { authService } from "./auth.service";
 import jwt_decode from "jwt-decode";
 
 const PrivateRoute: React.FC<{

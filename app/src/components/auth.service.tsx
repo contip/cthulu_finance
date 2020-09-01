@@ -1,5 +1,5 @@
 import { BehaviorSubject } from "rxjs";
-import { IUser } from "./interfaces";
+import { IUser } from "../data/interfaces";
 
 /* current user data (jwt token value and user data) stored as a subscribable
  * rxjs BehaviorSubject */
@@ -35,7 +35,6 @@ function logout(): void {
  * just use the ApiCall function */
 async function updateUserData(): Promise<void> {
   /* gets price data for user portfolio, updates localstorage with fresh JWT */
-  console.log("bitch i'm being called to get new userdata and token");
   let header = await authHeader();
   let response = await fetch("http://localhost:6969/auth/users", {
     method: "GET",

@@ -1,17 +1,10 @@
 import React from "react";
 import MaterialTable from "material-table";
+import { tableCol } from "../data/interfaces";
 
-export interface tableCol {
-    title: string;
-    field: string;
-}
 
 export default function Table(props: {tableCols: Array<tableCol>|any, 
     data: Array<any>|any, title: string, detailPanel?: any, options?: any}) {
-        
-        // console.log(options);
-        // console.log('the tableCols array i received is:', props.tableCols);
-        console.log('(table component) - the data array i received is:', props.data);
         return(
             <div className={props.title}>
                 <MaterialTable
@@ -24,6 +17,3 @@ export default function Table(props: {tableCols: Array<tableCol>|any,
             </div>
         )
     }
-
-
-
