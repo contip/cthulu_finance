@@ -15,6 +15,8 @@ import Sell from "./views/sell";
 import History from "./views/history";
 import { SnackbarProvider } from "notistack";
 import { Button } from "@material-ui/core";
+import ButtonAppBar from "./components/navbar";
+import MenuAppBar from "./components/navbar";
 
 
 export default function App() {
@@ -62,6 +64,9 @@ const onClickDismiss = (key:any) => () => {
               )}
               {!currentUser && <Link to="/login">Log In!</Link>}
               {!currentUser && <Link to="/register">Register!</Link>}
+            </nav>
+            <nav>
+                <MenuAppBar />
             </nav>
             <Switch>
               <PrivateRoute exact path="/" component={Home} />

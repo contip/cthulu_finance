@@ -37,6 +37,7 @@ export default function LoginForm() {
     } else {
       authService.login(response);
       history.push("/");
+      enqueueSnackbar(`Welcome back, ${response.userData.username}`, {variant: "success"})
     }
   }
 
