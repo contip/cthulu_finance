@@ -6,6 +6,19 @@ import { HistoryColumnsMap, Urls } from '../data/constants';
 import { IUserTransaction, ITradeCall, tableCol } from '../data/interfaces';
 import ApiCall from '../components/api-call';
 import { useSnackbar } from 'notistack';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: 'flex',
+      '& > * + *': {
+        marginLeft: theme.spacing(2),
+      },
+    },
+  }),
+);
 
 
 const tableCols: Array<tableCol | any> = [];
@@ -22,6 +35,7 @@ export default function History() {
   let { enqueueSnackbar, closeSnackbar } = useSnackbar();
     let history = useHistory();
     
+const classes = useStyles();
     useEffect(() => {
 
       let payload: ITradeCall = {url: Urls.history, auth: true, body: {user_id: authService.currentUserValue.userData.id}};
@@ -43,7 +57,10 @@ export default function History() {
     }, [])
 
     /* must implement the loading... system in a more general way */
-    if (!userHistory) {return <h1>loading...</h1>}
+    if (!userHistory) {return (<div className={classes.root}>
+      <CircularProgress />
+      <CircularProgress color="secondary" />
+    </div>)}
     return (
       <React.Fragment>
         <Table
@@ -54,7 +71,7 @@ export default function History() {
           options: {
             showSelectAllCheckbox: false,
             paging: true,
-            pageSize: 20,
+            pageSize: 10,
             search: false,
           }
         }}/>

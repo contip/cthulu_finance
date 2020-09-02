@@ -4,10 +4,23 @@ import Table  from "../components/table";
 import { HoldingsColumnsMap } from "../data/constants";
 import { authService } from "../components/auth.service";
 import Trade from "../components/trade";
-import { Container, Box } from "@material-ui/core";
 import ShopTwo from "@material-ui/icons/ShopTwo";
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: 'flex',
+      '& > * + *': {
+        marginLeft: theme.spacing(2),
+      },
+    },
+    quickTrade: {
+      textAlign: "center", 
+    }
+  }),
+);
 /* TODO: implement stronger typing and document code */
 /* TODO: make sure that currencies have $ symbol and are rounded to 2
  *       decimal places */
@@ -24,7 +37,7 @@ export default function Home() {
   let [userHoldings, setUserHoldings] = useState<Array<
     IUserHoldingFull
   > | null>(null);
-
+const classes = useStyles();
   useEffect(() => {
     authService.updateUserData().then(() => {
       setUserHoldings(authService.currentUserValue.userData.holdings);
@@ -45,7 +58,11 @@ export default function Home() {
   }
 
   if (!userHoldings) {
-    return <h3>looking up your stuff my dude...</h3>;
+    return(
+      <div className={classes.root}>
+      <CircularProgress color="secondary" />
+    </div>
+    ) 
   }
   return (
     <React.Fragment>
@@ -61,7 +78,7 @@ export default function Home() {
               tooltip: "Quick Trade",
               render: (rowData: any) => {
                 return (
-                  <div>
+                  <div className={classes.quickTrade}>
                   <Trade {...rowData} />
                   </div>
                 );

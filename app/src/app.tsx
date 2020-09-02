@@ -17,16 +17,16 @@ import { SnackbarProvider } from "notistack";
 import { Button, Container, Grid } from "@material-ui/core";
 import ButtonAppBar from "./components/navbar";
 import MenuAppBar from "./components/navbar";
-
+import  PageWrapper  from "./components/page-wrapper";
 
 export default function App() {
   let [currentUser, setCurrentUser] = useState<IUser | null>(null);
 
   // add action to all snackbars
-const notistackRef = React.createRef<any>();
-const onClickDismiss = (key:any) => () => { 
+  const notistackRef = React.createRef<any>();
+  const onClickDismiss = (key: any) => () => {
     notistackRef.current.closeSnackbar(key);
-}
+  };
   useEffect(() => {
     authService.currentUser.subscribe((user) => setCurrentUser(user));
   }, [currentUser]);
@@ -38,35 +38,39 @@ const onClickDismiss = (key:any) => () => {
         maxSnack={3}
         autoHideDuration={4000}
         ref={notistackRef}
-         action={(key) => (
-        <Button style={{color: "white"}} onClick={onClickDismiss(key)}>
+        action={(key) => (
+          <Button style={{ color: "white" }} onClick={onClickDismiss(key)}>
             Dismiss
-        </Button>)}
+          </Button>
+        )}
         anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
       >
         <Router>
           <div>
             <nav>
-                <MenuAppBar />
+              <MenuAppBar />
             </nav>
             <Switch>
               <Grid
-              container
-              spacing={0}
-              direction="column"
-              alignItems="center"
-              justify="center"
-              style={{minHeight: "50vh"}}
+                container
+                spacing={0}
+                direction="column"
+                alignItems="center"
+                justify="center"
+                style={{ minHeight: "50vh" }}
               >
-              <PrivateRoute exact path="/" component={Home} />
-              <Route exact path="/login" component={LoginForm} />
-              <Route exact path="/register" component={Register} />
-              <PrivateRoute exact path="/buy" component={Buy} />
-              <PrivateRoute exact path="/sell" component={Sell} />
-              <PrivateRoute exact path="/history" component={History} />
-              <PrivateRoute exact path="/lookup" component={Lookup} />
-              <PrivateRoute exact path="/logout" component={Logout as any}/>
-</Grid>
+                {/* <PageWrapper> */}
+                  <PrivateRoute exact path="/" component={Home} />
+                {/* </PageWrapper> */}
+                <Route exact path="/login" component={LoginForm} />
+                <Route exact path="/register" component={Register} />
+                <PrivateRoute exact path="/buy" component={Buy} />
+                <PrivateRoute exact path="/sell" component={Sell} />
+                <PrivateRoute exact path="/history" component={History} />
+                <PrivateRoute exact path="/test" component={PageWrapper} />
+                <PrivateRoute exact path="/lookup" component={Lookup} />
+                <PrivateRoute exact path="/logout" component={Logout as any} />
+              </Grid>
             </Switch>
           </div>
         </Router>

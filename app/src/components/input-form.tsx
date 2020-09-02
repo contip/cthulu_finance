@@ -51,8 +51,8 @@ export default function InputForm(props: IForm) {
         }}
       >
           {textInputs}
-          
-        {props.buttonValidators.every(Boolean) && <Button type="submit">Submit</Button> }
+          {/*instead of this check for buttonvalidators, i could just render the button   */}
+        <Button style={{visibility: props.buttonValidators.every(Boolean)? "visible": "hidden"}} type="submit">Submit</Button> 
 
       </ValidatorForm>
     </>

@@ -13,7 +13,31 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
+import { Typography } from "@material-ui/core";
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: 'flex',
+      '& > * + *': {
+        marginLeft: theme.spacing(2),
+      },
+    },
+    quickTrade: {
+      textAlign: "center", 
+    },
+    tradeInfo: {
+
+    },
+    visible: {
+visibility: "visible"
+    },
+    hidden: {
+visibility: "hidden"
+    }
+  }),
+);
 export default function Trade(rowData: any) {
   /* inline, single-field quicktrade form for users to buy/sell */
   /* we ALREADY KNOW that the given symbol from rowData is a valid stock
@@ -27,6 +51,7 @@ export default function Trade(rowData: any) {
   let { enqueueSnackbar, closeSnackbar } = useSnackbar();
   let history = useHistory();
   let location = useLocation();
+const classes = useStyles();
 
   if (tradeType === "buy") {
     ValidatorForm.addValidationRule("maxPurchase", (value: any) => {
@@ -91,7 +116,7 @@ export default function Trade(rowData: any) {
         }
       );
       if (location.pathname === "/") {
-        history.go(0);
+        history.push("/test")
       }
       else {
         history.push("/");
@@ -107,6 +132,7 @@ export default function Trade(rowData: any) {
       tradeType === "buy" ? "Purchase Cancelled!" : "Sale Cancelled!",
       { variant: "info" }
     );
+    setSharesInput("");
     return;
   }
   function handleConfirm() {
@@ -121,6 +147,7 @@ export default function Trade(rowData: any) {
     } else {
       setTradeType(event.target.value);
       setSharesInput("");
+      setValidSharesInput(false);
     }
     return;
   }
@@ -129,7 +156,6 @@ export default function Trade(rowData: any) {
     <>
     {(location.pathname === "/"  || location.pathname === "/lookup") &&
       <FormControl component="fieldset">
-        {/* <FormLabel component="legend">QuickTrade</FormLabel> */}
         <RadioGroup
           aria-label="tradeType"
           name="typeSelect"
@@ -138,7 +164,8 @@ export default function Trade(rowData: any) {
           row
         >
           <FormControlLabel value="buy" control={<Radio />} label="Buy" />
-          <FormControlLabel value="sell" control={<Radio />} label="Sell" />
+          {rowData.shares > 0 && 
+          <FormControlLabel value="sell" control={<Radio />} label="Sell" />}
         </RadioGroup>
       </FormControl>}
       {confirm && (
@@ -165,6 +192,7 @@ export default function Trade(rowData: any) {
           buttonValidators: [
             lookupPrice > 0,
             validSharesInput,
+            sharesInput !== "",
             parseInt(sharesInput) !== 0,
           ],
           inputs: [
@@ -209,18 +237,28 @@ export default function Trade(rowData: any) {
       />
 
       <div id="tradeInfo">
-        <h3>
+      {(location.pathname === "/buy" || location.pathname === "/sell") && <Typography
+        variant="subtitle1"
+        className={classes.tradeInfo}>
           {rowData.stock_name} ({rowData.stock_symbol}) current price: $
           {lookupPrice.toFixed(2)}
-        </h3>
-        <h3>
-          {validSharesInput &&
-            sharesInput !== "" &&
-            sharesInput !== "0" &&
-            `${tradeType === "buy" ? "Purchase" : "Sale"} price: $${(
+      </Typography> }
+        <Typography
+        variant="subtitle1"
+        className={validSharesInput &&
+          sharesInput !== "" &&
+          sharesInput !== "0" ? classes.visible : classes.hidden}
+          
+         > 
+            {tradeType === "buy" ? "Purchase" : "Sale"} price: {
+              new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+              }).format
+              (
               lookupPrice * parseInt(sharesInput)
-            ).toFixed(2)}`}
-        </h3>
+            )}
+            </Typography>
       </div>
     </>
   );

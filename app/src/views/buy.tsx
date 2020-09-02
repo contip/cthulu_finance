@@ -70,6 +70,7 @@ export default function Buy(props: any) {
         onChange={handleChange}
         onBlur={handleBlur as any}
         validatorListener={setValidStock}
+        variant="outlined"
         validators={[
           "required",
           "matchRegexp:^[A-Za-z]+$",

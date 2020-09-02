@@ -17,6 +17,11 @@ import { Link } from "react-router-dom";
 import { Button, Container } from "@material-ui/core";
 import logo from "../img/logo.png";
 
+let numFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -88,7 +93,7 @@ export default function MenuAppBar() {
             <IconButton
               edge="start"
               component={Link}
-              to="/"
+              to={currentUser?.accessToken ? "/" : "/login"}
               color="inherit"
               aria-label="menu"
             >
@@ -216,7 +221,7 @@ export default function MenuAppBar() {
             Cash: 
           </Typography>
           <Typography variant="caption" className={classes.infoBarSums}>
-            ${currentUser?.userData.cash.toFixed(2)}
+            {numFormatter.format(currentUser?.userData.cash)}
           </Typography>
 
           {currentUser.userData.holdings &&
@@ -227,7 +232,7 @@ export default function MenuAppBar() {
                   Portfolio: 
                 </Typography>
                 <Typography variant="caption" className={classes.infoBarSums}>
-                  ${getTotal().toFixed(2)}
+                  {numFormatter.format(getTotal())}
                 </Typography>{" "}
               </>
             )}
@@ -237,8 +242,8 @@ export default function MenuAppBar() {
           <Typography variant="caption" className={classes.infoBarSums}>
             {currentUser.userData.holdings &&
             currentUser.userData.holdings.length > 0
-              ? '$' + (getTotal() + currentUser?.userData.cash).toFixed(2)
-              : '$' + currentUser.userData.cash.toFixed(2)}
+              ? numFormatter.format(getTotal() + currentUser?.userData.cash)
+              : numFormatter.format(currentUser.userData.cash)}
           </Typography>
         </div>
       )}

@@ -22,6 +22,8 @@ export default function Register() {
     closeSnackbar();
     if (passInput !== confirmPassInput) {
       enqueueSnackbar("Error submitting: Passwords must match!", {variant: "error"})
+      setPassInput("");
+      setConfirmPassInput("");
       return;
     }
     let payload: IAuthCall = {url: Urls.register, auth: false, body: { username: nameInput, password: passInput }};
