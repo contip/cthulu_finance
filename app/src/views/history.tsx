@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import Table from "../components/table";
 import { HistoryColumnsMap, Urls } from '../data/constants';
 import { IUserTransaction, ITradeCall, tableCol } from '../data/interfaces';
-import ApiCall from '../components/api-call';
+import {fetchCall} from '../components/helpers';
 import { useSnackbar } from 'notistack';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -39,7 +39,7 @@ const classes = useStyles();
     useEffect(() => {
 
       let payload: ITradeCall = {url: Urls.history, auth: true, body: {user_id: authService.currentUserValue.userData.id}};
-      ApiCall(payload).then((response) => {
+      fetchCall(payload).then((response) => {
         if (response.code) {
           enqueueSnackbar(response.message, { variant: "error" });
           setUserHistory(null);

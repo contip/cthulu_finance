@@ -4,7 +4,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import SweetAlert from "react-bootstrap-sweetalert";
 import { Urls } from "../data/constants";
-import ApiCall from "./api-call";
+import { fetchCall, numFormat } from "./helpers";
 import InputForm from "./input-form";
 import { ILookupCall, ITradeCall } from "../data/interfaces";
 import { ValidatorForm } from "react-material-ui-form-validator";
@@ -12,31 +12,29 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
 import { Typography } from "@material-ui/core";
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      display: 'flex',
-      '& > * + *': {
+      display: "flex",
+      "& > * + *": {
         marginLeft: theme.spacing(2),
       },
     },
     quickTrade: {
-      textAlign: "center", 
+      textAlign: "center",
     },
-    tradeInfo: {
-
-    },
+    tradeInfo: {},
     visible: {
-visibility: "visible"
+      textAlign: "center",
+      visibility: "visible",
     },
     hidden: {
-visibility: "hidden"
-    }
-  }),
+      visibility: "hidden",
+    },
+  })
 );
 export default function Trade(rowData: any) {
   /* inline, single-field quicktrade form for users to buy/sell */
@@ -48,10 +46,10 @@ export default function Trade(rowData: any) {
   let [sharesInput, setSharesInput] = useState<string>("");
   let [validSharesInput, setValidSharesInput] = useState<boolean>(false);
   let [confirm, setConfirm] = useState(false);
-  let { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  let { enqueueSnackbar } = useSnackbar();
   let history = useHistory();
   let location = useLocation();
-const classes = useStyles();
+  const classes = useStyles();
 
   if (tradeType === "buy") {
     ValidatorForm.addValidationRule("maxPurchase", (value: any) => {
@@ -69,23 +67,23 @@ const classes = useStyles();
   useEffect(() => {
     // let mounted = true;
     if (location.pathname === "/") {
-    let payload: ILookupCall = {
-      url: Urls.lookup,
-      auth: true,
-      body: {
-        name: rowData.stock_symbol,
-      },
-    };
-    ApiCall(payload).then((response: any) => {
-      if (response.code) {
-        enqueueSnackbar(response.message, { variant: "error" });
-        setLookupPrice(0);
-      } else {
-        setLookupPrice(response.latestPrice);
-      }
-    });} else {
-      setLookupPrice(rowData.latestPrice)
-
+      let payload: ILookupCall = {
+        url: Urls.lookup,
+        auth: true,
+        body: {
+          name: rowData.stock_symbol,
+        },
+      };
+      fetchCall(payload).then((response: any) => {
+        if (response.code) {
+          enqueueSnackbar(response.message, { variant: "error" });
+          setLookupPrice(0);
+        } else {
+          setLookupPrice(response.latestPrice);
+        }
+      });
+    } else {
+      setLookupPrice(rowData.latestPrice);
     }
     // return () => {
     //   // mounted = false;
@@ -104,7 +102,7 @@ const classes = useStyles();
         shares: parseInt(sharesInput),
       },
     };
-    let response = await ApiCall(payload);
+    let response = await fetchCall(payload);
     if (response.code) {
       enqueueSnackbar(response.message, { variant: "error" });
       setSharesInput("");
@@ -116,12 +114,10 @@ const classes = useStyles();
         }
       );
       if (location.pathname === "/") {
-        history.push("/test")
-      }
-      else {
+        history.push("/redirect");
+      } else {
         history.push("/");
       }
-      
     }
 
     return;
@@ -154,20 +150,22 @@ const classes = useStyles();
 
   return (
     <>
-    {(location.pathname === "/"  || location.pathname === "/lookup") &&
-      <FormControl component="fieldset">
-        <RadioGroup
-          aria-label="tradeType"
-          name="typeSelect"
-          value={tradeType}
-          onChange={handleChange}
-          row
-        >
-          <FormControlLabel value="buy" control={<Radio />} label="Buy" />
-          {rowData.shares > 0 && 
-          <FormControlLabel value="sell" control={<Radio />} label="Sell" />}
-        </RadioGroup>
-      </FormControl>}
+      {(location.pathname === "/" || location.pathname === "/lookup") && (
+        <FormControl component="fieldset">
+          <RadioGroup
+            aria-label="tradeType"
+            name="typeSelect"
+            value={tradeType}
+            onChange={handleChange}
+            row
+          >
+            <FormControlLabel value="buy" control={<Radio />} label="Buy" />
+            {rowData.shares > 0 && (
+              <FormControlLabel value="sell" control={<Radio />} label="Sell" />
+            )}
+          </RadioGroup>
+        </FormControl>
+      )}
       {confirm && (
         <SweetAlert
           warning
@@ -181,8 +179,8 @@ const classes = useStyles();
         >
           {tradeType.charAt(0).toUpperCase() + tradeType.slice(1)} {sharesInput}{" "}
           {parseInt(sharesInput) > 1 ? "shares" : "share"} of{" "}
-          {rowData.stock_name} for $
-          {(parseInt(sharesInput) * lookupPrice).toFixed(2)}???
+          {rowData.stock_name} for{" "}
+          {numFormat(parseInt(sharesInput) * lookupPrice)}?
         </SweetAlert>
       )}
 
@@ -222,14 +220,14 @@ const classes = useStyles();
                       "this field is required!",
                       "numerical digits only!",
                       "maximum purchase amount: 99,999 shares!",
-                      `invalid!  you only have $${authService.currentUserValue.userData.cash.toFixed(
-                        2
+                      `you only have ${numFormat(
+                        authService.currentUserValue.userData.cash
                       )}!`,
                     ]
                   : [
                       "this field is required!",
                       "numerical digits >= 1 only!",
-                      `invalid! you only have ${rowData.shares} shares of ${rowData.stock_symbol} to sell!`,
+                      `you only have ${rowData.shares} shares of ${rowData.stock_symbol} to sell!`,
                     ],
             },
           ],
@@ -237,28 +235,29 @@ const classes = useStyles();
       />
 
       <div id="tradeInfo">
-      {(location.pathname === "/buy" || location.pathname === "/sell") && <Typography
-        variant="subtitle1"
-        className={classes.tradeInfo}>
-          {rowData.stock_name} ({rowData.stock_symbol}) current price: $
-          {lookupPrice.toFixed(2)}
-      </Typography> }
+        {(location.pathname === "/buy" || location.pathname === "/sell") && (
+          <Typography
+            variant="subtitle1"
+            className={lookupPrice > 0 ? classes.visible : classes.hidden}
+          >
+            {rowData.stock_name} ({rowData.stock_symbol}) current price:{" "}
+            {numFormat(lookupPrice)}
+          </Typography>
+        )}
         <Typography
-        variant="subtitle1"
-        className={validSharesInput &&
-          sharesInput !== "" &&
-          sharesInput !== "0" ? classes.visible : classes.hidden}
-          
-         > 
-            {tradeType === "buy" ? "Purchase" : "Sale"} price: {
-              new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-              }).format
-              (
-              lookupPrice * parseInt(sharesInput)
-            )}
-            </Typography>
+          variant="subtitle1"
+          className={
+            validSharesInput && sharesInput !== "" && sharesInput !== "0"
+              ? classes.visible
+              : classes.hidden
+          }
+        >
+          {tradeType === "buy" ? "Purchase" : "Sale"} price:{" "}
+          {new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(lookupPrice * parseInt(sharesInput))}
+        </Typography>
       </div>
     </>
   );

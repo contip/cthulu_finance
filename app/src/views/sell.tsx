@@ -6,7 +6,7 @@ import {
 import { IStockData, ILookupCall, IUserData, IUserHolding } from "../data/interfaces";
 import { useSnackbar } from "notistack";
 import { Urls } from "../data/constants";
-import ApiCall from "../components/api-call";
+import {fetchCall} from "../components/helpers";
 import { authService } from "../components/auth.service";
 import Trade from "../components/trade";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
@@ -20,11 +20,17 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     formControl: {
       margin: theme.spacing(1),
-      minWidth: 210,
+      minWidth: 200,
     },
     selectEmpty: {
       marginTop: theme.spacing(2),
     },
+  visible: {
+visibility: "visible"
+  },
+  hidden: {
+visibility: "hidden"
+  },
   })
 );
 
@@ -66,7 +72,7 @@ export default function Sell(props: any) {
           name: event.target.value /* can't be invalid... */,
         },
       };
-      let response = await ApiCall(payload);
+      let response = await fetchCall(payload);
       if (response.code) {
         enqueueSnackbar(response.message, { variant: "info" });
         setLookupData({} as IStockData);
@@ -99,6 +105,7 @@ export default function Sell(props: any) {
     type: "sell",
   };
 
+
   return (
     <>
       <FormControl variant="outlined" className={classes.formControl}>
@@ -116,7 +123,8 @@ export default function Sell(props: any) {
       </FormControl>
 
 
-      {validLookup && lookupData && select !== "" && <Trade {...bung} />}
+      {validLookup && lookupData && select !== "" ? <Trade  {...bung}/> :
+      <span><br/><br/><br/><br/><br/><br/><br/></span>}
     </>
   );
 }

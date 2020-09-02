@@ -5,7 +5,7 @@ import Table from "../components/table";
 import { LookupColumnsMap, Urls } from "../data/constants";
 import { IStockData, ILookupCall, IUserHolding } from "../data/interfaces";
 import { useSnackbar } from "notistack";
-import ApiCall from "../components/api-call";
+import {fetchCall} from "../components/helpers";
 import InputForm from "../components/input-form";
 import { authService } from "../components/auth.service";
 import Trade from "../components/trade";
@@ -40,7 +40,7 @@ export default function Lookup() {
       auth: true,
       body: { name: lookupInput },
     };
-    let response = await ApiCall(payload);
+    let response = await fetchCall(payload);
     if (response.code) {
       enqueueSnackbar(response.message, { variant: "error" });
       setLookupInput("");

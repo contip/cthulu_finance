@@ -17,7 +17,7 @@ import { SnackbarProvider } from "notistack";
 import { Button, Container, Grid } from "@material-ui/core";
 import ButtonAppBar from "./components/navbar";
 import MenuAppBar from "./components/navbar";
-import  PageWrapper  from "./components/page-wrapper";
+import Redirect from "./components/helpers";
 
 export default function App() {
   let [currentUser, setCurrentUser] = useState<IUser | null>(null);
@@ -67,7 +67,7 @@ export default function App() {
                 <PrivateRoute exact path="/buy" component={Buy} />
                 <PrivateRoute exact path="/sell" component={Sell} />
                 <PrivateRoute exact path="/history" component={History} />
-                <PrivateRoute exact path="/test" component={PageWrapper} />
+                <PrivateRoute exact path="/redirect" component={Redirect} />
                 <PrivateRoute exact path="/lookup" component={Lookup} />
                 <PrivateRoute exact path="/logout" component={Logout as any} />
               </Grid>

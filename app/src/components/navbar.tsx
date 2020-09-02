@@ -4,23 +4,15 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import Switch from "@material-ui/core/Switch";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormGroup from "@material-ui/core/FormGroup";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import { IUser, IUserHoldingFull } from "../data/interfaces";
 import { authService } from "./auth.service";
-import { Link } from "react-router-dom";
-import { Button, Container } from "@material-ui/core";
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@material-ui/core";
 import logo from "../img/logo.png";
-
-let numFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-});
+import { numFormat } from "./helpers";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,7 +25,6 @@ const useStyles = makeStyles((theme: Theme) =>
     title: {
       flexGrow: 1,
       color: "white",
-      
     },
     // infoBar: {
     //   // textAlign: "center",
@@ -46,16 +37,19 @@ const useStyles = makeStyles((theme: Theme) =>
     textButtons: {
       color: "white",
     },
+    selected: {
+      color: "LimeGreen",
+    },
     infoBarTitles: {
       color: "black",
-      padding: 5
+      padding: 5,
     },
     infoBarSums: {
       color: "green",
-      padding: 5
+      padding: 5,
     },
-     profileButton: {
-    }, })
+    profileButton: {},
+  })
 );
 
 export default function MenuAppBar() {
@@ -63,6 +57,7 @@ export default function MenuAppBar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   let [currentUser, setCurrentUser] = useState<IUser | null>(null);
+  let location = useLocation();
 
   useEffect(() => {
     authService.currentUser.subscribe((user) => setCurrentUser(user));
@@ -108,7 +103,14 @@ export default function MenuAppBar() {
                 variant="text"
                 color="secondary"
               >
-                <Typography variant="button" className={classes.textButtons}>
+                <Typography
+                  variant="button"
+                  className={
+                    location.pathname === "/lookup"
+                      ? classes.selected
+                      : classes.textButtons
+                  }
+                >
                   Lookup
                 </Typography>
               </Button>
@@ -118,7 +120,14 @@ export default function MenuAppBar() {
                 variant="text"
                 color="secondary"
               >
-                <Typography variant="button" className={classes.textButtons}>
+                <Typography
+                  variant="button"
+                  className={
+                    location.pathname === "/buy"
+                      ? classes.selected
+                      : classes.textButtons
+                  }
+                >
                   Buy
                 </Typography>
               </Button>
@@ -128,19 +137,25 @@ export default function MenuAppBar() {
                 variant="text"
                 color="secondary"
               >
-                <Typography variant="button" className={classes.textButtons}>
+                <Typography
+                  variant="button"
+                  className={
+                    location.pathname === "/sell"
+                      ? classes.selected
+                      : classes.textButtons
+                  }
+                >
                   Sell
                 </Typography>
               </Button>
               {/* why do i need this empty text to make sure button justifies
                 to the right? */}
-              <Typography variant="h6" className={classes.title}>
-              </Typography>
+              <Typography variant="h6" className={classes.title}></Typography>
             </>
           )}
 
           {currentUser?.accessToken && (
-            <div className={classes.profileButton}>
+            <div className={`${classes.profileButton} ${location.pathname === "/" || location.pathname === "/history" ? classes.selected : ""}`}>
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
@@ -188,16 +203,15 @@ export default function MenuAppBar() {
           )}
           {!currentUser && (
             <>
-{/* again needed phantom typography to get flex box to justify buttons right */}
-              <Typography variant="h6" className={classes.title}>
-              </Typography>
+              {/* again needed phantom typography to get flex box to justify buttons right */}
+              <Typography variant="h6" className={classes.title}></Typography>
               <Button
                 component={Link}
                 to="/register"
                 variant="text"
                 color="primary"
               >
-                <Typography variant="button" className={classes.title}>
+                <Typography variant="button" className={`${classes.title} ${location.pathname === "/register" ? classes.selected : ""}`}>
                   Register
                 </Typography>
               </Button>
@@ -207,7 +221,7 @@ export default function MenuAppBar() {
                 variant="text"
                 color="primary"
               >
-                <Typography variant="button" className={classes.title}>
+                <Typography variant="button" className={`${classes.title} ${location.pathname === "/login" ? classes.selected : ""}`}>
                   Login
                 </Typography>
               </Button>
@@ -218,10 +232,10 @@ export default function MenuAppBar() {
       {currentUser && currentUser.userData && currentUser.accessToken && (
         <div className={classes.bung}>
           <Typography variant="caption" className={classes.infoBarTitles}>
-            Cash: 
+            Cash:
           </Typography>
           <Typography variant="caption" className={classes.infoBarSums}>
-            {numFormatter.format(currentUser?.userData.cash)}
+            {numFormat(currentUser?.userData.cash)}
           </Typography>
 
           {currentUser.userData.holdings &&
@@ -229,21 +243,21 @@ export default function MenuAppBar() {
               <>
                 {" "}
                 <Typography variant="caption" className={classes.infoBarTitles}>
-                  Portfolio: 
+                  Portfolio:
                 </Typography>
                 <Typography variant="caption" className={classes.infoBarSums}>
-                  {numFormatter.format(getTotal())}
+                  {numFormat(getTotal())}
                 </Typography>{" "}
               </>
             )}
           <Typography variant="caption" className={classes.infoBarTitles}>
-            Total: 
+            Total:
           </Typography>
           <Typography variant="caption" className={classes.infoBarSums}>
             {currentUser.userData.holdings &&
             currentUser.userData.holdings.length > 0
-              ? numFormatter.format(getTotal() + currentUser?.userData.cash)
-              : numFormatter.format(currentUser.userData.cash)}
+              ? numFormat(getTotal() + currentUser?.userData.cash)
+              : numFormat(currentUser.userData.cash)}
           </Typography>
         </div>
       )}

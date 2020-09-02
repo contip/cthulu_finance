@@ -5,7 +5,7 @@ import InputForm from "../components/input-form";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { ILookupCall, IStockData, IUserHolding } from "../data/interfaces";
 import { Urls } from "../data/constants";
-import ApiCall from "../components/api-call";
+import {fetchCall} from "../components/helpers";
 import Trade from "../components/trade";
 
 export default function Buy(props: any) {
@@ -32,7 +32,7 @@ export default function Buy(props: any) {
           name: stockInput,
         },
       };
-      let response = await ApiCall(payload);
+      let response = await fetchCall(payload);
       if (response.code) {
         enqueueSnackbar(response.message, { variant: "info" });
         setLookupData({} as IStockData);
@@ -84,7 +84,7 @@ export default function Buy(props: any) {
       ></TextValidator>
     </ValidatorForm>
 
-    {lookupData && validStock && validLookup && <Trade {...bung}/>}
+    {lookupData && validStock && validLookup ? <Trade {...bung}/>:<span><br/><br/><br/><br/><br/><br/><br/></span>}
     </>
   );
 }

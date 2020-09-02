@@ -19,7 +19,3 @@ tbody.MuiTableBody-root >:nth-of-type(2n)
 {
     background-color: #fafafa;
 }
-
-button {
-  cursor:'pointer';
-}

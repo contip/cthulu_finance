@@ -3,7 +3,7 @@ import { authService } from "../components/auth.service";
 import { useHistory } from "react-router-dom";
 import { IAuthCall } from "../data/interfaces";
 import { Urls } from "../data/constants";
-import ApiCall from "../components/api-call";
+import {fetchCall} from "../components/helpers";
 import { useSnackbar } from "notistack";
 import InputForm from "../components/input-form";
 
@@ -29,7 +29,7 @@ export default function LoginForm() {
       auth: false,
       body: { username: nameInput, password: passInput },
     };
-    let response = await ApiCall(payload);
+    let response = await fetchCall(payload);
     if (response.code) {
       enqueueSnackbar(response.message, { variant: "error" });
       setNameInput("");

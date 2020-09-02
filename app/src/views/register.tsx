@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { authService } from "../components/auth.service";
 import { useHistory } from "react-router-dom";
 import { Urls } from "../data/constants";
-import ApiCall from "../components/api-call";
+import {fetchCall }from "../components/helpers";
 import { useSnackbar } from "notistack";
 import { IAuthCall } from "../data/interfaces";
 import InputForm from "../components/input-form";
@@ -27,7 +27,7 @@ export default function Register() {
       return;
     }
     let payload: IAuthCall = {url: Urls.register, auth: false, body: { username: nameInput, password: passInput }};
-    let response = await ApiCall(payload);
+    let response = await fetchCall(payload);
     if (response.code) {  /* should not be possible */
       enqueueSnackbar(response.message, {variant: "error"})
       setNameInput("");
@@ -64,7 +64,7 @@ export default function Register() {
         auth: false,
         body: { username: nameInput },
       };
-      let response = await ApiCall(payload);
+      let response = await fetchCall(payload);
       setValidLookup(response);
       if (response) {
         enqueueSnackbar(`Username ${nameInput} is available!`, {
