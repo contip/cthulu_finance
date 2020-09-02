@@ -11,11 +11,11 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormGroup from "@material-ui/core/FormGroup";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
-import { IUser } from "../data/interfaces";
+import { IUser, IUserHoldingFull } from "../data/interfaces";
 import { authService } from "./auth.service";
 import { Link } from "react-router-dom";
-import { Button } from "@material-ui/core";
-import logo from '../img/logo.png'
+import { Button, Container } from "@material-ui/core";
+import logo from "../img/logo.png";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,17 +27,30 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     title: {
       flexGrow: 1,
+      color: "white",
+      
     },
-    logoDiv: {
-
-    },
-    logoButton: {
-
+    // infoBar: {
+    //   // textAlign: "center",
+    //   color: "teal",
+    // },
+    bung: {
+      textAlign: "center",
+      // color:"white",
     },
     textButtons: {
-
-    }
-  })
+      color: "white",
+    },
+    infoBarTitles: {
+      color: "black",
+      padding: 5
+    },
+    infoBarSums: {
+      color: "green",
+      padding: 5
+    },
+     profileButton: {
+    }, })
 );
 
 export default function MenuAppBar() {
@@ -58,61 +71,71 @@ export default function MenuAppBar() {
     setAnchorEl(null);
   };
 
+  function getTotal() {
+    let sum: number = 0;
+    if (currentUser?.userData.holdings) {
+      for (let i = 0; i < currentUser.userData.holdings.length; i++) {
+        sum += (currentUser.userData.holdings[i] as IUserHoldingFull).value;
+      }
+    }
+    return sum;
+  }
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-            <div className={classes.logoDiv}>
-          <IconButton
-            edge="start"
-            component={Link}
-            to="/"
-            className={classes.logoButton}
-            color="inherit"
-            aria-label="menu"
-          >
-            {<img src={logo} alt="Logo" />}
-          </IconButton>
+          <div>
+            <IconButton
+              edge="start"
+              component={Link}
+              to="/"
+              color="inherit"
+              aria-label="menu"
+            >
+              {<img src={logo} alt="Logo" />}
+            </IconButton>
           </div>
-{currentUser?.accessToken && <>
-          <Button
-              component={Link}
-              to="/lookup"
-              variant="contained"
-              color="primary"
-            >
-              <Typography variant="button" className={classes.textButtons}>
-                Lookup
-              </Typography>
-            </Button>
-            <Button
-              component={Link}
-              to="/buy"
-              variant="contained"
-              color="primary"
-            >
-              <Typography variant="button" className={classes.textButtons}>
-                Buy
-              </Typography>
-            </Button>
-            <Button
-              component={Link}
-              to="/sell"
-              variant="contained"
-              color="primary"
-            >
-              <Typography variant="button" className={classes.textButtons}>
-                Sell
-              </Typography>
-            </Button>
-          <Typography variant="h6" className={classes.title}>
-            {`${currentUser?.userData.username} - Cash: $${currentUser?.userData.cash.toFixed(2)}` }
-          </Typography></>
-}
-
-          
           {currentUser?.accessToken && (
-            <div>
+            <>
+              <Button
+                component={Link}
+                to="/lookup"
+                variant="text"
+                color="secondary"
+              >
+                <Typography variant="button" className={classes.textButtons}>
+                  Lookup
+                </Typography>
+              </Button>
+              <Button
+                component={Link}
+                to="/buy"
+                variant="text"
+                color="secondary"
+              >
+                <Typography variant="button" className={classes.textButtons}>
+                  Buy
+                </Typography>
+              </Button>
+              <Button
+                component={Link}
+                to="/sell"
+                variant="text"
+                color="secondary"
+              >
+                <Typography variant="button" className={classes.textButtons}>
+                  Sell
+                </Typography>
+              </Button>
+              {/* why do i need this empty text to make sure button justifies
+                to the right? */}
+              <Typography variant="h6" className={classes.title}>
+              </Typography>
+            </>
+          )}
+
+          {currentUser?.accessToken && (
+            <div className={classes.profileButton}>
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
@@ -120,7 +143,7 @@ export default function MenuAppBar() {
                 onClick={handleMenu}
                 color="inherit"
               >
-                <AccountCircle />
+                <AccountCircle fontSize="large" />
               </IconButton>
               <Menu
                 id="menu-appbar"
@@ -158,33 +181,67 @@ export default function MenuAppBar() {
               </Menu>
             </div>
           )}
-        {!currentUser && 
-        <>
+          {!currentUser && (
+            <>
+{/* again needed phantom typography to get flex box to justify buttons right */}
+              <Typography variant="h6" className={classes.title}>
+              </Typography>
               <Button
-              component={Link}
-              to="/register"
-              variant="contained"
-              color="primary"
-            >
-              <Typography variant="button" className={classes.title}>
-                Register
-              </Typography>
-            </Button>
-            <Button
-              component={Link}
-              to="/login"
-              variant="contained"
-              color="primary"
-            >
-              <Typography variant="button" className={classes.title}>
-                Login
-              </Typography>
-            </Button>
-        </>
-        
-        }
+                component={Link}
+                to="/register"
+                variant="text"
+                color="primary"
+              >
+                <Typography variant="button" className={classes.title}>
+                  Register
+                </Typography>
+              </Button>
+              <Button
+                component={Link}
+                to="/login"
+                variant="text"
+                color="primary"
+              >
+                <Typography variant="button" className={classes.title}>
+                  Login
+                </Typography>
+              </Button>
+            </>
+          )}
         </Toolbar>
       </AppBar>
+      {currentUser && currentUser.userData && currentUser.accessToken && (
+        <div className={classes.bung}>
+          <Typography variant="caption" className={classes.infoBarTitles}>
+            Cash: 
+          </Typography>
+          <Typography variant="caption" className={classes.infoBarSums}>
+            ${currentUser?.userData.cash.toFixed(2)}
+          </Typography>
+
+          {currentUser.userData.holdings &&
+            currentUser.userData.holdings.length > 0 && (
+              <>
+                {" "}
+                <Typography variant="caption" className={classes.infoBarTitles}>
+                  Portfolio: 
+                </Typography>
+                <Typography variant="caption" className={classes.infoBarSums}>
+                  ${getTotal().toFixed(2)}
+                </Typography>{" "}
+              </>
+            )}
+          <Typography variant="caption" className={classes.infoBarTitles}>
+            Total: 
+          </Typography>
+          <Typography variant="caption" className={classes.infoBarSums}>
+            {currentUser.userData.holdings &&
+            currentUser.userData.holdings.length > 0
+              ? '$' + (getTotal() + currentUser?.userData.cash).toFixed(2)
+              : '$' + currentUser.userData.cash.toFixed(2)}
+          </Typography>
+        </div>
+      )}
     </div>
   );
 }

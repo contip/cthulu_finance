@@ -60,7 +60,7 @@ export interface IUser {
       id: number;
       username: string;
       cash: number;
-      holdings: Array<IUserHolding> | [];  /* not included for register route */
+      holdings: Array<IUserHolding | IUserHoldingFull> | [];  /* not included for register route */
     }
 
     export interface IUserHolding {

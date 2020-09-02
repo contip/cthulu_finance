@@ -129,7 +129,7 @@ export default function Trade(rowData: any) {
     <>
     {(location.pathname === "/"  || location.pathname === "/lookup") &&
       <FormControl component="fieldset">
-        <FormLabel component="legend">QuickTrade</FormLabel>
+        {/* <FormLabel component="legend">QuickTrade</FormLabel> */}
         <RadioGroup
           aria-label="tradeType"
           name="typeSelect"

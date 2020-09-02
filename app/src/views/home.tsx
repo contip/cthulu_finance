@@ -4,6 +4,8 @@ import Table  from "../components/table";
 import { HoldingsColumnsMap } from "../data/constants";
 import { authService } from "../components/auth.service";
 import Trade from "../components/trade";
+import { Container, Box } from "@material-ui/core";
+import ShopTwo from "@material-ui/icons/ShopTwo";
 
 
 /* TODO: implement stronger typing and document code */
@@ -22,7 +24,6 @@ export default function Home() {
   let [userHoldings, setUserHoldings] = useState<Array<
     IUserHoldingFull
   > | null>(null);
-  console.log("the state of userHoldings is...", userHoldings);
 
   useEffect(() => {
     authService.updateUserData().then(() => {
@@ -56,7 +57,8 @@ export default function Home() {
             authService.currentUserValue.userData.username + "'s Portfolio",
           detailPanel: [
             {
-              tooltip: "bung",
+              icon: ShopTwo,
+              tooltip: "Quick Trade",
               render: (rowData: any) => {
                 return (
                   <div>
@@ -74,7 +76,7 @@ export default function Home() {
           },
         }}
       />
-      <>
+      {/* <Box width="100%">
         {Table({
           tableCols: [
             { title: "bung", field: "words" },
@@ -97,7 +99,7 @@ export default function Home() {
             toolbar: false,
           },
         })}
-      </>
+      </Box> */}
     </React.Fragment>
   );
 }

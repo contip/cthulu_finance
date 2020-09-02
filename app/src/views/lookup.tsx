@@ -9,6 +9,7 @@ import ApiCall from "../components/api-call";
 import InputForm from "../components/input-form";
 import { authService } from "../components/auth.service";
 import Trade from "../components/trade";
+import ShopTwo from "@material-ui/icons/ShopTwo";
 
 export default function Lookup() {
   let [lookupInput, setLookupInput] = useState<string>("");
@@ -111,7 +112,6 @@ export default function Lookup() {
 
   return (
     <>
-      <p />
       <InputForm
         {...{
           onSubmit: handleSubmit,
@@ -148,7 +148,8 @@ export default function Lookup() {
           data: [stockData],
           detailPanel: [
             {
-              tooltip: "bung",
+              icon: ShopTwo,
+              tooltip: "Quick Trade",
               render: () => {
                 return (
                   <div>

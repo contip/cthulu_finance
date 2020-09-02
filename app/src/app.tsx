@@ -14,7 +14,7 @@ import Buy from "./views/buy";
 import Sell from "./views/sell";
 import History from "./views/history";
 import { SnackbarProvider } from "notistack";
-import { Button } from "@material-ui/core";
+import { Button, Container, Grid } from "@material-ui/core";
 import ButtonAppBar from "./components/navbar";
 import MenuAppBar from "./components/navbar";
 
@@ -39,36 +39,25 @@ const onClickDismiss = (key:any) => () => {
         autoHideDuration={4000}
         ref={notistackRef}
          action={(key) => (
-        <Button onClick={onClickDismiss(key)}>
+        <Button style={{color: "white"}} onClick={onClickDismiss(key)}>
             Dismiss
         </Button>)}
         anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
       >
         <Router>
           <div>
-            {/* if user is logged in, don't display the login and register 
-                links */}
-
-            {/* navbar should be its own component which also has access to auth
-           state and can therefore determine what links to show in nav */}
-            <nav>
-              {currentUser && (
-                <div>
-                  <Link to="/">Home</Link>
-                  <Link to="/lookup">Look Up a Dang Stock!</Link>
-                  <Link to="/buy">Purchase</Link>
-                  <Link to="/sell">Sell a dang thing</Link>
-                  <Link to="/history">Get ur dang transaction history</Link>
-                  <Link to="/logout">Log out my dude</Link>
-                </div>
-              )}
-              {!currentUser && <Link to="/login">Log In!</Link>}
-              {!currentUser && <Link to="/register">Register!</Link>}
-            </nav>
             <nav>
                 <MenuAppBar />
             </nav>
             <Switch>
+              <Grid
+              container
+              spacing={0}
+              direction="column"
+              alignItems="center"
+              justify="center"
+              style={{minHeight: "50vh"}}
+              >
               <PrivateRoute exact path="/" component={Home} />
               <Route exact path="/login" component={LoginForm} />
               <Route exact path="/register" component={Register} />
@@ -77,6 +66,7 @@ const onClickDismiss = (key:any) => () => {
               <PrivateRoute exact path="/history" component={History} />
               <PrivateRoute exact path="/lookup" component={Lookup} />
               <PrivateRoute exact path="/logout" component={Logout as any}/>
+</Grid>
             </Switch>
           </div>
         </Router>

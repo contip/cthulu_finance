@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import App from './app';
+import { ThemeProvider } from '@material-ui/core/styles';
+import theme from './data/theme';
 
 // ReactDOM.render(
 //   <div>
@@ -13,7 +15,9 @@ import App from './app';
 // );
 ReactDOM.render(
   <div>
+    <ThemeProvider theme={theme}>
   <App />
+</ThemeProvider>
   </div>, document.getElementById('root') as HTMLElement
 );
 
