@@ -19,6 +19,14 @@ export interface IFormInput {
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void | undefined;
 }
 
+export interface ITradeProps {
+  stock_symbol: string,
+  stock_name: string,
+  type?: string,
+  latestPrice: number,
+  shares?: number,
+}
+
 export interface ICallError {
   code: number;
   message: string;
@@ -28,6 +36,8 @@ export interface ICallError {
 export interface ITableCol {
   title: string;
   field: string;
+  width?: number;
+  type?: string;
 }
 
 /* ========= api calls to server ========= */

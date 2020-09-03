@@ -1,31 +1,34 @@
 import React, { useState } from "react";
-import { authService } from "../components/auth.service";
 import { useSnackbar } from "notistack";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { ILookupCall, IStockData, IUserHolding } from "../data/interfaces";
+import { ILookupCall, IStockData, ITradeProps } from "../data/interfaces";
 import { Urls } from "../data/constants";
 import { fetchCall } from "../components/helpers";
 import Trade from "../components/trade";
 
+/* provides text input for user to enter stock name, checks validity of stock
+ * symbol on blur, if valid show trade form and allow user to make purchase */
 export default function Buy() {
-  /* all we need to do is provide a textbox tied to state that gets a valid
-   * stock symbol */
-
   let [stockInput, setStockInput] = useState("");
   let [validStock, setValidStock] = useState(false);
-  let { enqueueSnackbar } = useSnackbar();
   let [lookupData, setLookupData] = useState({} as IStockData);
-  let [userShares, setUserShares] = useState<number>(0);
   let [validLookup, setValidLookup] = useState(false);
+  let [] = useState<number>(0);
+  let [lastSearched, setLastSearched] = useState("");
+  let { enqueueSnackbar } = useSnackbar();
 
+  /* sets state based on text input value */
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setStockInput(event.target.value);
   }
 
+  /* if the value in text field has changed, then on blur does api call to
+   * get latest price and sets state accordingly */
   async function handleBlur() {
-    /* BUG:  triggers again even if no change to input field */
-    /* BUG: does not work properly for story: valid input > valid input ( 2nd
-       price does not get updated )! */
+    if (stockInput === lastSearched) {
+      return;
+    }
+    setValidLookup(false); /* set invalid while searching */
     if (stockInput.length > 0 && validStock) {
       let payload: ILookupCall = {
         url: Urls.lookup,
@@ -36,32 +39,23 @@ export default function Buy() {
       };
       let response = await fetchCall(payload);
       if (response.code) {
+        /* if user blurs on invalid stock symbol and not found response given
+         * by server, display snackbar indicating this and reset state */
         enqueueSnackbar(response.message, { variant: "info" });
         setLookupData({} as IStockData);
         setValidLookup(false);
       } else {
-        /* get holdings info if any */
-        let result = authService.currentUserValue.userData.holdings.filter(
-          (holding: IUserHolding) => {
-            return holding.stock_symbol === lookupData.symbol;
-          }
-        );
-        setUserShares(
-          result && result[0] && result[0].shares && result[0].shares > 0
-            ? result[0].shares
-            : 0
-        );
         setLookupData(response);
         setValidLookup(true);
+        setLastSearched(response.symbol);
       }
     }
     return;
   }
 
-  let bung = {
+  let tradeProps: ITradeProps = {
     stock_symbol: lookupData.symbol,
     stock_name: lookupData.companyName,
-    shares: userShares,
     latestPrice: lookupData.latestPrice,
     type: "buy",
   };
@@ -89,20 +83,24 @@ export default function Buy() {
           ]}
         ></TextValidator>
       </ValidatorForm>
-
-      {lookupData && validStock && validLookup ? (
-        <Trade {...bung} />
-      ) : (
-        <span>
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-        </span>
-      )}
+      {
+        /* if user entered a valid stock and pricing information was gotten
+         * successfully, display the trade component, otherwise empty space */
+        lookupData && validStock && validLookup ? (
+          <div style={{textAlign: "center"}}>
+          <Trade {...tradeProps} /></div>
+        ) : (
+          <span>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+          </span>
+        )
+      }
     </>
   );
 }

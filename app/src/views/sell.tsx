@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import {
-  ValidatorForm,
-  SelectValidator,
-} from "react-material-ui-form-validator";
-import { IStockData, ILookupCall, IUserData, IUserHolding } from "../data/interfaces";
+  IStockData,
+  ILookupCall,
+  IUserData,
+  IUserHolding,
+  ITradeProps,
+} from "../data/interfaces";
 import { useSnackbar } from "notistack";
 import { Urls } from "../data/constants";
-import {fetchCall} from "../components/helpers";
+import { fetchCall } from "../components/helpers";
 import { authService } from "../components/auth.service";
 import Trade from "../components/trade";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 
@@ -25,33 +26,35 @@ const useStyles = makeStyles((theme: Theme) =>
     selectEmpty: {
       marginTop: theme.spacing(2),
     },
-  visible: {
-visibility: "visible"
-  },
-  hidden: {
-visibility: "hidden"
-  },
+    visible: {
+      visibility: "visible",
+    },
+    hidden: {
+      visibility: "hidden",
+    },
   })
 );
 
-export default function Sell(props: any) {
+/* allows user to sell any of the stocks they currently possess */
+export default function Sell(): JSX.Element {
   let [select, setSelect] = useState<string>("");
   let [lookupData, setLookupData] = useState({} as IStockData);
-  let { enqueueSnackbar, closeSnackbar } = useSnackbar();
   let [userShares, setUserShares] = useState<number>(0);
   let [validLookup, setValidLookup] = useState(false);
-
-  const classes = useStyles();
-
+  let { enqueueSnackbar } = useSnackbar();
+  let classes = useStyles();
   let userData: IUserData = authService.currentUserValue.userData;
-  console.log(userData);
 
-  function selectMenuOptions() {
-    let items = [];
+  /* creates a select option for each stock the user owns */
+  function selectMenuOptions(): Array<JSX.Element> {
+    let items: JSX.Element[] = [];
     if (userData.holdings.length > 0) {
       for (let i = 0; i < userData.holdings.length; i++) {
         items.push(
-          <MenuItem key={userData.holdings[i].stock_symbol} value={userData.holdings[i].stock_symbol}>
+          <MenuItem
+            key={userData.holdings[i].stock_symbol}
+            value={userData.holdings[i].stock_symbol}
+          >
             {userData.holdings[i].stock_symbol} -{" "}
             {userData.holdings[i].stock_name}
           </MenuItem>
@@ -61,15 +64,15 @@ export default function Sell(props: any) {
     return items;
   }
 
+  /* fetches latest stock data when user changes select option */
   async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    // await updateSelect(event.target.value);
     setSelect(event.target.value);
     if (event.target.value !== "") {
       let payload: ILookupCall = {
         url: Urls.lookup,
         auth: true,
         body: {
-          name: event.target.value /* can't be invalid... */,
+          name: event.target.value /* can't be invalid */,
         },
       };
       let response = await fetchCall(payload);
@@ -79,12 +82,10 @@ export default function Sell(props: any) {
         setValidLookup(false);
       } else {
         setLookupData(response);
-        /* get holdings info if any */
-        let result = userData.holdings.filter(
-          (holding: IUserHolding) => {
-            return holding.stock_symbol === event.target.value;
-          }
-        );
+        /* get holdings info if any and set user shares */
+        let result = userData.holdings.filter((holding: IUserHolding) => {
+          return holding.stock_symbol === event.target.value;
+        });
         setUserShares(
           result && result[0] && result[0].shares && result[0].shares > 0
             ? result[0].shares
@@ -92,12 +93,14 @@ export default function Sell(props: any) {
         );
         setValidLookup(true);
       }
+    } else {
+      setValidLookup(false);
+      return;
     }
-    else {setValidLookup(false); return;}
     return;
   }
 
-  let bung = {
+  let tradeProps: ITradeProps = {
     stock_symbol: lookupData.symbol,
     stock_name: lookupData.companyName,
     shares: userShares,
@@ -105,16 +108,11 @@ export default function Sell(props: any) {
     type: "sell",
   };
 
-
   return (
-    <>
+    <div style={{ textAlign: "center" }}>
       <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel id="stock-name-select">Select Stock</InputLabel>
-        <Select
-          value={select}
-          onChange={handleChange as any}
-          label="Stock"
-        >
+        <Select value={select} onChange={handleChange as any} label="Stock">
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
@@ -122,9 +120,19 @@ export default function Sell(props: any) {
         </Select>
       </FormControl>
 
-
-      {validLookup && lookupData && select !== "" ? <Trade  {...bung}/> :
-      <span><br/><br/><br/><br/><br/><br/><br/></span>}
-    </>
+      {validLookup && lookupData && select !== "" ? (
+        <Trade {...tradeProps} />
+      ) : (
+        <span>
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+        </span>
+      )}
+    </div>
   );
 }

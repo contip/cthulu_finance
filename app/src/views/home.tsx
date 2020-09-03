@@ -1,31 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { IUserHoldingFull, ITableCol } from "../data/interfaces";
-import Table  from "../components/table";
+import Table from "../components/table";
 import { HoldingsColumnsMap } from "../data/constants";
 import { authService } from "../components/auth.service";
 import Trade from "../components/trade";
 import ShopTwo from "@material-ui/icons/ShopTwo";
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      display: 'flex',
-      '& > * + *': {
+      display: "flex",
+      "& > * + *": {
         marginLeft: theme.spacing(2),
       },
     },
     quickTrade: {
-      textAlign: "center", 
-    }
-  }),
+      textAlign: "center",
+    },
+  })
 );
-/* TODO: implement stronger typing and document code */
-/* TODO: make sure that currencies have $ symbol and are rounded to 2
- *       decimal places */
 
-const tableCols: Array<ITableCol | any> = [];
+const tableCols: Array<ITableCol> = [];
 Object.keys(HoldingsColumnsMap).forEach((key) => {
   tableCols.push({ title: HoldingsColumnsMap[key], field: key, width: 250 });
   if (key == "price" || key == "value") {
@@ -33,37 +30,30 @@ Object.keys(HoldingsColumnsMap).forEach((key) => {
   }
 });
 
-export default function Home() {
+/* main landing page of app; displays table of user's stock portfolio */
+export default function Home(): JSX.Element {
   let [userHoldings, setUserHoldings] = useState<Array<
     IUserHoldingFull
   > | null>(null);
-const classes = useStyles();
+  const classes = useStyles();
+
+  /* silently get new JWT and refresh user holding data on load */
   useEffect(() => {
     authService.updateUserData().then(() => {
       setUserHoldings(authService.currentUserValue.userData.holdings);
     });
-    return () => {
-      /* what u need to do for cleanup??? */
-    };
   }, []);
 
-  function getTotal() {
-    let sum: number = 0;
-    if (userHoldings) {
-      for (let i = 0; i < userHoldings.length; i++) {
-        sum += userHoldings[i].value;
-      }
-    }
-    return sum;
+  /* if fetching data, display loading spinner (server must make individual
+   * external api call for each stock owned by user to get price info) */
+  if (!userHoldings) {
+    return (
+      <div className={classes.root}>
+        <CircularProgress color="secondary" />
+      </div>
+    );
   }
 
-  if (!userHoldings) {
-    return(
-      <div className={classes.root}>
-      <CircularProgress color="secondary" />
-    </div>
-    ) 
-  }
   return (
     <React.Fragment>
       <Table
@@ -79,7 +69,7 @@ const classes = useStyles();
               render: (rowData: any) => {
                 return (
                   <div className={classes.quickTrade}>
-                  <Trade {...rowData} />
+                    <Trade {...rowData} />
                   </div>
                 );
               },
@@ -93,37 +83,6 @@ const classes = useStyles();
           },
         }}
       />
-      {/* <Box width="100%">
-        {Table({
-          tableCols: [
-            { title: "bung", field: "words" },
-            { title: "bung", field: "total", type: "currency" },
-          ],
-          data: [
-            {
-              words: "Your Cash",
-              total: authService.currentUserValue.userData.cash,
-            },
-            { total: getTotal() + authService.currentUserValue.userData.cash },
-          ],
-          title: "bung",
-          options: {
-            paging: false,
-            showSelectAllCheckbox: false,
-            search: false,
-            header: false,
-            showTitle: false,
-            toolbar: false,
-          },
-        })}
-      </Box> */}
     </React.Fragment>
   );
 }
-
-// function inLineBuy() {
-//   return (rowData: any) => { return (
-//     <Buy />
-//     )
-//   }
-// }

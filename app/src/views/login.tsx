@@ -3,16 +3,17 @@ import { authService } from "../components/auth.service";
 import { useHistory } from "react-router-dom";
 import { IAuthCall } from "../data/interfaces";
 import { Urls } from "../data/constants";
-import {fetchCall} from "../components/helpers";
+import { fetchCall } from "../components/helpers";
 import { useSnackbar } from "notistack";
 import InputForm from "../components/input-form";
 
-export default function LoginForm() {
+/* simple user login form using validating text inputs */
+export default function LoginForm(): JSX.Element {
   let [nameInput, setNameInput] = useState<string>("");
   let [passInput, setPassInput] = useState<string>("");
   let [validName, setValidName] = useState<boolean>(false);
   let [validPass, setValidPass] = useState<boolean>(false);
-  let { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  let { enqueueSnackbar } = useSnackbar();
   let history = useHistory();
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -23,6 +24,8 @@ export default function LoginForm() {
     }
   }
 
+  /* sends given data to server for validation, if valid logs in, if not
+   * reloads login page; displays snackbar message in either case */
   async function handleSubmit() {
     let payload: IAuthCall = {
       url: Urls.login,
@@ -32,17 +35,19 @@ export default function LoginForm() {
     let response = await fetchCall(payload);
     if (response.code) {
       enqueueSnackbar(response.message, { variant: "error" });
-      setNameInput("");
+      setNameInput(""); /* reset state on any bad attempt */
       setPassInput("");
     } else {
       authService.login(response);
       history.push("/");
-      enqueueSnackbar(`Welcome back, ${response.userData.username}`, {variant: "success"})
+      enqueueSnackbar(`Welcome back, ${response.userData.username}`, {
+        variant: "success",
+      });
     }
   }
 
   return (
-    <div id="LoginForm">
+    <div style={{ textAlign: "center" }} id="LoginForm">
       <InputForm
         {...{
           onSubmit: handleSubmit,
@@ -69,7 +74,6 @@ export default function LoginForm() {
                 "15 character maximum!",
               ],
             },
-
             {
               label: "Password",
               type: "password",

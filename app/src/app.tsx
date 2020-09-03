@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { authService } from "./components/auth.service";
 import PrivateRoute from "./components/protected-route";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -14,24 +14,24 @@ import Buy from "./views/buy";
 import Sell from "./views/sell";
 import History from "./views/history";
 import { SnackbarProvider } from "notistack";
-import { Button, Container, Grid } from "@material-ui/core";
-import ButtonAppBar from "./components/navbar";
+import { Button, Grid } from "@material-ui/core";
 import MenuAppBar from "./components/navbar";
 import Redirect from "./components/helpers";
 
 export default function App() {
   let [currentUser, setCurrentUser] = useState<IUser | null>(null);
-
-  // add action to all snackbars
   const notistackRef = React.createRef<any>();
   const onClickDismiss = (key: any) => () => {
     notistackRef.current.closeSnackbar(key);
   };
+
   useEffect(() => {
-   const subscription = authService.currentUser.subscribe((user) => setCurrentUser(user));
-  //  return () => {
-  //    subscription.unsubscribe();
-  //  }
+    const subscription = authService.currentUser.subscribe((user) =>
+      setCurrentUser(user)
+    );
+     return () => {
+       subscription.unsubscribe();
+     }
   }, [currentUser]);
 
   return (
@@ -62,9 +62,7 @@ export default function App() {
                 justify="center"
                 style={{ minHeight: "50vh" }}
               >
-                {/* <PageWrapper> */}
-                  <PrivateRoute exact path="/" component={Home} />
-                {/* </PageWrapper> */}
+                <PrivateRoute exact path="/" component={Home} />
                 <Route exact path="/login" component={LoginForm} />
                 <Route exact path="/register" component={Register} />
                 <PrivateRoute exact path="/buy" component={Buy} />

@@ -6,7 +6,7 @@ import SweetAlert from "react-bootstrap-sweetalert";
 import { Urls } from "../data/constants";
 import { fetchCall, numFormat } from "./helpers";
 import InputForm from "./input-form";
-import { ILookupCall, ITradeCall } from "../data/interfaces";
+import { ILookupCall, ITradeCall, ITradeProps } from "../data/interfaces";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -37,10 +37,10 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-/* single-field configurable quicktrade form, allowing user to buy or sell */
-export default function Trade(rowData: any) {
+/* configurable quicktrade form, allowing user to buy or sell */
+export default function Trade(props: ITradeProps): JSX.Element {
   let [lookupPrice, setLookupPrice] = useState<number>(0);
-  let [tradeType, setTradeType] = useState(rowData.type);
+  let [tradeType, setTradeType] = useState(props.type);
   let [sharesInput, setSharesInput] = useState<string>("");
   let [validSharesInput, setValidSharesInput] = useState<boolean>(false);
   let [confirm, setConfirm] = useState<boolean>(false);
@@ -70,7 +70,7 @@ export default function Trade(rowData: any) {
         url: Urls.lookup,
         auth: true,
         body: {
-          name: rowData.stock_symbol,
+          name: props.stock_symbol,
         },
       };
       fetchCall(payload).then((response: any) => {
@@ -82,7 +82,7 @@ export default function Trade(rowData: any) {
         }
       });
     } else {
-      setLookupPrice(rowData.latestPrice);
+      setLookupPrice(props.latestPrice);
     }
   }, []);
 
@@ -95,7 +95,7 @@ export default function Trade(rowData: any) {
       auth: true,
       body: {
         user_id: authService.currentUserValue.userData.id,
-        stock_symbol: rowData.stock_symbol,
+        stock_symbol: props.stock_symbol,
         shares: parseInt(sharesInput),
       },
     };
@@ -122,8 +122,7 @@ export default function Trade(rowData: any) {
     return;
   }
 
-  /* if user does not accept confirmation alert, display a cancelled snackbar
-   * and reset the state */
+  /* if user declines confirmation, reset state and display cancelled snack */
   function handleCancelAlert() {
     setConfirm(false);
     enqueueSnackbar(
@@ -134,9 +133,8 @@ export default function Trade(rowData: any) {
     return;
   }
 
-  /* sets flag to enable displaying the confirmation alert popup */
   function showConfirm() {
-    setConfirm(true);
+    setConfirm(true); /* displays (unhides) the alert popup */
     return;
   }
 
@@ -156,8 +154,7 @@ export default function Trade(rowData: any) {
   return (
     <>
       {
-        /* only display buy / sell selection buttons if component is being
-         * accessed from portfolio or lookup Tables (i.e. quicktrade) */
+        /* only display buy/sell radios if component accessed thru Table */
         (location.pathname === "/" || location.pathname === "/lookup") && (
           <FormControl component="fieldset">
             <RadioGroup
@@ -169,10 +166,8 @@ export default function Trade(rowData: any) {
             >
               <FormControlLabel value="buy" control={<Radio />} label="Buy" />
               {
-                /* furthermore, only display the sell radio button if being
-                 * accessed from the lookup table AND the user has shares of
-                 * that stock */
-                rowData.shares > 0 && (
+                /* hide sell radio unless user owns shares of that stock */
+                props.shares && props.shares > 0 && (
                   <FormControlLabel
                     value="sell"
                     control={<Radio />}
@@ -196,9 +191,10 @@ export default function Trade(rowData: any) {
           focusConfirmBtn
         >
           {/* alert format example: Buy 10 shares of Company A for $100.69? */}
-          {tradeType.charAt(0).toUpperCase() + tradeType.slice(1)}{" "}
-          {sharesInput} {parseInt(sharesInput) > 1 ? "shares" : "share"} of
-          {" "}{rowData.stock_name} for{" "}
+          {tradeType &&
+            tradeType.charAt(0).toUpperCase() + tradeType.slice(1)}{" "}
+          {sharesInput} {parseInt(sharesInput) > 1 ? "shares" : "share"} of{" "}
+          {props.stock_name} for{" "}
           {numFormat(parseInt(sharesInput) * lookupPrice)}?
         </SweetAlert>
       )}
@@ -207,23 +203,20 @@ export default function Trade(rowData: any) {
         {...{
           onSubmit: showConfirm,
           buttonValidators: [
-            /* all must be true for submit button to show */ lookupPrice > 0,
+            lookupPrice > 0,
             validSharesInput,
             sharesInput !== "",
             parseInt(sharesInput) !== 0,
           ],
           inputs: [
-            /* options for the single validated input field used */
             {
               label: "Shares",
               type: "Number",
               onChange: handleChange,
               name: "shares",
               validatorListener: setValidSharesInput,
-              value: sharesInput as any /* casts number to string for form */,
+              value: sharesInput as any,  /* casts number to string */
               validators:
-                /* each validation constraint corresponds to an error with same
-                 * index in errorMessages array */
                 tradeType === "buy"
                   ? [
                       "required",
@@ -234,7 +227,7 @@ export default function Trade(rowData: any) {
                   : [
                       "required",
                       "matchRegexp:^[0-9]+$",
-                      `maxNumber:${rowData.shares}` /* total shares */,
+                      `maxNumber:${props.shares}` /* total shares */,
                     ],
               errorMessages:
                 tradeType === "buy"
@@ -249,8 +242,8 @@ export default function Trade(rowData: any) {
                   : [
                       "this field is required!",
                       "numerical digits >= 1 only!",
-                      `you only have ${rowData.shares} shares of 
-                      ${rowData.stock_symbol} to sell!`,
+                      `you only have ${props.shares} shares of 
+                      ${props.stock_symbol} to sell!`,
                     ],
             },
           ],
@@ -264,7 +257,7 @@ export default function Trade(rowData: any) {
             variant="subtitle1"
             className={lookupPrice > 0 ? classes.visible : classes.hidden}
           >
-            {rowData.stock_name} ({rowData.stock_symbol}) current price:{" "}
+            {props.stock_name} ({props.stock_symbol}) current price:{" "}
             {numFormat(lookupPrice)}
           </Typography>
         )}

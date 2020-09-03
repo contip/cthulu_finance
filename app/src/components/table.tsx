@@ -18,7 +18,7 @@ export default function Table(props: {
     <div className={props.title}>
       <MaterialTable
         options={props.options}
-        columns={props.tableCols}
+        columns={props.tableCols as any}
         data={props.data}
         title={props.title}
         detailPanel={props.detailPanel}

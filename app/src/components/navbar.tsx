@@ -59,10 +59,10 @@ export default function MenuAppBar() {
     const subscription = authService.currentUser.subscribe((user) =>
       setCurrentUser(user)
     );
-    // return () => {
-    //   /* cleanup */
-    //   subscription.unsubscribe();
-    // };
+    return () => {
+      /* cleanup */
+      subscription.unsubscribe();
+    };
   }, [currentUser]);
 
   /* loggin-in user dropdown menu handlers */
