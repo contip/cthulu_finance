@@ -3,14 +3,14 @@ import { Route, Redirect } from "react-router-dom";
 import { authService } from "./auth.service";
 import jwt_decode from "jwt-decode";
 
-/* definition for react router protected route; gives authentication method */
+/* definition for router protected route; provides authentication method */
 const PrivateRoute: React.FC<{
   component: React.FC;
   path: string;
   exact: boolean;
 }> = (props) => {
-  /* returns true if user has userData in localStorage and a valid JWT that is
-   * not expired */
+  /* authenticated set to true if user has userData in localStorage and a 
+   * valid JWT that is not expired */
   const authenticated =
     !localStorage.getItem("currentUser") || !authService.currentUserValue
       ?

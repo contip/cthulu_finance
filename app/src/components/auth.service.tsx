@@ -1,9 +1,8 @@
 import { BehaviorSubject } from "rxjs";
 import { IUser } from "../data/interfaces";
 
-
-/* current user data (jwt token value and user data) stored as a subscribable
- * rxjs BehaviorSubject */
+/* current user info (auth and holdings data) stored and provided to rest of 
+ * app by rxjs observable */
 const currentUserSubject = new BehaviorSubject(
   JSON.parse(localStorage.getItem("currentUser")!)
 );
@@ -21,12 +20,12 @@ export const authService = {
   },
 };
 
-/* store userdata in local storage and update global state by adding to 
- * observable */
+/* login stores userdata in local storage and updates global state by
+ * pushing to the observable */
 async function login(userData: IUser): Promise<void> {
   localStorage.setItem("currentUser", JSON.stringify(userData));
   currentUserSubject.next(userData);
-};
+}
 
 /* log user out by clearing localStorage and setting observable next to null */
 function logout(): void {
@@ -42,7 +41,7 @@ async function updateUserData(): Promise<void> {
     method: "GET",
     headers: header,
   });
-  if (response.status == 401) {
+  if (response.status === 401) {
     logout();
     return;
   }
@@ -50,21 +49,24 @@ async function updateUserData(): Promise<void> {
   let userData = await response.json();
   localStorage.setItem("currentUser", JSON.stringify(userData));
   currentUserSubject.next(userData);
-  return; 
+  return;
 }
 
 /* if new user has registered, logs them in and sets state */
 function newUser(res: IUser): void {
-  if (!res.accessToken || !res.userData) {  /* should not be possible */
+  if (!res.accessToken || !res.userData) {
+    /* should not be possible */
     return logout();
   }
   localStorage.setItem("currentUser", JSON.stringify(res));
   currentUserSubject.next(res);
 }
 
-/* returns HTTP authorization header containing JWT of currently logged-in 
+/* returns HTTP authorization header containing JWT of currently logged-in
  * user, otherwise empty object if user not logged in */
-async function authHeader(): Promise<{ "Content-Type": string; Authorization: string } | {}> {
+async function authHeader(): Promise<
+  { "Content-Type": string; Authorization: string } | {}
+> {
   const currentUser = authService.currentUserValue;
   if (currentUser && currentUser.accessToken) {
     return {

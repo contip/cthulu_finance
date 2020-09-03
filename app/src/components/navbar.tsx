@@ -112,7 +112,7 @@ export default function MenuAppBar() {
                   variant="text"
                   color="secondary"
                 >
-                  {/* assign selected className to any link matching the
+                  {/* assign "selected" className to any link matching the
                    * current app pathname to assign contextual color */}
                   <Typography
                     variant="button"

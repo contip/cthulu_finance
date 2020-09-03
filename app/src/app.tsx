@@ -17,6 +17,7 @@ import { SnackbarProvider } from "notistack";
 import { Button, Grid } from "@material-ui/core";
 import MenuAppBar from "./components/navbar";
 import Redirect from "./components/helpers";
+import Footer from "./components/footer";
 
 export default function App() {
   let [currentUser, setCurrentUser] = useState<IUser | null>(null);
@@ -60,7 +61,7 @@ export default function App() {
                 direction="column"
                 alignItems="center"
                 justify="center"
-                style={{ minHeight: "50vh" }}
+                style={{ minHeight: "100vh" , position: "relative"}}
               >
                 <PrivateRoute exact path="/" component={Home} />
                 <Route exact path="/login" component={LoginForm} />
@@ -71,6 +72,7 @@ export default function App() {
                 <PrivateRoute exact path="/redirect" component={Redirect} />
                 <PrivateRoute exact path="/lookup" component={Lookup} />
                 <PrivateRoute exact path="/logout" component={Logout as any} />
+                <Footer/>
               </Grid>
             </Switch>
           </div>

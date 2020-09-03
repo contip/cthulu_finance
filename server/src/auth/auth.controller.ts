@@ -12,7 +12,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { loginRegisterDto } from './interfaces/register-dto';
 import { userNameConstraints } from './constants';
-import { userDto } from 'src/database/interfaces/user-dto.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -29,18 +28,15 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-  /* TODO: this route is potentially unnecessary.. frontend user can just
-   * attempt to login again behind the scenes to obtain a new jwt and current
-   * user data */
   /* users controller allows retrieval of user data for get requests bearing
-   * valid jwt credentials */
+   * valid jwt credentials; also issues a new jwt */
   @UseGuards(AuthGuard('jwt'))
   @Get('/users')
-  async users(@Request() req: any): Promise<any|HttpException> {
+  async users(@Request() req: any): Promise<any | HttpException> {
     return await this.authService.getUserByToken(req.user);
   }
-  
-  /* register controller is unguarded and assumes post req with body 
+
+  /* register controller is unguarded and assumes post req with body
    * containing entries for 'username' and 'password' */
   @Post('/register')
   async register(@Body() body: Body): Promise<any> {
@@ -57,7 +53,7 @@ export class AuthController {
     return await this.authService.login(userData);
   }
 
-  /* unguarded available controller accepts req with single field ('username')
+  /* unguarded /available controller accepts req with single field ('username')
    * in body, returns true if username is available in db, false otherwise */
   @Post('/available')
   async available(@Body() body: Body): Promise<Boolean> {

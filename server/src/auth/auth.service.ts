@@ -17,9 +17,8 @@ export class AuthService {
   ) {}
 
   /* password-based user validation function, used by routes guarded with
-   * the 'local' strategy; returns user data if plaintext pw from req matches
-   * stored hash */
-
+   * the 'local' strategy (i.e. login); returns user data if plaintext
+   * password from request matches the stored hash */
   async validateUser(username: string, password: string): Promise<userDto> {
     const user = await this.userService.findByNameAuth(username);
     if (
@@ -41,7 +40,8 @@ export class AuthService {
     regData.password = null;
     const toSave = { username: regData.username, hash: hash };
     /* createUser uses the typeorm save() function which should exclude
-      returning the default unselected hash column, but it doesn't */
+     * returning the hash column (set by default to unselected), but it
+     * doesn't (bugged) therefore a try/catch workaround is used */
     try {
       let userData = await this.userService.createUser(toSave);
       delete userData.hash;
@@ -77,21 +77,15 @@ export class AuthService {
 
   /* processes input request to ensure user in JWT is same user being modified
    * by trade; if valid, passes along the properly formatted tradeInputDto,
-   * otherwise throw appropriate HttpException */
+   * otherwise throws appropriate HttpException */
   async validateTrade(req: any): Promise<tradeInputDto> {
     if (
       !(req.body['user_id'] && req.body['stock_symbol'] && req.body['shares'])
     ) {
-      throw new HttpException(
-        'Invalid Request!',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('Invalid Request!', HttpStatus.BAD_REQUEST);
     }
     if (req.body['user_id'] != req.user.id) {
-      throw new HttpException(
-        'Unauthorized! Invalid JWT Credentials!',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new HttpException('Unauthorized!', HttpStatus.UNAUTHORIZED);
     }
     let tradeData: tradeInputDto = {
       user_id: req.body['user_id'],
@@ -101,24 +95,26 @@ export class AuthService {
     return tradeData;
   }
 
-  /* retrieves user data by the JWT associated with request, used by frontend
-   *  to verify that stored JWT when deciding if user is logged in */
+  /* retrieves user data by the JWT associated with request, including current
+   * stock prices for each user holding; also issues a new JWT */
   async getUserByToken(decoded: any) {
     if (!(decoded.username && decoded.id)) {
-      throw new HttpException('Invalid!', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Invalid Request!', HttpStatus.BAD_REQUEST);
     }
     let userData = await this.userService.findByIdFull(decoded.id);
     if (!userData || userData.username.length < 1) {
       throw new HttpException('Unauthorized!', HttpStatus.UNAUTHORIZED);
     }
-    /* from userData, iterate thru their holdings if any... for each, call
-     * the lookup api and get the price, add it to the holding object, then
-     * calculate the total value (based on shares) and also add it */
+    /* for each holding in user holdings array (if any), call lookup api and
+     * get price, add price and the total value (based on # shares) to array */
     if (userData.holdings && userData.holdings.length > 0) {
       for (let i = 0; i < userData.holdings.length; i++) {
-        let response = await (await this.lookupService.get_quote(userData.holdings[i].stock_symbol)).toPromise();
+        let response = await (
+          await this.lookupService.get_quote(userData.holdings[i].stock_symbol)
+        ).toPromise();
         userData.holdings[i].price = response.latestPrice;
-        userData.holdings[i].value = response.latestPrice * userData.holdings[i].shares;
+        userData.holdings[i].value =
+          response.latestPrice * userData.holdings[i].shares;
       }
     }
     const payload = { username: userData.username, id: userData.id };
@@ -128,5 +124,3 @@ export class AuthService {
     };
   }
 }
-
-

@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const tableCols: Array<ITableCol> = [];
 Object.keys(HoldingsColumnsMap).forEach((key) => {
   tableCols.push({ title: HoldingsColumnsMap[key], field: key, width: 250 });
-  if (key == "price" || key == "value") {
+  if (key === "price" || key === "value") {
     tableCols[tableCols.length - 1]["type"] = "currency";
   }
 });

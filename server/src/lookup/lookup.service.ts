@@ -5,31 +5,22 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { map, catchError } from 'rxjs/operators';
-import { Observable, throwError } from 'rxjs';
 import { API_KEY } from './constants';
 
 @Injectable()
 export class LookupService {
   constructor(private http: HttpService) {}
 
-  /* validates input string then submits as query to stock quote api
-   * returns response as an observable */
+  /* submits input string (assumed legal string of 4 chars or less) to
+   * external lookup service, returns response as an observable, otherwise
+   * not found exception */
   async get_quote(symbol: string) {
-    /* input string must be 1 to 4 chars long and only consist of 
-            alphabetical letters (case insensitive) */
     let response = this.http.get(
       'https://cloud-sse.iexapis.com/stable/stock/' +
         symbol +
         '/quote?token=' +
         API_KEY,
     );
-    /* TODO: better error handling for the returned observable */
-    // if (!response) {
-    //   throw new HttpException(
-    //     'Error contacting quote service!',
-    //     HttpStatus.SERVICE_UNAVAILABLE,
-    //   );
-    // }
     return response.pipe(
       map(response => response.data),
       catchError(err => {

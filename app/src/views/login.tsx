@@ -6,6 +6,7 @@ import { Urls } from "../data/constants";
 import { fetchCall } from "../components/helpers";
 import { useSnackbar } from "notistack";
 import InputForm from "../components/input-form";
+import logo from "../img/login.png";
 
 /* simple user login form using validating text inputs */
 export default function LoginForm(): JSX.Element {
@@ -48,6 +49,7 @@ export default function LoginForm(): JSX.Element {
 
   return (
     <div style={{ textAlign: "center" }} id="LoginForm">
+     <img style={{maxWidth: "50%"}} src={logo}/>
       <InputForm
         {...{
           onSubmit: handleSubmit,

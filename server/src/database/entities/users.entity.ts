@@ -8,7 +8,7 @@ import {
 import { Trades } from './trades.entity';
 
 /* schema of 'users' table of the server's sqlite database, stores user
- * login info */
+ * login / account info */
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -18,7 +18,8 @@ export class UserEntity extends BaseEntity {
   @Column({ unique: true })
   username: string;
 
-  /* user hash column not selected by default (bugged for save() method) */
+  /* user hash column not selected by default (bugged for save() method)
+   * see https://github.com/typeorm/typeorm/issues/4591 */
   @Column({ select: false })
   hash: string;
 

@@ -13,7 +13,6 @@ export default function Buy() {
   let [validStock, setValidStock] = useState(false);
   let [lookupData, setLookupData] = useState({} as IStockData);
   let [validLookup, setValidLookup] = useState(false);
-  let [] = useState<number>(0);
   let [lastSearched, setLastSearched] = useState("");
   let { enqueueSnackbar } = useSnackbar();
 

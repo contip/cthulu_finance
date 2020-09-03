@@ -39,7 +39,7 @@ export class TradesService {
       throw new HttpException('Not Enough Cash!', HttpStatus.BAD_REQUEST);
     }
     /* build object to pass to trades database (tradesDto) */
-    let tradeData: tradesDto | any = {
+    let tradeData: tradesDto = {
       user_id: userData.id,
       transaction_price: transaction_price,
       stock_symbol: purchaseData.stock_symbol,
@@ -48,8 +48,8 @@ export class TradesService {
       shares: purchaseData.shares,
       date: new Date(),
     };
-    /* add the trade to the trades db */
-    await this.tradesRepository.save(tradeData);
+    /* add the trade to the trades db (cast as any for typeorm) */
+    await this.tradesRepository.save(tradeData as any);
     /* update user's cash */
     userData.cash = userData.cash - transaction_price;
     await this.updateUser(userData);
@@ -57,7 +57,7 @@ export class TradesService {
     return await this.getUserById(purchaseData.user_id);
   }
 
-  /* handles entering given stock salae information in the trades db
+  /* handles entering given stock sale information in the trades db
    * returns the user after the updates to their holdings and cash, otherwise
    * throws HtmlException */
   async logSale(saleData: tradeInputDto): Promise<userDto> {
@@ -111,7 +111,7 @@ export class TradesService {
 
   /* following are helper functions that call on providers of other modules */
 
-  /* calls appropriate method in users service to get transaction history 
+  /* calls appropriate method in users service to get transaction history
    * from users table as an array of objects*/
   getUserHistory = async (user_id: number): Promise<Array<portfolioDto>> => {
     return await this.userService.getTransactionsById(user_id);
@@ -129,7 +129,7 @@ export class TradesService {
     return (await this.lookupService.get_quote(symbol)).toPromise();
   };
 
-  /* calls createUser method of user module to update given user with 
+  /* calls createUser method of user module to update given user with
    * new data provided in input object*/
   updateUser = async (newUserData: userDto): Promise<object | null> => {
     return await this.userService.createUser(newUserData);

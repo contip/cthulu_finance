@@ -17,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   /* function executes every time route guarded by 'jwt' strategy is
    * triggered */
   async validate(payload: any) {
-    /* pass the decoded jwt data to be validated by auth service */
+    /* passes decoded jwt data to be validated by auth service */
     return { username: payload.username, id: payload.id };
   }
 }

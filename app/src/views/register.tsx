@@ -6,6 +6,7 @@ import { fetchCall } from "../components/helpers";
 import { useSnackbar } from "notistack";
 import { IAuthCall } from "../data/interfaces";
 import InputForm from "../components/input-form";
+import logo from "../img/login.png";
 
 /* simple registration form using validated mui text inputs */
 export default function Register(): JSX.Element {
@@ -46,6 +47,9 @@ export default function Register(): JSX.Element {
     } else {
       authService.newUser(response);
       history.push("/");
+      enqueueSnackbar(`Welcome, ${response.userData.username}. Good luck!`, {
+        variant: "success",
+      });
     }
   }
 
@@ -92,75 +96,78 @@ export default function Register(): JSX.Element {
   }
 
   return (
-    <InputForm
-      {...{
-        onSubmit: handleSubmit,
-        buttonValidators: [
-          validName,
-          validPass,
-          validConfirm,
-          validLookup,
-          nameInput.length > 0 &&
-            passInput.length > 0 &&
-            confirmPassInput.length > 0,
-        ],
-        inputs: [
-          {
-            label: "Username",
-            value: nameInput,
-            onChange: handleChange,
-            name: "username",
-            validatorListener: setValidName,
-            onBlur: handleBlur as any,
-            validators: [
-              "required",
-              "matchRegexp:^[A-Za-z0-9]+$",
-              "maxStringLength:15",
-            ],
-            errorMessages: [
-              "this field is required!",
-              "alphabetical letters and digits only!",
-              "15 character maximum!",
-            ],
-          },
-          {
-            label: "Password",
-            type: "password",
-            value: passInput,
-            onChange: handleChange,
-            name: "password",
-            validatorListener: setValidPass,
-            validators: [
-              "required",
-              "matchRegexp:^[A-Za-z0-9!@#$%^&*]+$",
-              "maxStringLength:19",
-            ],
-            errorMessages: [
-              "this field is required!",
-              "only letters, digits, and '!@#$%^&*' are allowed!",
-              "19 character maximum!",
-            ],
-          },
-          {
-            label: "Password (again)",
-            type: "password",
-            value: confirmPassInput,
-            onChange: handleChange,
-            name: "repeatPassword",
-            validatorListener: setValidConfirm,
-            validators: [
-              "required",
-              "matchRegexp:^[A-Za-z0-9!@#$%^&*]+$",
-              "maxStringLength:19",
-            ],
-            errorMessages: [
-              "this field is required!",
-              "only letters, digits, and '!@#$%^&*' are allowed!",
-              "19 character maximum!",
-            ],
-          },
-        ],
-      }}
-    ></InputForm>
+    <div style={{ textAlign: "center" }}>
+     <img style={{maxWidth: "50%"}} src={logo}/>
+      <InputForm
+        {...{
+          onSubmit: handleSubmit,
+          buttonValidators: [
+            validName,
+            validPass,
+            validConfirm,
+            validLookup,
+            nameInput.length > 0 &&
+              passInput.length > 0 &&
+              confirmPassInput.length > 0,
+          ],
+          inputs: [
+            {
+              label: "Username",
+              value: nameInput,
+              onChange: handleChange,
+              name: "username",
+              validatorListener: setValidName,
+              onBlur: handleBlur as any,
+              validators: [
+                "required",
+                "matchRegexp:^[A-Za-z0-9]+$",
+                "maxStringLength:15",
+              ],
+              errorMessages: [
+                "this field is required!",
+                "alphabetical letters and digits only!",
+                "15 character maximum!",
+              ],
+            },
+            {
+              label: "Password",
+              type: "password",
+              value: passInput,
+              onChange: handleChange,
+              name: "password",
+              validatorListener: setValidPass,
+              validators: [
+                "required",
+                "matchRegexp:^[A-Za-z0-9!@#$%^&*]+$",
+                "maxStringLength:19",
+              ],
+              errorMessages: [
+                "this field is required!",
+                "only letters, digits, and '!@#$%^&*' are allowed!",
+                "19 character maximum!",
+              ],
+            },
+            {
+              label: "Password (again)",
+              type: "password",
+              value: confirmPassInput,
+              onChange: handleChange,
+              name: "repeatPassword",
+              validatorListener: setValidConfirm,
+              validators: [
+                "required",
+                "matchRegexp:^[A-Za-z0-9!@#$%^&*]+$",
+                "maxStringLength:19",
+              ],
+              errorMessages: [
+                "this field is required!",
+                "only letters, digits, and '!@#$%^&*' are allowed!",
+                "19 character maximum!",
+              ],
+            },
+          ],
+        }}
+      ></InputForm>
+    </div>
   );
 }

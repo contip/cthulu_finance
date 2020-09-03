@@ -51,7 +51,7 @@ export default function Lookup() {
       let lookupData: any = {};
       Object.keys(LookupColumnsMap).forEach((element) => {
         if (response[element]) {
-          if (element == "lowTime" || element == "highTime") {
+          if (element === "lowTime" || element === "highTime") {
             if (!response[element.substr(0, element.indexOf("T"))]) {
               delete response[element];
             } else {

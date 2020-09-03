@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const tableCols: Array<ITableCol> = [];
 Object.keys(HistoryColumnsMap).forEach((key) => {
   tableCols.push({ title: HistoryColumnsMap[key], field: key, width: 250 });
-  if (key == "stock_price" || key == "transaction_price") {
+  if (key === "stock_price" || key === "transaction_price") {
     tableCols[tableCols.length - 1]["type"] = "currency";
   }
 });
