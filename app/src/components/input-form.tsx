@@ -1,29 +1,12 @@
 import React from "react";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { Button } from "@material-ui/core";
+import { IForm } from "../data/interfaces";
 
-interface IForm {
-    onSubmit: (event: React.FormEvent<any>) => void;
-    inputs: Array<IFormInput>;
-    buttonValidators: Array<boolean>;
-}
-
-interface IFormInput {
-  label: string;
-  value: string;
-  type?: string | undefined;
-  onChange: (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => void /* function to update the state of input field */;
-  name: string;
-  validatorListener: (isValid: boolean) => void | undefined;
-  validators: Array<string>;
-  errorMessages: Array<string>;
-  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void | undefined;
-}
-
-export default function InputForm(props: IForm) {
+/* combination of mui submit button and validator input field */
+export default function InputForm(props: IForm): JSX.Element {
   let textInputs = [];
+  /* prepare desired number of validated input fields w/ options from props */
   for (let i = 0; i < props.inputs.length; i++) {
     textInputs.push(
       <TextValidator
@@ -44,16 +27,30 @@ export default function InputForm(props: IForm) {
 
   return (
     <>
+      {/* add text fields to validator form along with submit button (handler
+       * functions provided by input props */}
       <ValidatorForm
         onSubmit={props.onSubmit}
         onError={(errors) => {
           console.log(errors);
         }}
       >
-          {textInputs}
-          {/*instead of this check for buttonvalidators, i could just render the button   */}
-        <Button style={{visibility: props.buttonValidators.every(Boolean)? "visible": "hidden"}} type="submit">Submit</Button> 
-
+        {textInputs}
+        {/* hide button (but continue to take up space in DOM) if all given
+          * validity checks do not pass */}
+        <Button
+          disableElevation
+          variant="contained"
+          color="primary"
+          style={{
+            visibility: props.buttonValidators.every(Boolean)
+              ? "visible"
+              : "hidden",
+          }}
+          type="submit"
+        >
+          Submit
+        </Button>
       </ValidatorForm>
     </>
   );

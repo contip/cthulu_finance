@@ -141,7 +141,7 @@ export default function Lookup() {
       {didSearch &&
         stockData &&
         stockData.companyName &&
-        columnData &&
+        columnData ?  
         <div>
         {Table({
           tableCols: columnData,
@@ -152,7 +152,7 @@ export default function Lookup() {
               tooltip: "Quick Trade",
               render: () => {
                 return (
-                  <div>
+                  <div style={{textAlign: "center"}}>
                   <Trade {...bung} />
                   </div>
                 );
@@ -167,7 +167,7 @@ export default function Lookup() {
             sorting: false,
           },
         })}
-</div>
+</div>: <span><br/><br/><br/><br/><br/></span>
         // &&
         // <div>
         // <QuickTrade {...bung} />

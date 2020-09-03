@@ -1,7 +1,22 @@
-/* temp... */
-export interface ILoginInput {
-  username: string;
-  password: string;
+/* input-form component */
+export interface IForm {
+  onSubmit: (event: React.FormEvent<any>) => void;
+  inputs: Array<IFormInput>;
+  buttonValidators: Array<boolean>;
+}
+
+export interface IFormInput {
+  label: string;
+  value: string;
+  type?: string | undefined;
+  onChange: (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => void /* function to update the state of input field */;
+  name: string;
+  validatorListener: (isValid: boolean) => void | undefined;
+  validators: Array<string>;
+  errorMessages: Array<string>;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void | undefined;
 }
 
 export interface ICallError {
@@ -9,77 +24,69 @@ export interface ICallError {
   message: string;
 }
 
-export interface tableCol {
+/* table component, column format */
+export interface ITableCol {
   title: string;
   field: string;
 }
 
-/* every call will need a url and boolean specifying whether or not to include
- * jwt authentication */
+/* ========= api calls to server ========= */
 interface IApiCall {
   url: string;
   auth: boolean;
 }
 
-/* ===========auth controller=========== */
-/* login, register, and available routes */
+/* auth controller */
 export interface IAuthCall extends IApiCall {
   body: { username: string; password?: string };
 }
 
-
-/* ===========trades controller=========== */
-/* buy, sell, and history routes */
+/* trades controller */
 export interface ITradeCall extends IApiCall {
   body: {
-    user_id: number;  /* required by /history */
+    user_id: number;
     stock_symbol?: string;
     shares?: number;
   };
 }
 
-/* ===========lookup controller=========== */
-/* lookup route */
+/* lookup controller */
 export interface ILookupCall extends IApiCall {
   body: {
     name: string;
-  }
+  };
 }
 
+/* ========= server responses to api calls ========= */
+/* auth controller */
 
-/* responses from server */
-/* ===========auth controller=========== */
-/* response from available route is simple boolean */
-/* response from login and register routes */
+/* top-level user data type with auth token */
 export interface IUser {
   accessToken: string;
   userData: IUserData;
 }
-    /* relies on... */
-    export interface IUserData {
-      id: number;
-      username: string;
-      cash: number;
-      holdings: Array<IUserHolding | IUserHoldingFull> | [];  /* not included for register route */
-    }
 
-    export interface IUserHolding {
-      stock_name: string;
-      stock_symbol: string;
-      shares: number;
-    }
+export interface IUserData {
+  id: number;
+  username: string;
+  cash: number;
+  holdings:
+    | Array<IUserHolding | IUserHoldingFull>
+    | [] /* not included for register route */;
+}
 
-    export interface IUserHoldingFull extends IUserHolding {
-      price: number;
-      value: number;
-    }
+export interface IUserHolding {
+  stock_name: string;
+  stock_symbol: string;
+  shares: number;
+}
 
-/* ===========trades controller=========== */
-/* buy, sell, and history routes */
+export interface IUserHoldingFull extends IUserHolding {
+  price: number;
+  value: number;
+}
 
-/* buy and sell routes return IUserData */
-
-/* history route */
+/* trades controller */
 export interface IUserTransaction {
   date: string;
   stock_name: string;
@@ -89,8 +96,7 @@ export interface IUserTransaction {
   total: number;
 }
 
-/* ===========lookup controller=========== */
-/* lookup route */
+/* lookup controller */
 export interface IStockData {
   companyName: string;
   symbol: string;

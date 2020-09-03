@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { IUserHoldingFull, tableCol } from "../data/interfaces";
+import { IUserHoldingFull, ITableCol } from "../data/interfaces";
 import Table  from "../components/table";
 import { HoldingsColumnsMap } from "../data/constants";
 import { authService } from "../components/auth.service";
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 /* TODO: make sure that currencies have $ symbol and are rounded to 2
  *       decimal places */
 
-const tableCols: Array<tableCol | any> = [];
+const tableCols: Array<ITableCol | any> = [];
 Object.keys(HoldingsColumnsMap).forEach((key) => {
   tableCols.push({ title: HoldingsColumnsMap[key], field: key, width: 250 });
   if (key == "price" || key == "value") {

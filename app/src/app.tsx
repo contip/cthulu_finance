@@ -28,7 +28,10 @@ export default function App() {
     notistackRef.current.closeSnackbar(key);
   };
   useEffect(() => {
-    authService.currentUser.subscribe((user) => setCurrentUser(user));
+   const subscription = authService.currentUser.subscribe((user) => setCurrentUser(user));
+  //  return () => {
+  //    subscription.unsubscribe();
+  //  }
   }, [currentUser]);
 
   return (

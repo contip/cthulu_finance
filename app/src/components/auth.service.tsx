@@ -1,12 +1,14 @@
 import { BehaviorSubject } from "rxjs";
 import { IUser } from "../data/interfaces";
 
+
 /* current user data (jwt token value and user data) stored as a subscribable
  * rxjs BehaviorSubject */
 const currentUserSubject = new BehaviorSubject(
   JSON.parse(localStorage.getItem("currentUser")!)
 );
 
+/* methods provided by the authentication service */
 export const authService = {
   login,
   logout,
@@ -19,22 +21,22 @@ export const authService = {
   },
 };
 
-async function login(userData: IUser) {
+/* store userdata in local storage and update global state by adding to 
+ * observable */
+async function login(userData: IUser): Promise<void> {
   localStorage.setItem("currentUser", JSON.stringify(userData));
   currentUserSubject.next(userData);
-}
+};
 
+/* log user out by clearing localStorage and setting observable next to null */
 function logout(): void {
-  /* remove any token / current user in the session storage */
-  console.log("auth service logout function has just been called");
   localStorage.clear();
   currentUserSubject.next(null);
 }
 
-/* i might be able to put this function in the home component and
- * just use the ApiCall function */
+/* re-authenticates user by getting fresh JWT from server and adds price info
+ * to user holdings */
 async function updateUserData(): Promise<void> {
-  /* gets price data for user portfolio, updates localstorage with fresh JWT */
   let header = await authHeader();
   let response = await fetch("http://localhost:6969/auth/users", {
     method: "GET",
@@ -44,26 +46,25 @@ async function updateUserData(): Promise<void> {
     logout();
     return;
   }
+  /* user is valid, so update localstorage and currentuser observable */
   let userData = await response.json();
   localStorage.setItem("currentUser", JSON.stringify(userData));
-  /* update the user data globally? */
   currentUserSubject.next(userData);
   return; 
 }
 
-function newUser(res: any) {
-  /* if a new user has registered, this logs them in and sets state */
-  if (!res.accessToken || !res.userData) {  /* jic, should not be possible */
+/* if new user has registered, logs them in and sets state */
+function newUser(res: IUser): void {
+  if (!res.accessToken || !res.userData) {  /* should not be possible */
     return logout();
   }
   localStorage.setItem("currentUser", JSON.stringify(res));
   currentUserSubject.next(res);
 }
 
+/* returns HTTP authorization header containing JWT of currently logged-in 
+ * user, otherwise empty object if user not logged in */
 async function authHeader(): Promise<{ "Content-Type": string; Authorization: string } | {}> {
-  /* returns HTTP authorization header containing the JWT auth token of
-   * the currently logged-in user.  if user isn't logged in, returns an
-   * empty object instead */
   const currentUser = authService.currentUserValue;
   if (currentUser && currentUser.accessToken) {
     return {

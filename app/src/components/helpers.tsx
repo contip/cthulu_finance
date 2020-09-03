@@ -19,9 +19,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+/* currently no supported way to force rerender of a route without a browser
+ * refresh using react router.  since table data requires refresh after quick
+ * trade, and since browser refresh would break snackbar alerts, this helper
+ * route renders a loading spinner and performs a redirect, solving the issue
+ * see https://github.com/ReactTraining/react-router/issues/7416 */
 export default function Redirect() {
-  /* wraps intended page in a div with key tied to location key, allowing
-   * forced rerenders by react router links */
   let history = useHistory();
   const classes = useStyles();
   history.push("/");
@@ -32,7 +35,7 @@ export default function Redirect() {
   );
 }
 
-
+/* general configurable helper function to send POST requests to the server */
 export async function fetchCall(payload: IAuthCall | ITradeCall | ILookupCall) {
   let response: Response = await fetch(payload.url, {
     method: "POST",
@@ -49,7 +52,7 @@ export async function fetchCall(payload: IAuthCall | ITradeCall | ILookupCall) {
   }
 }
 
-/* for displaying properly formatted currency strings from numbers */
+/* convert input numbers to properly formatted currency strings */
 export function numFormat(num: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",

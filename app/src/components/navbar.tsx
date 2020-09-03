@@ -26,13 +26,8 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       color: "white",
     },
-    // infoBar: {
-    //   // textAlign: "center",
-    //   color: "teal",
-    // },
-    bung: {
+    infoBar: {
       textAlign: "center",
-      // color:"white",
     },
     textButtons: {
       color: "white",
@@ -48,21 +43,29 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "green",
       padding: 5,
     },
-    profileButton: {},
   })
 );
 
 export default function MenuAppBar() {
-  const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
   let [currentUser, setCurrentUser] = useState<IUser | null>(null);
+  let [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  let open = Boolean(anchorEl);
   let location = useLocation();
+  let classes = useStyles();
 
   useEffect(() => {
-    authService.currentUser.subscribe((user) => setCurrentUser(user));
+    /* login status of user determines what is shown in navbar, so subscribe to
+     * auth service currentUser observable */
+    const subscription = authService.currentUser.subscribe((user) =>
+      setCurrentUser(user)
+    );
+    // return () => {
+    //   /* cleanup */
+    //   subscription.unsubscribe();
+    // };
   }, [currentUser]);
 
+  /* loggin-in user dropdown menu handlers */
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -71,8 +74,9 @@ export default function MenuAppBar() {
     setAnchorEl(null);
   };
 
-  function getTotal() {
-    let sum: number = 0;
+  /* determines value of user portfolio, otherwise returns 0 */
+  function getTotal(): number {
+    let sum = 0;
     if (currentUser?.userData.holdings) {
       for (let i = 0; i < currentUser.userData.holdings.length; i++) {
         sum += (currentUser.userData.holdings[i] as IUserHoldingFull).value;
@@ -80,11 +84,14 @@ export default function MenuAppBar() {
     }
     return sum;
   }
+
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
           <div>
+            {/* main logo button links to root route (portfolio) if
+             * user logged in, otherwise links to login */}
             <IconButton
               edge="start"
               component={Link}
@@ -95,67 +102,75 @@ export default function MenuAppBar() {
               {<img src={logo} alt="Logo" />}
             </IconButton>
           </div>
-          {currentUser?.accessToken && (
-            <>
-              <Button
-                component={Link}
-                to="/lookup"
-                variant="text"
-                color="secondary"
-              >
-                <Typography
-                  variant="button"
-                  className={
-                    location.pathname === "/lookup"
-                      ? classes.selected
-                      : classes.textButtons
-                  }
+          {
+            /* display links to main app routes if user is logged in */
+            currentUser?.accessToken && (
+              <>
+                <Button
+                  component={Link}
+                  to="/lookup"
+                  variant="text"
+                  color="secondary"
                 >
-                  Lookup
-                </Typography>
-              </Button>
-              <Button
-                component={Link}
-                to="/buy"
-                variant="text"
-                color="secondary"
-              >
-                <Typography
-                  variant="button"
-                  className={
-                    location.pathname === "/buy"
-                      ? classes.selected
-                      : classes.textButtons
-                  }
+                  {/* assign selected className to any link matching the
+                   * current app pathname to assign contextual color */}
+                  <Typography
+                    variant="button"
+                    className={
+                      location.pathname === "/lookup"
+                        ? classes.selected
+                        : classes.textButtons
+                    }
+                  >
+                    Lookup
+                  </Typography>
+                </Button>
+                <Button
+                  component={Link}
+                  to="/buy"
+                  variant="text"
+                  color="secondary"
                 >
-                  Buy
-                </Typography>
-              </Button>
-              <Button
-                component={Link}
-                to="/sell"
-                variant="text"
-                color="secondary"
-              >
-                <Typography
-                  variant="button"
-                  className={
-                    location.pathname === "/sell"
-                      ? classes.selected
-                      : classes.textButtons
-                  }
+                  <Typography
+                    variant="button"
+                    className={
+                      location.pathname === "/buy"
+                        ? classes.selected
+                        : classes.textButtons
+                    }
+                  >
+                    Buy
+                  </Typography>
+                </Button>
+                <Button
+                  component={Link}
+                  to="/sell"
+                  variant="text"
+                  color="secondary"
                 >
-                  Sell
-                </Typography>
-              </Button>
-              {/* why do i need this empty text to make sure button justifies
-                to the right? */}
-              <Typography variant="h6" className={classes.title}></Typography>
-            </>
-          )}
-
-          {currentUser?.accessToken && (
-            <div className={`${classes.profileButton} ${location.pathname === "/" || location.pathname === "/history" ? classes.selected : ""}`}>
+                  <Typography
+                    variant="button"
+                    className={
+                      location.pathname === "/sell"
+                        ? classes.selected
+                        : classes.textButtons
+                    }
+                  >
+                    Sell
+                  </Typography>
+                </Button>
+                <Typography variant="h6" className={classes.title}></Typography>
+              </>
+            )
+          }
+          {currentUser?.accessToken /* logged-in dropdown menu */ && (
+            <div
+              className={
+                location.pathname === "/" || location.pathname === "/history"
+                  ? classes.selected
+                  : ""
+              }
+            >
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
@@ -201,9 +216,8 @@ export default function MenuAppBar() {
               </Menu>
             </div>
           )}
-          {!currentUser && (
+          {!currentUser /* register and login links */ && (
             <>
-              {/* again needed phantom typography to get flex box to justify buttons right */}
               <Typography variant="h6" className={classes.title}></Typography>
               <Button
                 component={Link}
@@ -211,7 +225,12 @@ export default function MenuAppBar() {
                 variant="text"
                 color="primary"
               >
-                <Typography variant="button" className={`${classes.title} ${location.pathname === "/register" ? classes.selected : ""}`}>
+                <Typography
+                  variant="button"
+                  className={`${classes.title} ${
+                    location.pathname === "/register" ? classes.selected : ""
+                  }`}
+                >
                   Register
                 </Typography>
               </Button>
@@ -221,7 +240,12 @@ export default function MenuAppBar() {
                 variant="text"
                 color="primary"
               >
-                <Typography variant="button" className={`${classes.title} ${location.pathname === "/login" ? classes.selected : ""}`}>
+                <Typography
+                  variant="button"
+                  className={`${classes.title} ${
+                    location.pathname === "/login" ? classes.selected : ""
+                  }`}
+                >
                   Login
                 </Typography>
               </Button>
@@ -229,38 +253,43 @@ export default function MenuAppBar() {
           )}
         </Toolbar>
       </AppBar>
-      {currentUser && currentUser.userData && currentUser.accessToken && (
-        <div className={classes.bung}>
-          <Typography variant="caption" className={classes.infoBarTitles}>
-            Cash:
-          </Typography>
-          <Typography variant="caption" className={classes.infoBarSums}>
-            {numFormat(currentUser?.userData.cash)}
-          </Typography>
-
-          {currentUser.userData.holdings &&
-            currentUser.userData.holdings.length > 0 && (
-              <>
-                {" "}
-                <Typography variant="caption" className={classes.infoBarTitles}>
-                  Portfolio:
-                </Typography>
-                <Typography variant="caption" className={classes.infoBarSums}>
-                  {numFormat(getTotal())}
-                </Typography>{" "}
-              </>
-            )}
-          <Typography variant="caption" className={classes.infoBarTitles}>
-            Total:
-          </Typography>
-          <Typography variant="caption" className={classes.infoBarSums}>
+      {
+        /* info bar section underneath main appbar, displaying user stats */
+        currentUser && currentUser.userData && currentUser.accessToken && (
+          <div className={classes.infoBar}>
+            <Typography variant="caption" className={classes.infoBarTitles}>
+              Cash:
+            </Typography>
+            <Typography variant="caption" className={classes.infoBarSums}>
+              {numFormat(currentUser?.userData.cash)}
+            </Typography>
             {currentUser.userData.holdings &&
-            currentUser.userData.holdings.length > 0
-              ? numFormat(getTotal() + currentUser?.userData.cash)
-              : numFormat(currentUser.userData.cash)}
-          </Typography>
-        </div>
-      )}
+              currentUser.userData.holdings.length > 0 && (
+                <>
+                  {" "}
+                  <Typography
+                    variant="caption"
+                    className={classes.infoBarTitles}
+                  >
+                    Portfolio:
+                  </Typography>
+                  <Typography variant="caption" className={classes.infoBarSums}>
+                    {numFormat(getTotal())}
+                  </Typography>{" "}
+                </>
+              )}
+            <Typography variant="caption" className={classes.infoBarTitles}>
+              Total:
+            </Typography>
+            <Typography variant="caption" className={classes.infoBarSums}>
+              {currentUser.userData.holdings &&
+              currentUser.userData.holdings.length > 0
+                ? numFormat(getTotal() + currentUser?.userData.cash)
+                : numFormat(currentUser.userData.cash)}
+            </Typography>
+          </div>
+        )
+      }
     </div>
   );
 }

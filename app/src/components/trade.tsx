@@ -36,21 +36,20 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
+
+/* single-field configurable quicktrade form, allowing user to buy or sell */
 export default function Trade(rowData: any) {
-  /* inline, single-field quicktrade form for users to buy/sell */
-  /* we ALREADY KNOW that the given symbol from rowData is a valid stock
-   * that is already owned by user, therefore we ONLY have to worry about
-   * the dang price */
   let [lookupPrice, setLookupPrice] = useState<number>(0);
   let [tradeType, setTradeType] = useState(rowData.type);
   let [sharesInput, setSharesInput] = useState<string>("");
   let [validSharesInput, setValidSharesInput] = useState<boolean>(false);
-  let [confirm, setConfirm] = useState(false);
+  let [confirm, setConfirm] = useState<boolean>(false);
   let { enqueueSnackbar } = useSnackbar();
   let history = useHistory();
   let location = useLocation();
   const classes = useStyles();
 
+  /* if the trade type is buy, add max purchase validation rule to form */
   if (tradeType === "buy") {
     ValidatorForm.addValidationRule("maxPurchase", (value: any) => {
       if (
@@ -63,9 +62,9 @@ export default function Trade(rowData: any) {
     });
   }
 
-  /* prevent stale purchase / sale requests by always fetching latest price */
+  /* prevent stale purchase/sale requests from "/" (home) route by fetching
+   * latest price data, otherwise use price data from passed props */
   useEffect(() => {
-    // let mounted = true;
     if (location.pathname === "/") {
       let payload: ILookupCall = {
         url: Urls.lookup,
@@ -85,14 +84,12 @@ export default function Trade(rowData: any) {
     } else {
       setLookupPrice(rowData.latestPrice);
     }
-    // return () => {
-    //   // mounted = false;
-    // };
   }, []);
 
-  //TODO
+  /* reachable by user accepting the transaction alert popup; handles
+   * server api call to log the trade, then updates with a redirect */
   async function handleSubmit() {
-    setConfirm(false);
+    setConfirm(false); /* close the alert popup */
     let payload: ITradeCall = {
       url: tradeType === "buy" ? Urls.buy : Urls.sell,
       auth: true,
@@ -104,10 +101,13 @@ export default function Trade(rowData: any) {
     };
     let response = await fetchCall(payload);
     if (response.code) {
+      /* error codes from server requests should be unreachable due to validity
+       * checks, but if received, display as a snackbar and reset state*/
       enqueueSnackbar(response.message, { variant: "error" });
       setSharesInput("");
     } else {
       enqueueSnackbar(
+        /* display the appropriate success snackbar */
         tradeType === "buy" ? "Purchase Successful!" : "Sale Successful!",
         {
           variant: "success",
@@ -119,10 +119,12 @@ export default function Trade(rowData: any) {
         history.push("/");
       }
     }
-
     return;
   }
-  function handleCloseAlert() {
+
+  /* if user does not accept confirmation alert, display a cancelled snackbar
+   * and reset the state */
+  function handleCancelAlert() {
     setConfirm(false);
     enqueueSnackbar(
       tradeType === "buy" ? "Purchase Cancelled!" : "Sale Cancelled!",
@@ -131,14 +133,17 @@ export default function Trade(rowData: any) {
     setSharesInput("");
     return;
   }
-  function handleConfirm() {
-    setConfirm(true);
 
+  /* sets flag to enable displaying the confirmation alert popup */
+  function showConfirm() {
+    setConfirm(true);
     return;
   }
+
+  /* sets state for shares input field (number of shares in trade), otherwise
+   * sets overall Buy or Sell state if buy/sell radio button was triggered */
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.name === "shares") {
-      // alertSystem({onConfirm: handleConfirm, confirmBtnText: "slit", title: "bung", onCancel: ()=>{}, message: "bunghilda"})
       setSharesInput(event.target.value);
     } else {
       setTradeType(event.target.value);
@@ -150,23 +155,36 @@ export default function Trade(rowData: any) {
 
   return (
     <>
-      {(location.pathname === "/" || location.pathname === "/lookup") && (
-        <FormControl component="fieldset">
-          <RadioGroup
-            aria-label="tradeType"
-            name="typeSelect"
-            value={tradeType}
-            onChange={handleChange}
-            row
-          >
-            <FormControlLabel value="buy" control={<Radio />} label="Buy" />
-            {rowData.shares > 0 && (
-              <FormControlLabel value="sell" control={<Radio />} label="Sell" />
-            )}
-          </RadioGroup>
-        </FormControl>
-      )}
-      {confirm && (
+      {
+        /* only display buy / sell selection buttons if component is being
+         * accessed from portfolio or lookup Tables (i.e. quicktrade) */
+        (location.pathname === "/" || location.pathname === "/lookup") && (
+          <FormControl component="fieldset">
+            <RadioGroup
+              aria-label="tradeType"
+              name="typeSelect"
+              value={tradeType}
+              onChange={handleChange}
+              row
+            >
+              <FormControlLabel value="buy" control={<Radio />} label="Buy" />
+              {
+                /* furthermore, only display the sell radio button if being
+                 * accessed from the lookup table AND the user has shares of
+                 * that stock */
+                rowData.shares > 0 && (
+                  <FormControlLabel
+                    value="sell"
+                    control={<Radio />}
+                    label="Sell"
+                  />
+                )
+              }
+            </RadioGroup>
+          </FormControl>
+        )
+      }
+      {confirm /* if the confirm flag is true, display the alert popup */ && (
         <SweetAlert
           warning
           showCancel
@@ -174,45 +192,49 @@ export default function Trade(rowData: any) {
           confirmBtnText={tradeType === "buy" ? "Buy!" : "Sell!"}
           confirmBtnBsStyle="danger"
           title={tradeType === "buy" ? "Confirm Purchase" : "Confirm Sale"}
-          onCancel={handleCloseAlert}
-          focusCancelBtn
+          onCancel={handleCancelAlert}
+          focusConfirmBtn
         >
-          {tradeType.charAt(0).toUpperCase() + tradeType.slice(1)} {sharesInput}{" "}
-          {parseInt(sharesInput) > 1 ? "shares" : "share"} of{" "}
-          {rowData.stock_name} for{" "}
+          {/* alert format example: Buy 10 shares of Company A for $100.69? */}
+          {tradeType.charAt(0).toUpperCase() + tradeType.slice(1)}{" "}
+          {sharesInput} {parseInt(sharesInput) > 1 ? "shares" : "share"} of
+          {" "}{rowData.stock_name} for{" "}
           {numFormat(parseInt(sharesInput) * lookupPrice)}?
         </SweetAlert>
       )}
 
       <InputForm
         {...{
-          onSubmit: handleConfirm,
+          onSubmit: showConfirm,
           buttonValidators: [
-            lookupPrice > 0,
+            /* all must be true for submit button to show */ lookupPrice > 0,
             validSharesInput,
             sharesInput !== "",
             parseInt(sharesInput) !== 0,
           ],
           inputs: [
+            /* options for the single validated input field used */
             {
               label: "Shares",
               type: "Number",
               onChange: handleChange,
               name: "shares",
               validatorListener: setValidSharesInput,
-              value: sharesInput as any,
+              value: sharesInput as any /* casts number to string for form */,
               validators:
+                /* each validation constraint corresponds to an error with same
+                 * index in errorMessages array */
                 tradeType === "buy"
                   ? [
                       "required",
                       "matchRegexp:^[0-9]+$",
                       "maxStringLength:5",
-                      "maxPurchase",
+                      "maxPurchase" /* total cash */,
                     ]
                   : [
                       "required",
                       "matchRegexp:^[0-9]+$",
-                      `maxNumber:${rowData.shares}`,
+                      `maxNumber:${rowData.shares}` /* total shares */,
                     ],
               errorMessages:
                 tradeType === "buy"
@@ -227,13 +249,15 @@ export default function Trade(rowData: any) {
                   : [
                       "this field is required!",
                       "numerical digits >= 1 only!",
-                      `you only have ${rowData.shares} shares of ${rowData.stock_symbol} to sell!`,
+                      `you only have ${rowData.shares} shares of 
+                      ${rowData.stock_symbol} to sell!`,
                     ],
             },
           ],
         }}
       />
-
+      {/* depending on location, display text showing price of currently "selected"
+       * stock as well as summary of total proposed transaction amount */}
       <div id="tradeInfo">
         {(location.pathname === "/buy" || location.pathname === "/sell") && (
           <Typography

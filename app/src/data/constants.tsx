@@ -1,5 +1,4 @@
-import SelectInput from "@material-ui/core/Select/SelectInput";
-
+/* column names for all data fields used as columns in tables */
 export const LookupColumnsMap: any = {
         companyName: "Company Name",
         symbol: "Trade Symbol",
@@ -30,11 +29,6 @@ export const HistoryColumnsMap: any = {
         transaction_price: "Total Transaction Amount",
 }
 
-export const CurrencyOptions = {
-        price: {currencySetting: true},
-        value: {currencySetting: true},
-}
-
 const ServerUrl = "http://localhost:6969/";
 
 export const Urls = {
@@ -45,4 +39,5 @@ export const Urls = {
         sell: ServerUrl + "trades/sell",
         history: ServerUrl + "trades/history",
         lookup: ServerUrl + "lookup",
+        users: ServerUrl + "auth/users",
 }

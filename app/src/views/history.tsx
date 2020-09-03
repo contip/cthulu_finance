@@ -3,7 +3,7 @@ import { authService } from "../components/auth.service";
 import { useHistory } from 'react-router-dom';
 import Table from "../components/table";
 import { HistoryColumnsMap, Urls } from '../data/constants';
-import { IUserTransaction, ITradeCall, tableCol } from '../data/interfaces';
+import { IUserTransaction, ITradeCall, ITableCol } from '../data/interfaces';
 import {fetchCall} from '../components/helpers';
 import { useSnackbar } from 'notistack';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 
-const tableCols: Array<tableCol | any> = [];
+const tableCols: Array<ITableCol | any> = [];
 Object.keys(HistoryColumnsMap).forEach((key) => {
   tableCols.push({ title: HistoryColumnsMap[key], field: key, width: 250 });
   if (key == "stock_price" || key == "transaction_price") {
