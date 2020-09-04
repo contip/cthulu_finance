@@ -3,6 +3,7 @@ import { DatabaseModule } from './database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { LookupModule } from './lookup/lookup.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -10,7 +11,8 @@ import { LookupModule } from './lookup/lookup.module';
     HttpModule,
     DatabaseModule,
     AuthModule,
-    LookupModule
+    LookupModule,
+    ConfigModule.forRoot(),
   ],
   controllers: [],
   providers: [],
