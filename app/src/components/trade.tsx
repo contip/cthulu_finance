@@ -165,16 +165,17 @@ export default function Trade(props: ITradeProps): JSX.Element {
               row
             >
               <FormControlLabel value="buy" control={<Radio />} label="Buy" />
-              {
-                /* hide sell radio unless user owns shares of that stock */
-                props.shares && props.shares > 0 && (
-                  <FormControlLabel
-                    value="sell"
-                    control={<Radio />}
-                    label="Sell"
-                  />
-                )
-              }
+              {/* hide sell button unless user owns shares of that stock */}
+              <FormControlLabel
+                className={
+                  props.shares && props.shares > 0
+                    ? classes.visible
+                    : classes.hidden
+                }
+                value="sell"
+                control={<Radio />}
+                label="Sell"
+              />
             </RadioGroup>
           </FormControl>
         )
@@ -198,7 +199,6 @@ export default function Trade(props: ITradeProps): JSX.Element {
           {numFormat(parseInt(sharesInput) * lookupPrice)}?
         </SweetAlert>
       )}
-
       <InputForm
         {...{
           onSubmit: showConfirm,
@@ -212,10 +212,16 @@ export default function Trade(props: ITradeProps): JSX.Element {
             {
               label: "Shares",
               type: "Number",
+              disabled:
+                (location.pathname === "/" ||
+                  location.pathname === "/lookup") &&
+                !tradeType
+                  ? true
+                  : false,
               onChange: handleChange,
               name: "shares",
               validatorListener: setValidSharesInput,
-              value: sharesInput as any,  /* casts number to string */
+              value: sharesInput as any /* casts number to string */,
               validators:
                 tradeType === "buy"
                   ? [

@@ -9,6 +9,7 @@ export interface IFormInput {
   label: string;
   value: string;
   type?: string | undefined;
+  disabled?: boolean;
   onChange: (
     event: React.ChangeEvent<HTMLInputElement>
   ) => void /* function to update the state of input field */;

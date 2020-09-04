@@ -8,5 +8,5 @@ export default function Logout() {
   authService.logout();
   /* attempt to reload in place (router will drop to login in all cases) */
   history.go(0);
-  return;
+  return null;
 }

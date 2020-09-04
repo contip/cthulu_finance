@@ -19,22 +19,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-/* currently no supported way to force rerender of a route without a browser
- * refresh using react router.  since table data requires refresh after quick
- * trade, and since browser refresh would break snackbar alerts, this helper
- * route renders a loading spinner and performs a redirect, solving the issue
- * see https://github.com/ReactTraining/react-router/issues/7416 */
-export default function Redirect() {
-  let history = useHistory();
-  const classes = useStyles();
-  history.push("/");
-  return (
-    <div className={classes.root}>
-      <CircularProgress color="secondary" />
-    </div>
-  );
-}
-
 /* general configurable helper function to send POST requests to the server */
 export async function fetchCall(payload: IAuthCall | ITradeCall | ILookupCall) {
   let response: Response = await fetch(payload.url, {
@@ -58,4 +42,20 @@ export function numFormat(num: number): string {
     style: "currency",
     currency: "USD",
   }).format(num);
+}
+
+/* currently no supported way to force rerender of a route without a browser
+ * refresh using react router.  since table data requires refresh after quick
+ * trade, and since browser refresh would break snackbar alerts, this helper
+ * route renders a loading spinner and performs a redirect, solving the issue
+ * see https://github.com/ReactTraining/react-router/issues/7416 */
+export default function Redirect() {
+  let history = useHistory();
+  const classes = useStyles();
+  history.push("/");
+  return (
+    <div className={classes.root}>
+      <CircularProgress color="secondary" />
+    </div>
+  );
 }

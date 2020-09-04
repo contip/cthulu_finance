@@ -39,6 +39,7 @@ export default function App() {
     <React.Fragment>
       <CssBaseline />
       <SnackbarProvider
+      style={{marginTop:75}}
         maxSnack={3}
         autoHideDuration={4000}
         ref={notistackRef}
@@ -47,7 +48,7 @@ export default function App() {
             Dismiss
           </Button>
         )}
-        anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+        anchorOrigin={{ horizontal: "center", vertical: "top" }}
       >
         <Router>
           <div>
@@ -61,7 +62,7 @@ export default function App() {
                 direction="column"
                 alignItems="center"
                 justify="center"
-                style={{ minHeight: "100vh" , position: "relative"}}
+                style={{ minHeight: "90vh" , position: "relative"}}
               >
                 <PrivateRoute exact path="/" component={Home} />
                 <Route exact path="/login" component={LoginForm} />

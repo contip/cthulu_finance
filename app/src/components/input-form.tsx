@@ -19,6 +19,7 @@ export default function InputForm(props: IForm): JSX.Element {
         validatorListener={props.inputs[i].validatorListener}
         validators={props.inputs[i].validators}
         errorMessages={props.inputs[i].errorMessages}
+        disabled={props.inputs[i].disabled}
         onBlur={props.inputs[i].onBlur ? props.inputs[i].onBlur : undefined}
         variant="outlined"
       />

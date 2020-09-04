@@ -1,29 +1,42 @@
-import React from 'react';
-import { Typography } from '@material-ui/core';
+import React from "react";
+import { Typography, Box, Link } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-        position: 'absolute',
-        bottom: 0,
-        width: '100%',
-        textAlign: 'center',
+      position: "absolute",
+      bottom: 0,
+      width: "50%",
+      textAlign: "center",
+      alignItems: "center",
     },
     footerText: {
-        
-
-    }
+      color: "white",
+    },
+    link: {
+      color: "#8c9eff",
+    },
   })
 );
 export default function Footer(): JSX.Element {
   let classes = useStyles();
 
-    return(
-        <div className={classes.root}>
-<Typography color="primary" variant="subtitle2" className={classes.footerText} >
-    Miskatonic Research Systems, 2020.
-</Typography>
-</div>
-    )
+  return (
+    <Box bgcolor="primary.main" className={classes.root}>
+      <Typography variant="subtitle2" className={classes.footerText}>
+        Miskatonic Research Systems, 2020.
+      </Typography>
+      <Typography variant="subtitle2" className={classes.footerText}>
+        Financial information provided by{" "}
+        <Link
+          className={classes.link}
+          rel="noreferrer"
+          href="https://iexcloud.io"
+        >
+          IEX Cloud
+        </Link>
+      </Typography>
+    </Box>
+  );
 }

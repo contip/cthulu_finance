@@ -97,7 +97,7 @@ export default function Register(): JSX.Element {
 
   return (
     <div style={{ textAlign: "center" }}>
-     <img style={{maxWidth: "50%"}} src={logo}/>
+     <img style={{maxWidth: "75%"}} src={logo}/>
       <InputForm
         {...{
           onSubmit: handleSubmit,

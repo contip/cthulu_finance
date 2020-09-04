@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "white",
     },
     selected: {
-      color: "LimeGreen",
+      color: theme.palette.secondary.light,
     },
     infoBarTitles: {
       color: "black",
@@ -46,6 +46,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+/* simple navbar; primary means of user navigation and retrieval of primary
+ * stats; mostly JSX and styles */
 export default function MenuAppBar() {
   let [currentUser, setCurrentUser] = useState<IUser | null>(null);
   let [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
