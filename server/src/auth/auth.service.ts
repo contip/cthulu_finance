@@ -47,12 +47,12 @@ export class AuthService {
       delete userData.hash;
       return userData;
     } catch (error) {
-      if (error?.code == 'SQLITE_CONSTRAINT') {
-        throw new HttpException(
-          'User with that username already exists!',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+      // if (error?.code == 'SQLITE_CONSTRAINT') {
+      //   throw new HttpException(
+      //     'User with that username already exists!',
+      //     HttpStatus.BAD_REQUEST,
+      //   );
+      // }
       throw new HttpException(
         'Error registering user!',
         HttpStatus.INTERNAL_SERVER_ERROR,

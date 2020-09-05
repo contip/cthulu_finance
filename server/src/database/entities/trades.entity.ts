@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { UserEntity } from './users.entity';
 
-/* schema of 'trades' table of the server's sqlite database, stores stock
+/* schema of 'trades' table of the server's database, stores stock
  * purchase and sale data */
 @Entity({ name: 'trades' })
 export class Trades {

@@ -7,7 +7,6 @@ import { ConfigModule } from '@nestjs/config';
 import { UserEntity } from './database/entities/users.entity';
 import { Trades } from './database/entities/trades.entity';
 
-console.log(process.env);
 @Module({
   imports: [
     TypeOrmModule.forRoot({

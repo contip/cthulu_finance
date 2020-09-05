@@ -77,8 +77,11 @@ export class TradesService {
     let userShares: number, i: number;
     /* make sure user has enough shares of given stock */
     for (i = 0; i < userData.holdings.length; i++) {
+      console.log('i is', i);
+      console.log('userData[i] is', userData.holdings[i])
       if (saleData.stock_symbol === userData.holdings[i]['stock_symbol']) {
         userShares = userData.holdings[i].shares;
+        // i++;
         break; // indexing variable can be used later to access holdings
       }
     }
@@ -101,7 +104,7 @@ export class TradesService {
     userData.cash = userData.cash + tradeData.transaction_price;
     userData.holdings[i].shares -= saleData.shares;
     /* if shares have reduced to 0, remove item from holdings */
-    if (userData.holdings[i].shares == 0) {
+    if (userData.holdings[i].shares === 0) {
       userData.holdings.splice(i, 1);
     }
     await this.updateUser(userData);
