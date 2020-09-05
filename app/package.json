@@ -1,4 +1,5 @@
 {
+  "proxy": "http://localhost:6969",
   "name": "first",
   "version": "0.1.0",
   "private": true,

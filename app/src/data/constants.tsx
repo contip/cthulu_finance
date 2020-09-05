@@ -29,15 +29,13 @@ export const HistoryColumnsMap: any = {
         transaction_price: "Total Transaction Amount",
 }
 
-const ServerUrl = "http://localhost:6969/";
-
 export const Urls = {
-        login: ServerUrl + "auth/login",
-        register: ServerUrl + "auth/register",
-        available: ServerUrl + "auth/available",
-        buy: ServerUrl + "trades/buy",
-        sell: ServerUrl + "trades/sell",
-        history: ServerUrl + "trades/history",
-        lookup: ServerUrl + "lookup",
-        users: ServerUrl + "auth/users",
+        login: "auth/login",
+        register: "auth/register",
+        available: "auth/available",
+        buy: "trades/buy",
+        sell: "trades/sell",
+        history: "trades/history",
+        lookup: "lookup",
+        users: "auth/users",
 }

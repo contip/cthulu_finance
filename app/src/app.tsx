@@ -60,8 +60,8 @@ export default function App() {
                 spacing={0}
                 direction="column"
                 alignItems="center"
-                justify="center"
-                style={{ minHeight: "90vh" , position: "relative"}}
+                justify="flex-start"
+                style={{ minHeight: "90vh" , position: "relative", paddingTop: "10%" }}
               >
             <Switch>
                 <PrivateRoute exact path="/" component={Home} />
@@ -73,8 +73,8 @@ export default function App() {
                 <PrivateRoute exact path="/redirect" component={Redirect} />
                 <PrivateRoute exact path="/lookup" component={Lookup} />
                 <PrivateRoute exact path="/logout" component={Logout as any} />
-                <Footer/>
             </Switch>
+                <Footer/>
               </Grid>
           </div>
         </Router>

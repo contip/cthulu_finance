@@ -79,7 +79,7 @@ export class UserService {
       ])
       .where('users.id = :id', { id: user_id })
       .getOne();
-    return transactions.trades;
+    return !transactions? [] : transactions.trades;
   }
 
   /* returns array of user stock holdings, one object for each holding */

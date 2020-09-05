@@ -55,7 +55,7 @@ export default function Home(): JSX.Element {
   }
 
   return (
-    <React.Fragment>
+    <div style={{paddingBottom: "5%"}}>
       <Table
         {...{
           tableCols: tableCols,
@@ -83,6 +83,6 @@ export default function Home(): JSX.Element {
           },
         }}
       />
-    </React.Fragment>
+    </div>
   );
 }

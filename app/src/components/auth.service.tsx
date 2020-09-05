@@ -37,7 +37,7 @@ function logout(): void {
  * to user holdings */
 async function updateUserData(): Promise<void> {
   let header = await authHeader();
-  let response = await fetch("http://localhost:6969/auth/users", {
+  let response = await fetch("auth/users", {
     method: "GET",
     headers: header,
   });
