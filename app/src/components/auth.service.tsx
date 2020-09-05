@@ -1,7 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 import { IUser } from "../data/interfaces";
 
-/* current user info (auth and holdings data) stored and provided to rest of 
+/* current user info (auth and holdings data) stored and provided to rest of
  * app by rxjs observable */
 const currentUserSubject = new BehaviorSubject(
   JSON.parse(localStorage.getItem("currentUser")!)

@@ -15,7 +15,38 @@ code {
     monospace;
 }
 
-tbody.MuiTableBody-root >:nth-of-type(2n)
-{
-    background-color: #fafafa;
+/* Table Zebra striping */
+tr:nth-of-type(odd) { 
+  background: #eee; 
+}
+th { 
+  background: #333; 
+  color: white; 
+  font-weight: bold; 
+}
+td, th { 
+  padding: 6px; 
+  border: 1px solid #ccc; 
+  text-align: left; 
+}
+
+div[class^="MTableToolbar-title"] {
+  width: 100%;
+  padding-left: 8px;
+  text-align: center;
+}
+
+div[class^="MTableToolbar-title"]>h6 {
+  font-family: 'Chiller';
+  font-size: 50px;
+  color: #3d5afe;
+}
+
+div[class^="MuiInputBase-root"] {
+  margin: 10px;
+}
+
+@font-face {
+  font-family: 'Chiller';
+  src: local('Chiller'), url(./fonts/CHILLER.TTF) format('truetype');
 }

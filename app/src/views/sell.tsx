@@ -16,6 +16,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
+import Title from "../components/title";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -110,6 +111,7 @@ export default function Sell(): JSX.Element {
 
   return (
     <div style={{ textAlign: "center" }}>
+      <Title view="Sell" />
       <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel id="stock-name-select">Select Stock</InputLabel>
         <Select value={select} onChange={handleChange as any} label="Stock">

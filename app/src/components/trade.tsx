@@ -154,8 +154,8 @@ export default function Trade(props: ITradeProps): JSX.Element {
   return (
     <>
       {
-        /* only display buy/sell radios if component accessed thru Table 
-         * triggers material ui warning about changing the uncontrolled 
+        /* only display buy/sell radios if component accessed thru Table
+         * triggers material ui warning about changing the uncontrolled
          * value state of radio button (bug) */
         (location.pathname === "/" || location.pathname === "/lookup") && (
           <FormControl component="fieldset">

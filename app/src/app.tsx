@@ -30,18 +30,18 @@ export default function App() {
     const subscription = authService.currentUser.subscribe((user) =>
       setCurrentUser(user)
     );
-     return () => {
-       subscription.unsubscribe();
-     }
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [currentUser]);
 
   return (
     <React.Fragment>
       <CssBaseline />
       <SnackbarProvider
-      style={{marginTop:75}}
-        maxSnack={3}
-        autoHideDuration={4000}
+        style={{ marginTop: 75 }}
+        maxSnack={1}
+        autoHideDuration={3000}
         ref={notistackRef}
         action={(key) => (
           <Button style={{ color: "white" }} onClick={onClickDismiss(key)}>
@@ -55,27 +55,40 @@ export default function App() {
             <nav>
               <MenuAppBar />
             </nav>
-              <Grid
-                container
-                spacing={0}
-                direction="column"
-                alignItems="center"
-                justify="flex-start"
-                style={{ minHeight: "90vh" , position: "relative", paddingTop: "10%" }}
-              >
-            <Switch>
-                <PrivateRoute exact path="/" component={Home} />
-                <Route exact path="/login" component={LoginForm} />
-                <Route exact path="/register" component={Register} />
-                <PrivateRoute exact path="/buy" component={Buy} />
-                <PrivateRoute exact path="/sell" component={Sell} />
-                <PrivateRoute exact path="/history" component={History} />
-                <PrivateRoute exact path="/redirect" component={Redirect} />
-                <PrivateRoute exact path="/lookup" component={Lookup} />
-                <PrivateRoute exact path="/logout" component={Logout as any} />
-            </Switch>
-                <Footer/>
+            <Grid
+              container
+              spacing={5}
+              direction="column"
+              alignItems="center"
+              alignContent="center"
+              justify="flex-start"
+              style={{
+                minHeight: "90vh",
+                position: "relative",
+                paddingTop: "10%",
+              }}
+            >
+              <Grid item>
+                <Switch>
+                  <PrivateRoute exact path="/" component={Home} />
+                  <Route exact path="/login" component={LoginForm} />
+                  <Route exact path="/register" component={Register} />
+                  <PrivateRoute exact path="/buy" component={Buy} />
+                  <PrivateRoute exact path="/sell" component={Sell} />
+                  <PrivateRoute exact path="/history" component={History} />
+                  <PrivateRoute exact path="/redirect" component={Redirect} />
+                  <PrivateRoute exact path="/lookup" component={Lookup} />
+                  <PrivateRoute
+                    exact
+                    path="/logout"
+                    component={Logout as any}
+                  />
+                </Switch>
               </Grid>
+              <Grid item>
+                <Footer />
+              </Grid>
+            </Grid>
           </div>
         </Router>
       </SnackbarProvider>

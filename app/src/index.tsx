@@ -5,6 +5,7 @@ import * as serviceWorker from "./serviceWorker";
 import App from "./app";
 import { ThemeProvider } from "@material-ui/core/styles";
 import theme from "./data/theme";
+import './fonts/CHILLER.TTF'
 
 ReactDOM.render(
   <div>

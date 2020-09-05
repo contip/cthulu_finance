@@ -1,23 +1,6 @@
-import React from "react";
 import { IAuthCall, ITradeCall, ILookupCall } from "../data/interfaces";
 import { authService } from "./auth.service";
 import { useHistory } from "react-router-dom";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { makeStyles, Theme, createStyles } from "@material-ui/core";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      display: "flex",
-      "& > * + *": {
-        marginLeft: theme.spacing(2),
-      },
-    },
-    quickTrade: {
-      textAlign: "center",
-    },
-  })
-);
 
 /* general configurable helper function to send POST requests to the server */
 export async function fetchCall(payload: IAuthCall | ITradeCall | ILookupCall) {
@@ -53,7 +36,6 @@ export function numFormat(num: number): string {
  * doesn't render anything (bug) */
 export default function Redirect() {
   let history = useHistory();
-  const classes = useStyles();
   history.push("/");
-  return (null);
+  return null;
 }

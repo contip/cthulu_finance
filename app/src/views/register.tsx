@@ -84,12 +84,12 @@ export default function Register(): JSX.Element {
       if (response) {
         enqueueSnackbar(`Username ${nameInput} is available!`, {
           variant: "info",
-          persist: true,
+          autoHideDuration: 6000, 
         });
       } else {
         enqueueSnackbar(`Username not available!`, {
           variant: "warning",
-          persist: true,
+          autoHideDuration: 6000, 
         });
       }
     }

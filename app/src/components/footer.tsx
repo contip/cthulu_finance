@@ -5,11 +5,8 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      position: "absolute",
-      bottom: 0,
-      width: "50%",
+      padding: "10px",
       textAlign: "center",
-      alignItems: "center",
     },
     footerText: {
       color: "white",

@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
 /* column titles and types for the table display */
 const tableCols: Array<ITableCol> = [];
 Object.keys(HistoryColumnsMap).forEach((key) => {
-  tableCols.push({ title: HistoryColumnsMap[key], field: key, width: 250 });
+  tableCols.push({ title: HistoryColumnsMap[key], field: key });
   if (key === "stock_price" || key === "transaction_price") {
     tableCols[tableCols.length - 1]["type"] = "currency";
   }
@@ -49,9 +49,9 @@ export default function History(): JSX.Element {
         enqueueSnackbar(response.message, { variant: "error" });
         setUserHistory(null);
       } else {
-        /* before setting response, remove microseconds from date column */
+        /* format and remove seconds from db date response */
         response.forEach((transaction: IUserTransaction) => {
-          transaction.date = transaction.date.split(".")[0];
+          transaction.date = transaction.date.replace("T", " ").slice(0, -5);
         });
         setUserHistory(response);
       }

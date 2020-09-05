@@ -13,6 +13,7 @@ import InputForm from "../components/input-form";
 import { authService } from "../components/auth.service";
 import Trade from "../components/trade";
 import ShopTwo from "@material-ui/icons/ShopTwo";
+import Title from "../components/title";
 
 /* allows user to lookup stocks by symbol, if found, displays table with data
  * from api; table provides quickbuy/sell functionality */
@@ -114,6 +115,7 @@ export default function Lookup() {
 
   return (
     <div style={{ textAlign: "center" }}>
+      <Title view="Lookup" />
       <InputForm
         {...{
           onSubmit: handleSubmit,

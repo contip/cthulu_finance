@@ -5,6 +5,7 @@ import { ILookupCall, IStockData, ITradeProps } from "../data/interfaces";
 import { Urls } from "../data/constants";
 import { fetchCall } from "../components/helpers";
 import Trade from "../components/trade";
+import Title from "../components/title";
 
 /* provides text input for user to enter stock name, checks validity of stock
  * symbol on blur, if valid show trade form and allow user to make purchase */
@@ -60,7 +61,8 @@ export default function Buy() {
   };
 
   return (
-    <>
+    <div style={{ textAlign: "center" }}>
+      <Title view="Buy" />
       <ValidatorForm onSubmit={() => {}}>
         <TextValidator
           name="stock_symbol"
@@ -86,8 +88,9 @@ export default function Buy() {
         /* if user entered a valid stock and pricing information was gotten
          * successfully, display the trade component, otherwise empty space */
         lookupData && validStock && validLookup ? (
-          <div style={{textAlign: "center"}}>
-          <Trade {...tradeProps} /></div>
+          <div style={{ textAlign: "center" }}>
+            <Trade {...tradeProps} />
+          </div>
         ) : (
           <span>
             <br />
@@ -100,6 +103,6 @@ export default function Buy() {
           </span>
         )
       }
-    </>
+    </div>
   );
 }
