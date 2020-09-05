@@ -49,7 +49,7 @@ export default function LoginForm(): JSX.Element {
 
   return (
     <div style={{ textAlign: "center" }} id="LoginForm">
-     <img style={{maxWidth: "75%"}} src={logo}/>
+     <img style={{maxWidth: "75%"}} src={logo} alt="logo"/>
       <InputForm
         {...{
           onSubmit: handleSubmit,

@@ -51,7 +51,7 @@ export default function App() {
         anchorOrigin={{ horizontal: "center", vertical: "top" }}
       >
         <Router>
-          <div>
+          <div style={{width:"100%"}}>
             <nav>
               <MenuAppBar />
             </nav>
@@ -63,12 +63,13 @@ export default function App() {
               alignContent="center"
               justify="flex-start"
               style={{
+                width: "100%",
                 minHeight: "90vh",
                 position: "relative",
                 paddingTop: "10%",
               }}
             >
-              <Grid item>
+              <Grid item draggable="true" > 
                 <Switch>
                   <PrivateRoute exact path="/" component={Home} />
                   <Route exact path="/login" component={LoginForm} />

@@ -4,9 +4,9 @@ import Table from "../components/table";
 import { HistoryColumnsMap, Urls } from "../data/constants";
 import { IUserTransaction, ITradeCall, ITableCol } from "../data/interfaces";
 import { fetchCall } from "../components/helpers";
-import { useSnackbar } from "notistack";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Logout from "./logout";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
 /* column titles and types for the table display */
 const tableCols: Array<ITableCol> = [];
 Object.keys(HistoryColumnsMap).forEach((key) => {
-  tableCols.push({ title: HistoryColumnsMap[key], field: key });
+  tableCols.push({ title: HistoryColumnsMap[key], field: key, width: 200 });
   if (key === "stock_price" || key === "transaction_price") {
     tableCols[tableCols.length - 1]["type"] = "currency";
   }
@@ -34,7 +34,6 @@ export default function History(): JSX.Element {
   let [userHistory, setUserHistory] = useState<Array<IUserTransaction> | null>(
     null
   );
-  let { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
 
   /* fetch user trade data from server, otherwise display error snack */
@@ -46,8 +45,9 @@ export default function History(): JSX.Element {
     };
     fetchCall(payload).then((response) => {
       if (response.code) {
-        enqueueSnackbar(response.message, { variant: "error" });
         setUserHistory(null);
+        Logout();
+        return;
       } else {
         /* format and remove seconds from db date response */
         response.forEach((transaction: IUserTransaction) => {

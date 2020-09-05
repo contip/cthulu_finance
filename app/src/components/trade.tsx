@@ -26,7 +26,11 @@ const useStyles = makeStyles((theme: Theme) =>
     quickTrade: {
       textAlign: "center",
     },
-    tradeInfo: {},
+    tradeInfo: {
+      fontFamily: "Chiller",
+      fontSize: "x-large",
+      color: theme.palette.primary.main,
+    },
     visible: {
       textAlign: "center",
       visibility: "visible",
@@ -262,26 +266,26 @@ export default function Trade(props: ITradeProps): JSX.Element {
       <div id="tradeInfo">
         {(location.pathname === "/buy" || location.pathname === "/sell") && (
           <Typography
-            variant="subtitle1"
-            className={lookupPrice > 0 ? classes.visible : classes.hidden}
-          >
+            variant="body1"
+            className={[lookupPrice > 0 ? classes.visible : classes.hidden, classes.tradeInfo].join(" ")}
+          ><b>
             {props.stock_name} ({props.stock_symbol}) current price:{" "}
-            {numFormat(lookupPrice)}
+            {numFormat(lookupPrice)}</b>
           </Typography>
         )}
         <Typography
-          variant="subtitle1"
-          className={
+          variant="body1"
+          className={[
             validSharesInput && sharesInput !== "" && sharesInput !== "0"
               ? classes.visible
-              : classes.hidden
+              : classes.hidden, classes.tradeInfo].join(" ")
           }
         >
-          {tradeType === "buy" ? "Purchase" : "Sale"} price:{" "}
+          {tradeType === "buy" ? "Purchase" : "Sale"} price:{" "}<b>
           {new Intl.NumberFormat("en-US", {
             style: "currency",
             currency: "USD",
-          }).format(lookupPrice * parseInt(sharesInput))}
+          }).format(lookupPrice * parseInt(sharesInput))}</b>
         </Typography>
       </div>
     </>

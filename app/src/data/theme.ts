@@ -8,6 +8,14 @@ const theme = createMuiTheme({
     secondary: indigo,
   },
   typography: {},
+  overrides: {
+    MuiTableCell: {
+      root: {  //This can be referred from Material UI API documentation. 
+
+      },
+  }
+  }
+  
 });
 
 export default theme;

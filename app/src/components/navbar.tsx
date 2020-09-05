@@ -161,7 +161,7 @@ export default function MenuAppBar() {
                     Sell
                   </Typography>
                 </Button>
-                <Typography variant="h6" className={classes.title}></Typography>
+                <Typography variant="h5" className={classes.title}></Typography>
               </>
             )
           }
@@ -220,7 +220,7 @@ export default function MenuAppBar() {
           )}
           {!currentUser /* register and login links */ && (
             <>
-              <Typography variant="h6" className={classes.title}></Typography>
+              <Typography variant="h5" className={classes.title}></Typography>
               <Button
                 component={Link}
                 to="/register"

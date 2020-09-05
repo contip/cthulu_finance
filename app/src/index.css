@@ -36,7 +36,7 @@ div[class^="MTableToolbar-title"] {
   text-align: center;
 }
 
-div[class^="MTableToolbar-title"]>h6 {
+h6[class^="MuiTypography-root"] {
   font-family: 'Chiller';
   font-size: 50px;
   color: #3d5afe;
