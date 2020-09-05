@@ -5,7 +5,6 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { map, catchError } from 'rxjs/operators';
-import { API_KEY } from './constants';
 
 @Injectable()
 export class LookupService {
@@ -19,7 +18,7 @@ export class LookupService {
       'https://cloud-sse.iexapis.com/stable/stock/' +
         symbol +
         '/quote?token=' +
-        API_KEY,
+        process.env.API_KEY,
     );
     return response.pipe(
       map(response => response.data),
