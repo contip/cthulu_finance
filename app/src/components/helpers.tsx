@@ -48,14 +48,12 @@ export function numFormat(num: number): string {
  * refresh using react router.  since table data requires refresh after quick
  * trade, and since browser refresh would break snackbar alerts, this helper
  * route renders a loading spinner and performs a redirect, solving the issue
- * see https://github.com/ReactTraining/react-router/issues/7416 */
+ * see https://github.com/ReactTraining/react-router/issues/7416
+ * triggers a warning about setting state during render even though function
+ * doesn't render anything (bug) */
 export default function Redirect() {
   let history = useHistory();
   const classes = useStyles();
   history.push("/");
-  return (null
-    // <div className={classes.root}>
-    //   <CircularProgress color="secondary" />
-    // </div>
-  );
+  return (null);
 }

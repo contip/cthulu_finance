@@ -55,7 +55,6 @@ export default function App() {
             <nav>
               <MenuAppBar />
             </nav>
-            <Switch>
               <Grid
                 container
                 spacing={0}
@@ -64,6 +63,7 @@ export default function App() {
                 justify="center"
                 style={{ minHeight: "90vh" , position: "relative"}}
               >
+            <Switch>
                 <PrivateRoute exact path="/" component={Home} />
                 <Route exact path="/login" component={LoginForm} />
                 <Route exact path="/register" component={Register} />
@@ -74,8 +74,8 @@ export default function App() {
                 <PrivateRoute exact path="/lookup" component={Lookup} />
                 <PrivateRoute exact path="/logout" component={Logout as any} />
                 <Footer/>
-              </Grid>
             </Switch>
+              </Grid>
           </div>
         </Router>
       </SnackbarProvider>
