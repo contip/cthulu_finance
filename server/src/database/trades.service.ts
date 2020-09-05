@@ -77,8 +77,6 @@ export class TradesService {
     let userShares: number, i: number;
     /* make sure user has enough shares of given stock */
     for (i = 0; i < userData.holdings.length; i++) {
-      console.log('i is', i);
-      console.log('userData[i] is', userData.holdings[i])
       if (saleData.stock_symbol === userData.holdings[i]['stock_symbol']) {
         userShares = userData.holdings[i].shares;
         // i++;

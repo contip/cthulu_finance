@@ -53,9 +53,9 @@ export default function Redirect() {
   let history = useHistory();
   const classes = useStyles();
   history.push("/");
-  return (
-    <div className={classes.root}>
-      <CircularProgress color="secondary" />
-    </div>
+  return (null
+    // <div className={classes.root}>
+    //   <CircularProgress color="secondary" />
+    // </div>
   );
 }

@@ -100,6 +100,7 @@ export class UserService {
     for (let i = 0; i < holdings.length; i++) {
       if (holdings[i].shares === '0') {
         holdings.splice(i, 1);
+        i--;
       }
     }
     return holdings;
