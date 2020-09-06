@@ -103,6 +103,9 @@ export default function Lookup() {
         tableCols[tableCols.length - 1]["type"] = "currency";
       }
     });
+    tableCols.forEach((col: any) => {
+      col["width"] = 350;
+    })
     setColumnData(tableCols);
   }
 

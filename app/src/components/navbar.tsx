@@ -38,10 +38,12 @@ const useStyles = makeStyles((theme: Theme) =>
     infoBarTitles: {
       color: "black",
       padding: 5,
+      fontWeight: "bold"
     },
     infoBarSums: {
       color: "green",
       padding: 5,
+      fontWeight: "bold"
     },
   })
 );

@@ -14,10 +14,11 @@ import Buy from "./views/buy";
 import Sell from "./views/sell";
 import History from "./views/history";
 import { SnackbarProvider } from "notistack";
-import { Button, Grid } from "@material-ui/core";
+import { Button, Grid, Container } from "@material-ui/core";
 import MenuAppBar from "./components/navbar";
 import Redirect from "./components/helpers";
 import Footer from "./components/footer";
+import theme from "./data/theme";
 
 export default function App() {
   let [currentUser, setCurrentUser] = useState<IUser | null>(null);
@@ -51,7 +52,7 @@ export default function App() {
         anchorOrigin={{ horizontal: "center", vertical: "top" }}
       >
         <Router>
-          <div style={{width:"100%"}}>
+          <Container maxWidth="xl" >
             <nav>
               <MenuAppBar />
             </nav>
@@ -59,17 +60,18 @@ export default function App() {
               container
               spacing={5}
               direction="column"
-              alignItems="center"
-              alignContent="center"
+              // alignItems="center"
+              // alignContent="center"
               justify="flex-start"
               style={{
-                width: "100%",
+                // width: "100%",
                 minHeight: "90vh",
                 position: "relative",
                 paddingTop: "10%",
+                alignContent: "center"
               }}
             >
-              <Grid item draggable="true" > 
+              <Grid item style={{width: "100%"}}> 
                 <Switch>
                   <PrivateRoute exact path="/" component={Home} />
                   <Route exact path="/login" component={LoginForm} />
@@ -90,7 +92,7 @@ export default function App() {
                 <Footer />
               </Grid>
             </Grid>
-          </div>
+          </Container>
         </Router>
       </SnackbarProvider>
     </React.Fragment>

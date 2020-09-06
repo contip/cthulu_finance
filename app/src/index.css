@@ -30,11 +30,11 @@ td, th {
   text-align: left; 
 }
 
-div[class^="MTableToolbar-title"] {
+/* div[class^="MTableToolbar-title"] {
   width: 100%;
   padding-left: 8px;
   text-align: center;
-}
+} */
 
 h6[class^="MuiTypography-root"] {
   font-family: 'Chiller';
@@ -49,4 +49,10 @@ div[class^="MuiInputBase-root"] {
 @font-face {
   font-family: 'Chiller';
   src: local('Chiller'), url(./fonts/CHILLER.TTF) format('truetype');
+}
+
+
+div[class^="MTableToolbar-title"] {
+  width: 100%;
+  text-align: center;
 }
