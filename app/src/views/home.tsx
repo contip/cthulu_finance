@@ -7,16 +7,19 @@ import Trade from "../components/trade";
 import ShopTwo from "@material-ui/icons/ShopTwo";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Title from "../components/title";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      display: "flex",
-      "& > * + *": {
-        marginLeft: theme.spacing(2),
-      },
+      width: "100%",
+      textAlign: "center",
     },
     quickTrade: {
+      textAlign: "center",
+    },
+    mainDisplay: {
+      width: "100%",
       textAlign: "center",
     },
   })
@@ -24,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const tableCols: Array<ITableCol> = [];
 Object.keys(HoldingsColumnsMap).forEach((key) => {
-  tableCols.push({ title: HoldingsColumnsMap[key], field: key, width: 350});
+  tableCols.push({ title: HoldingsColumnsMap[key], field: key, width: 350 });
   if (key === "price" || key === "value") {
     tableCols[tableCols.length - 1]["type"] = "currency";
   }
@@ -55,7 +58,10 @@ export default function Home(): JSX.Element {
   }
 
   return (
-    <div style={{paddingBottom: "5%"}}>
+    <div className={classes.mainDisplay}>
+      <Title
+        view={authService.currentUserValue.userData.username + "'s Portfolio"}
+      />
       <Table
         {...{
           tableCols: tableCols,
@@ -79,7 +85,6 @@ export default function Home(): JSX.Element {
             paging: false,
             showSelectAllCheckbox: false,
             search: false,
-            // tableLayout: "fixed"
           },
         }}
       />

@@ -79,7 +79,6 @@ export class TradesService {
     for (i = 0; i < userData.holdings.length; i++) {
       if (saleData.stock_symbol === userData.holdings[i]['stock_symbol']) {
         userShares = userData.holdings[i].shares;
-        // i++;
         break; // indexing variable can be used later to access holdings
       }
     }
@@ -110,8 +109,7 @@ export class TradesService {
     return await this.getUserById(saleData.user_id);
   }
 
-  /* following are helper functions that call on providers of other modules */
-
+  /***following are helper functions that call on providers of other modules***/
   /* calls appropriate method in users service to get transaction history
    * from users table as an array of objects*/
   getUserHistory = async (user_id: number): Promise<Array<portfolioDto>> => {

@@ -1,12 +1,12 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UserService } from '../database/user.service';
+import { LookupService } from 'src/lookup/lookup.service';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
-import { loginRegisterDto } from './interfaces/register-dto';
 import { userDto } from '../database/interfaces/user-dto.interface';
+import { loginRegisterDto } from './interfaces/register-dto';
 import { tradeInputDto } from 'src/database/interfaces/trades-dto.interface';
 import { HASH_SALT } from './constants';
-import { LookupService } from 'src/lookup/lookup.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +18,7 @@ export class AuthService {
 
   /* password-based user validation function, used by routes guarded with
    * the 'local' strategy (i.e. login); returns user data if plaintext
-   * password from request matches the stored hash */
+   * password from request matches the stored hash, null otherwise */
   async validateUser(username: string, password: string): Promise<userDto> {
     const user = await this.userService.findByNameAuth(username);
     if (
@@ -39,20 +39,18 @@ export class AuthService {
     const hash = await bcrypt.hash(regData.password, HASH_SALT);
     regData.password = null;
     const toSave = { username: regData.username, hash: hash };
-    /* createUser uses the typeorm save() function which should exclude
-     * returning the hash column (set by default to unselected), but it
-     * doesn't (bugged) therefore a try/catch workaround is used */
     try {
       let userData = await this.userService.createUser(toSave);
       delete userData.hash;
       return userData;
     } catch (error) {
-      // if (error?.code == 'SQLITE_CONSTRAINT') {
-      //   throw new HttpException(
-      //     'User with that username already exists!',
-      //     HttpStatus.BAD_REQUEST,
-      //   );
-      // }
+      /* 23505 is the unique constraint error code for postgres */
+      if (error?.code === '23505') {
+        throw new HttpException(
+          'User with that username already exists!',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
       throw new HttpException(
         'Error registering user!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -60,7 +58,7 @@ export class AuthService {
     }
   }
 
-  /* logs in user based on local strategy; issue JWT with username and id,
+  /* logs in user based on local strategy; issues JWT with username and id
    * as well as relevant user data including cash and holdings */
   async login(user: any) {
     const payload = { username: user.username, id: user.id };

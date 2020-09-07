@@ -19,7 +19,7 @@ export async function fetchCall(payload: IAuthCall | ITradeCall | ILookupCall) {
   }
 }
 
-/* convert input numbers to properly formatted currency strings */
+/* converts input number to a properly formatted US currency string */
 export function numFormat(num: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -30,10 +30,10 @@ export function numFormat(num: number): string {
 /* currently no supported way to force rerender of a route without a browser
  * refresh using react router.  since table data requires refresh after quick
  * trade, and since browser refresh would break snackbar alerts, this helper
- * route renders a loading spinner and performs a redirect, solving the issue
+ * route provides a workaround to trigger the refresh in the desired manner
  * see https://github.com/ReactTraining/react-router/issues/7416
  * triggers a warning about setting state during render even though function
- * doesn't render anything (bug) */
+ * doesn't render anything */
 export default function Redirect() {
   let history = useHistory();
   history.push("/");

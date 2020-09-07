@@ -12,16 +12,13 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
-import { Typography } from "@material-ui/core";
+import { Typography, Grid } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      display: "flex",
-      "& > * + *": {
-        marginLeft: theme.spacing(2),
-      },
+      textAlign: "center",
     },
     quickTrade: {
       textAlign: "center",
@@ -29,7 +26,8 @@ const useStyles = makeStyles((theme: Theme) =>
     tradeInfo: {
       fontFamily: "Chiller",
       fontSize: "x-large",
-      color: theme.palette.primary.main,
+      color: theme.palette.secondary.main,
+      fontWeight: "bold",
     },
     visible: {
       textAlign: "center",
@@ -38,10 +36,17 @@ const useStyles = makeStyles((theme: Theme) =>
     hidden: {
       visibility: "hidden",
     },
+    sums: {
+      fontWeight: "bold",
+      color: theme.palette.primary.main,
+      display: "inline",
+      fontFamily: "Chiller",
+      fontSize: "x-large",
+    },
   })
 );
 
-/* configurable quicktrade form, allowing user to buy or sell */
+/* configurable quicktrade form, allowing user to buy or sell stocks */
 export default function Trade(props: ITradeProps): JSX.Element {
   let [lookupPrice, setLookupPrice] = useState<number>(0);
   let [tradeType, setTradeType] = useState(props.type);
@@ -66,8 +71,8 @@ export default function Trade(props: ITradeProps): JSX.Element {
     });
   }
 
-  /* prevent stale purchase/sale requests from "/" (home) route by fetching
-   * latest price data, otherwise use price data from passed props */
+  /* prevent stale purchase/sale requests from "/" route by fetching latest
+   * price data, otherwise use newly generated price data from passed props */
   useEffect(() => {
     if (location.pathname === "/") {
       let payload: ILookupCall = {
@@ -90,8 +95,8 @@ export default function Trade(props: ITradeProps): JSX.Element {
     }
   }, []);
 
-  /* reachable by user accepting the transaction alert popup; handles
-   * server api call to log the trade, then updates with a redirect */
+  /* handles server api call to log the trade, then updates state with redirect;
+   * reachable by user accepting the transaction confirmation popup */
   async function handleSubmit() {
     setConfirm(false); /* close the alert popup */
     let payload: ITradeCall = {
@@ -105,13 +110,10 @@ export default function Trade(props: ITradeProps): JSX.Element {
     };
     let response = await fetchCall(payload);
     if (response.code) {
-      /* error codes from server requests should be unreachable due to validity
-       * checks, but if received, display as a snackbar and reset state*/
       enqueueSnackbar(response.message, { variant: "error" });
       setSharesInput("");
     } else {
       enqueueSnackbar(
-        /* display the appropriate success snackbar */
         tradeType === "buy" ? "Purchase Successful!" : "Sale Successful!",
         {
           variant: "success",
@@ -126,7 +128,7 @@ export default function Trade(props: ITradeProps): JSX.Element {
     return;
   }
 
-  /* if user declines confirmation, reset state and display cancelled snack */
+  /* if user declines confirmation, resets state and displays cancelled snack */
   function handleCancelAlert() {
     setConfirm(false);
     enqueueSnackbar(
@@ -158,8 +160,8 @@ export default function Trade(props: ITradeProps): JSX.Element {
   return (
     <>
       {
-        /* only display buy/sell radios if component accessed thru Table
-         * triggers material ui warning about changing the uncontrolled
+        /* only display buy/sell radios if component accessed thru Table */
+        /* triggers material ui warning about changing the uncontrolled
          * value state of radio button (bug) */
         (location.pathname === "/" || location.pathname === "/lookup") && (
           <FormControl component="fieldset">
@@ -263,14 +265,19 @@ export default function Trade(props: ITradeProps): JSX.Element {
       />
       {/* depending on location, display text showing price of currently "selected"
        * stock as well as summary of total proposed transaction amount */}
-      <div id="tradeInfo">
+      <Grid container direction="column" className={classes.root}>
         {(location.pathname === "/buy" || location.pathname === "/sell") && (
           <Typography
             variant="body1"
-            className={[lookupPrice > 0 ? classes.visible : classes.hidden, classes.tradeInfo].join(" ")}
-          ><b>
+            className={[
+              lookupPrice > 0 ? classes.visible : classes.hidden,
+              classes.tradeInfo,
+            ].join(" ")}
+          >
             {props.stock_name} ({props.stock_symbol}) current price:{" "}
-            {numFormat(lookupPrice)}</b>
+            <Typography variant="body1" className={classes.sums}>
+              {numFormat(lookupPrice)}
+            </Typography>
           </Typography>
         )}
         <Typography
@@ -278,16 +285,19 @@ export default function Trade(props: ITradeProps): JSX.Element {
           className={[
             validSharesInput && sharesInput !== "" && sharesInput !== "0"
               ? classes.visible
-              : classes.hidden, classes.tradeInfo].join(" ")
-          }
+              : classes.hidden,
+            classes.tradeInfo,
+          ].join(" ")}
         >
-          {tradeType === "buy" ? "Purchase" : "Sale"} price:{" "}<b>
-          {new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-          }).format(lookupPrice * parseInt(sharesInput))}</b>
+          {tradeType === "buy" ? "Purchase" : "Sale"} price:{" "}
+          <Typography variant="body1" className={classes.sums}>
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(lookupPrice * parseInt(sharesInput))}
+          </Typography>
         </Typography>
-      </div>
+      </Grid>
     </>
   );
 }

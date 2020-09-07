@@ -29,6 +29,7 @@ export const HistoryColumnsMap: any = {
         transaction_price: "Total Transaction Amount",
 }
 
+/* backend routes (set server url in env variables or proxy to localhost) */
 export const Urls = {
         login: "auth/login",
         register: "auth/register",

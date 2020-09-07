@@ -22,7 +22,7 @@ export default function Footer(): JSX.Element {
   return (
     <Box bgcolor="primary.main" className={classes.root}>
       <Typography variant="body2" className={classes.footerText}>
-        Miskatonic Research Systems, 2020.
+        Miskatonic University, 2020.
       </Typography>
       <Typography variant="body2" className={classes.footerText}>
         Financial information provided by{" "}

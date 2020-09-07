@@ -36,3 +36,13 @@ lerna-debug.log*
 
 # environment variables
 *.env
+
+#typescript lint config
+*.eslintrc*
+
+#prettier settings
+*.prettier*
+
+*react-app-env.d.ts
+
+

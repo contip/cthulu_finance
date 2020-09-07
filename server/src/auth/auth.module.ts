@@ -6,7 +6,6 @@ import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
 import { LookupModule } from 'src/lookup/lookup.module';
 
 @Module({
@@ -14,8 +13,8 @@ import { LookupModule } from 'src/lookup/lookup.module';
     forwardRef(() => DatabaseModule),
     PassportModule,
     JwtModule.register({
-      secret: jwtConstants.SECRET,
-      signOptions: { expiresIn: jwtConstants.EXPIRY },
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: process.env.JWT_EXPIRY },
     }),
     forwardRef(() => LookupModule),
   ],

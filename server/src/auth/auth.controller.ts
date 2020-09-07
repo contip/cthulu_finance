@@ -17,7 +17,7 @@ import { userNameConstraints } from './constants';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  /* login controller assumes post req with body containing entries for
+  /* /login controller assumes post req with body containing entries for
    * 'username' and 'password' */
   @UseGuards(AuthGuard('local'))
   @Post('/login')
@@ -28,7 +28,7 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-  /* users controller allows retrieval of user data for get requests bearing
+  /* /users controller allows retrieval of user data for get requests bearing
    * valid jwt credentials; also issues a new jwt */
   @UseGuards(AuthGuard('jwt'))
   @Get('/users')
@@ -36,7 +36,7 @@ export class AuthController {
     return await this.authService.getUserByToken(req.user);
   }
 
-  /* register controller is unguarded and assumes post req with body
+  /* /register controller is unguarded and assumes post req with body
    * containing entries for 'username' and 'password' */
   @Post('/register')
   async register(@Body() body: Body): Promise<any> {
@@ -53,8 +53,8 @@ export class AuthController {
     return await this.authService.login(userData);
   }
 
-  /* unguarded /available controller accepts req with single field ('username')
-   * in body, returns true if username is available in db, false otherwise */
+  /* /available accepts req with single field ('username') in body, returns true
+   * if username is available in db, false otherwise; unguarded */
   @Post('/available')
   async available(@Body() body: Body): Promise<Boolean> {
     /* impose restrictions on username length and legal chars */

@@ -6,12 +6,13 @@ import { LookupModule } from './lookup/lookup.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserEntity } from './database/entities/users.entity';
 import { Trades } from './database/entities/trades.entity';
-import * as PostgressConnectionStringParser from 'pg-connection-string';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import * as PostgressConnectionStringParser from 'pg-connection-string';
 
+/* if NODE_ENV is development, will use postgres connection info from
+ * process.env.POSTGRES*, otherwise decoded from process.env.DATABASE_URL */
 const databaseUrl: string = process.env.DATABASE_URL;
-console.log(process.env.NODE_ENV);
 const connectionOptions =
   process.env.NODE_ENV === 'development'
     ? {
@@ -25,15 +26,16 @@ const connectionOptions =
 
 @Module({
   imports: [
+    /* enables serving the compiled frontend from the "build" subdirectory */
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'build'),
-      exclude: ['/auth*', '/trades*', '/lookup']
+      /* exclude backend api routes from serve static module */
+      exclude: ['/auth*', '/trades*', '/lookup'],
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: connectionOptions.host,
-      port:
-        parseInt(connectionOptions.port),
+      port: parseInt(connectionOptions.port),
       username: connectionOptions.user,
       password: connectionOptions.password,
       database: connectionOptions.database,

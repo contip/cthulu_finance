@@ -18,7 +18,7 @@ export class DatabaseController {
     private authService: AuthService,
   ) {}
 
-  /* controller for purchases; sends incoming request to be validated, then
+  /* /buy controller sends incoming request to be validated, then
    * passes purchase data to trades service to be added to db */
   @UseGuards(AuthGuard('jwt'))
   @Post('/buy')
@@ -27,7 +27,7 @@ export class DatabaseController {
     return this.tradesService.logPurchase(tradeData);
   }
 
-  /* controller for sales; sends incoming request to be validated, then
+  /* /sell controller sends incoming request to be validated, then
    * passes sale data to trades service to be added to db */
   @UseGuards(AuthGuard('jwt'))
   @Post('/sell')
@@ -36,7 +36,7 @@ export class DatabaseController {
     return this.tradesService.logSale(tradeData);
   }
 
-  /* controller for retrieving user history / portfolio; validates request
+  /* /history controller for transaction history validates request
    * then passes data to trades service where db query is performed */
   @UseGuards(AuthGuard('jwt'))
   @Post('/history')

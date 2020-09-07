@@ -7,8 +7,8 @@ import { Observable } from 'rxjs';
 export class LookupController {
   constructor(private readonly lookupService: LookupService) {}
 
-  /* controller for post to /lookup requires jwt authentication and looks
-   * for 'name' field in request body */
+  /* /lookup controller for stock quotes; looks for 'name' field in
+   * request body */
   @Post()
   @UseGuards(AuthGuard('jwt'))
   async get_quote(@Body() body: Body): Promise<Observable<object>> {

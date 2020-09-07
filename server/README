@@ -1,1 +1,21 @@
-The server portion for the finance app, written in nest js
+environment variables to set:
+
+heroku:
+JWT_EXPIRY
+JWT_SECRET
+NODE_ENV
+API_KEY
+
+local development:
+POSTGRES_HOST
+POSTGRES_PORT
+POSTGRES_USER
+POSTGRES_PASSWORD
+POSTGRES_DB
+PORT
+API_KEY
+JWT_SECRET
+JWT_EXPIRY
+NODE_ENV
+
+*for local development, POSTGRES variables also need to go in docker.env

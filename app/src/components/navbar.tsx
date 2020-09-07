@@ -11,7 +11,7 @@ import { IUser, IUserHoldingFull } from "../data/interfaces";
 import { authService } from "./auth.service";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@material-ui/core";
-import logo from "../img/logo.png";
+import logo from "../data/img/logo.png";
 import { numFormat } from "./helpers";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -38,12 +38,12 @@ const useStyles = makeStyles((theme: Theme) =>
     infoBarTitles: {
       color: "black",
       padding: 5,
-      fontWeight: "bold"
+      fontWeight: "bold",
     },
     infoBarSums: {
       color: "green",
       padding: 5,
-      fontWeight: "bold"
+      fontWeight: "bold",
     },
   })
 );
@@ -69,7 +69,7 @@ export default function MenuAppBar() {
     };
   }, [currentUser]);
 
-  /* loggin-in user dropdown menu handlers */
+  /* logged-in user dropdown menu handlers */
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -95,7 +95,8 @@ export default function MenuAppBar() {
         <Toolbar>
           <div>
             {/* main logo button links to root route (portfolio) if
-             * user logged in, otherwise links to login */}
+             * user logged in, otherwise links to login; Cthulu icon source:
+             * https://github.com/FortAwesome/Font-Awesome/ */}
             <IconButton
               edge="start"
               component={Link}

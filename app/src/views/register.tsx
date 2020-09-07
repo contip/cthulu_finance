@@ -6,7 +6,7 @@ import { fetchCall } from "../components/helpers";
 import { useSnackbar } from "notistack";
 import { IAuthCall } from "../data/interfaces";
 import InputForm from "../components/input-form";
-import logo from "../img/login.png";
+import logo from "../data/img/login.png";
 
 /* simple registration form using validated mui text inputs */
 export default function Register(): JSX.Element {
@@ -84,12 +84,12 @@ export default function Register(): JSX.Element {
       if (response) {
         enqueueSnackbar(`Username ${nameInput} is available!`, {
           variant: "info",
-          autoHideDuration: 6000, 
+          autoHideDuration: 6000,
         });
       } else {
         enqueueSnackbar(`Username not available!`, {
           variant: "warning",
-          autoHideDuration: 6000, 
+          autoHideDuration: 6000,
         });
       }
     }
@@ -97,7 +97,7 @@ export default function Register(): JSX.Element {
 
   return (
     <div style={{ textAlign: "center" }}>
-     <img style={{maxWidth: "75%"}} src={logo} alt="logo"/>
+      <img style={{ maxWidth: "75%" }} src={logo} alt="logo" />
       <InputForm
         {...{
           onSubmit: handleSubmit,

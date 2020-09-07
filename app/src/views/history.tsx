@@ -7,15 +7,18 @@ import { fetchCall } from "../components/helpers";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Logout from "./logout";
+import Title from "../components/title";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      display: "flex",
-      "& > * + *": {
-        marginLeft: theme.spacing(2),
+      root: {
+        width: "100%",
+        textAlign: "center",
       },
-    },
+      mainDisplay: {
+        width: "100%",
+        textAlign: "center",
+      },
   })
 );
 
@@ -62,14 +65,14 @@ export default function History(): JSX.Element {
   if (!userHistory) {
     return (
       <div className={classes.root}>
-        <CircularProgress />
         <CircularProgress color="secondary" />
       </div>
     );
   }
 
   return (
-    <React.Fragment>
+    <div className={classes.mainDisplay}>
+      <Title view={authService.currentUserValue.userData.username + "'s Transaction History"} />
       <Table
         {...{
           tableCols: tableCols,
@@ -85,6 +88,6 @@ export default function History(): JSX.Element {
           },
         }}
       />
-    </React.Fragment>
+    </div>
   );
 }

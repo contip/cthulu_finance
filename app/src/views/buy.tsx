@@ -8,7 +8,7 @@ import Trade from "../components/trade";
 import Title from "../components/title";
 
 /* provides text input for user to enter stock name, checks validity of stock
- * symbol on blur, if valid show trade form and allow user to make purchase */
+ * symbol on blur, if valid shows trade form and allows user to make purchase */
 export default function Buy() {
   let [stockInput, setStockInput] = useState("");
   let [validStock, setValidStock] = useState(false);

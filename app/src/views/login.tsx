@@ -6,7 +6,7 @@ import { Urls } from "../data/constants";
 import { fetchCall } from "../components/helpers";
 import { useSnackbar } from "notistack";
 import InputForm from "../components/input-form";
-import logo from "../img/login.png";
+import logo from "../data/img/login.png";
 
 /* simple user login form using validating text inputs */
 export default function LoginForm(): JSX.Element {

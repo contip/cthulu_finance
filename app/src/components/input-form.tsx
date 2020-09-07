@@ -44,7 +44,6 @@ export default function InputForm(props: IForm): JSX.Element {
           variant="contained"
           color="primary"
           style={{
-            marginTop: "10px",
             marginBottom: "10px",
             
             visibility: props.buttonValidators.every(Boolean)

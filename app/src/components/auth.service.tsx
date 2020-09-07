@@ -27,7 +27,7 @@ async function login(userData: IUser): Promise<void> {
   currentUserSubject.next(userData);
 }
 
-/* log user out by clearing localStorage and setting observable next to null */
+/* logs user out by clearing localStorage and pushing null to observable */
 function logout(): void {
   localStorage.clear();
   currentUserSubject.next(null);
@@ -41,7 +41,7 @@ async function updateUserData(): Promise<void> {
     method: "GET",
     headers: header,
   });
-  if (response.status === 401) {
+  if (response.status >= 400) {
     logout();
     return;
   }

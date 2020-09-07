@@ -18,7 +18,6 @@ import { Button, Grid, Container } from "@material-ui/core";
 import MenuAppBar from "./components/navbar";
 import Redirect from "./components/helpers";
 import Footer from "./components/footer";
-import theme from "./data/theme";
 
 export default function App() {
   let [currentUser, setCurrentUser] = useState<IUser | null>(null);
@@ -52,7 +51,7 @@ export default function App() {
         anchorOrigin={{ horizontal: "center", vertical: "top" }}
       >
         <Router>
-          <Container maxWidth="xl" >
+          <Container maxWidth="xl">
             <nav>
               <MenuAppBar />
             </nav>
@@ -65,13 +64,14 @@ export default function App() {
               justify="flex-start"
               style={{
                 // width: "100%",
+                display: "flex",
                 minHeight: "90vh",
                 position: "relative",
                 paddingTop: "10%",
-                alignContent: "center"
+                alignContent: "center",
               }}
             >
-              <Grid item style={{width: "100%"}}> 
+              <Grid item style={{ width: "100%", paddingBottom: "5%"}}>
                 <Switch>
                   <PrivateRoute exact path="/" component={Home} />
                   <Route exact path="/login" component={LoginForm} />
@@ -88,10 +88,10 @@ export default function App() {
                   />
                 </Switch>
               </Grid>
-              <Grid item>
+            </Grid>
+              <Grid item > 
                 <Footer />
               </Grid>
-            </Grid>
           </Container>
         </Router>
       </SnackbarProvider>

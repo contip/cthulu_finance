@@ -25,7 +25,7 @@ export default function Table(props: {
   return (
     <div className={props.title}>
       <MaterialTable
-        options={props.options}
+        options={{...props.options, ...{showTitle: false, toolbar: false}}}
         columns={props.tableCols as any}
         data={props.data}
         title={props.title}

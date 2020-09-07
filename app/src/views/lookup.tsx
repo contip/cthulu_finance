@@ -47,8 +47,8 @@ export default function Lookup() {
       setLookupInput("");
       return;
     } else {
-      /* api sometimes includes min/max dates without the associated min/max
-       * price.. in this case, discard the date */
+      /* IEX api sometimes includes min/max dates without the associated
+       * min/max price (a bug)... in this case, discard the date */
       let lookupData: any = {};
       Object.keys(LookupColumnsMap).forEach((element) => {
         if (response[element]) {
@@ -105,7 +105,7 @@ export default function Lookup() {
     });
     tableCols.forEach((col: any) => {
       col["width"] = 350;
-    })
+    });
     setColumnData(tableCols);
   }
 
