@@ -1,24 +1,22 @@
-The idea is to implement something like the CS50x finance application:
+Cthulu Finance - educational mock stock-trading project
 
-https://cs50.harvard.edu/x/2020/tracks/web/finance/
+Simple CRUD app begun as a first personal project after the completion of 
+an undergraduate web development course.  The project aims to recreate the 
+functionality of the following site:
 
-using nest js and react with typescript instead of flask and python.
-The reason is that I have taken a web dev course recently, and would like to 
-apply some of the skills (js / node) I learned in that course.  I would also 
-like to learn react.
+https://finance.cs50.net/
 
-The CS50x project itself is presented as mostly pre-built, with the user to 
-finish writing several incomplete functions.  This project aims to implement 
-everything from scratch and use none of the CS50 code (except for, perhaps, 
-the html layout of the main app page).
+from the ground up, as a learning exercise.
 
-current goal:
--implement quick buy / sell from landing page; persistently display 
-    username and cash
+Technologies used:
+-Backend: Nestjs, postgresql
+-Frontend: React (typescript)
 
--remaining feature additions:
-    -notification / alert system
-    
--essential code improvements (combining redundant functions)
--design
--code cleanup and documentation
+Some features:
+-JWT-authenticated user login / registration system
+-sortable interactive tables with inline trading functionality
+-use of material-ui and associated material design principles
+
+Check out the live app here:
+
+https://guarded-reaches-45301.herokuapp.com/
