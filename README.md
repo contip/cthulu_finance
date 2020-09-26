@@ -18,7 +18,7 @@ Frontend written in React with TypeScript using functional components and
  hooks, and using material-ui and associated material design principles
 
 ## Additional Features
-JWT-based user authentication service
+JWT-based user authentication service\
 Interactive tables with in-line purchase, sale, and sorting functionality
 
 ## License
