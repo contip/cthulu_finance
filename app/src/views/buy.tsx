@@ -55,8 +55,8 @@ export default function Buy() {
 
   let tradeProps: ITradeProps = {
     stock_symbol: lookupData.symbol,
-    stock_name: lookupData.companyName,
-    latestPrice: lookupData.latestPrice,
+    stock_name: lookupData.shortName,
+    latestPrice: lookupData.regularMarketPrice,
     type: "buy",
   };
 

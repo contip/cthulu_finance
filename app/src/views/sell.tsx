@@ -103,9 +103,9 @@ export default function Sell(): JSX.Element {
 
   let tradeProps: ITradeProps = {
     stock_symbol: lookupData.symbol,
-    stock_name: lookupData.companyName,
+    stock_name: lookupData.shortName,
     shares: userShares,
-    latestPrice: lookupData.latestPrice,
+    latestPrice: lookupData.regularMarketPrice,
     type: "sell",
   };
 

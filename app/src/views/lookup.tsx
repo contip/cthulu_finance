@@ -86,6 +86,7 @@ export default function Lookup() {
     tableCols.forEach((col: any) => {
       col["width"] = 350;
     });
+    console.log(tableCols);
     setColumnData(tableCols);
   }
 
@@ -128,7 +129,7 @@ export default function Lookup() {
       {
         /* display table with lookup data if successful lookup, otherwise
          * render equivalent whitespace to preserve formatting */
-        didSearch && stockData && stockData.companyName && columnData ? (
+        didSearch && stockData && stockData.shortName && columnData ? (
           <div>
             {Table({
               tableCols: columnData,

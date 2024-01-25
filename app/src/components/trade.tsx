@@ -87,7 +87,7 @@ export default function Trade(props: ITradeProps): JSX.Element {
           enqueueSnackbar(response.message, { variant: "error" });
           setLookupPrice(0);
         } else {
-          setLookupPrice(response.latestPrice);
+          setLookupPrice(response["optionChain"]["result"][0]["quote"]["regularMarketPrice"]);
         }
       });
     } else {
