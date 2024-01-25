@@ -34,7 +34,7 @@ export default function Lookup() {
   /* carries out fetch request to server for stock lookup data */
   async function handleSubmit() {
     /* purge anything in stockData / columnData state before submission */
-    setStockData({ companyName: "", symbol: "", latestPrice: NaN });
+    setStockData({ shortName: "", symbol: "", regularMarketPrice: NaN });
     setColumnData(null);
     let payload: ILookupCall = {
       url: Urls.lookup,
@@ -47,29 +47,9 @@ export default function Lookup() {
       setLookupInput("");
       return;
     } else {
-      /* IEX api sometimes includes min/max dates without the associated
-       * min/max price (a bug)... in this case, discard the date */
       let lookupData: any = {};
       Object.keys(LookupColumnsMap).forEach((element) => {
-        if (response[element]) {
-          if (element === "lowTime" || element === "highTime") {
-            if (!response[element.substr(0, element.indexOf("T"))]) {
-              delete response[element];
-            } else {
-              /* if date and min/max present, convert to readable string */
-              lookupData[element] = new Intl.DateTimeFormat("en-Us", {
-                year: "numeric",
-                month: "numeric",
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                second: "numeric",
-              }).format(response[element]);
-            }
-          } else {
-            lookupData[element] = response[element];
-          }
-        }
+            lookupData[element] = response["optionChain"]["result"][0]["quote"][element];
       });
       setLookupInput("");
       /* see if user owns any of that stock already (to give sell option) */
@@ -111,9 +91,9 @@ export default function Lookup() {
 
   let tradeProps: ITradeProps = {
     stock_symbol: stockData.symbol,
-    stock_name: stockData.companyName,
+    stock_name: stockData.shortName,
     shares: userShares,
-    latestPrice: stockData.latestPrice,
+    latestPrice: stockData.regularMarketPrice,
   };
 
   return (

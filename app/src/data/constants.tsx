@@ -1,15 +1,8 @@
 /* column names for all data fields used as columns in tables */
 export const LookupColumnsMap: any = {
-        companyName: "Company Name",
+        shortName: "Company Name",
         symbol: "Trade Symbol",
-        latestPrice: "Current Price",
-        previousClose: "Last Closing Price",
-        low: "24h Low Price",
-        lowTime: "24h Low Time",
-        high: "24h High Price",
-        highTime: "24h High Time",
-        week52Low: "Yearly Low Price",
-        week52High: "Yearly High Price",
+        regularMarketPrice: "Current Price",
 }
 
 export const HoldingsColumnsMap: any = {
