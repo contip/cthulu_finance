@@ -15,11 +15,8 @@ export class LookupService {
    * not found exception */
   async get_quote(symbol: string) {
     let response = this.http.get(
-      'https://cloud-sse.iexapis.com/stable/stock/' +
-        symbol +
-        '/quote?token=' +
-        process.env.API_KEY,
-    );
+      'https://query1.finance.yahoo.com/v7/finance/options/' +
+        symbol);
     return response.pipe(
       map(response => response.data),
       catchError(err => {
