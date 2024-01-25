@@ -3,8 +3,8 @@ import {
   HttpService,
   HttpException,
   HttpStatus,
-} from '@nestjs/common';
-import { map, catchError } from 'rxjs/operators';
+} from "@nestjs/common";
+import { map, catchError } from "rxjs/operators";
 
 @Injectable()
 export class LookupService {
@@ -15,16 +15,23 @@ export class LookupService {
    * not found exception */
   async get_quote(symbol: string) {
     let response = this.http.get(
-      'https://query1.finance.yahoo.com/v7/finance/options/' +
-        symbol);
+      "https://query1.finance.yahoo.com/v7/finance/options/" + symbol
+    );
     return response.pipe(
-      map(response => response.data),
-      catchError(err => {
-        throw new HttpException(
-          'Not Found / Invalid Stock Symbol',
-          HttpStatus.BAD_REQUEST,
-        );
+      map((response) => {
+        return {
+          latestPrice:
+            response.data.optionChain.result[0].quote.regularMarketPrice,
+          companyName: response.data.optionChain.result[0].quote.shortName,
+          symbol: response.data.optionChain.result[0].quote.symbol,
+        };
       }),
+      catchError((err) => {
+        throw new HttpException(
+          "Not Found / Invalid Stock Symbol",
+          HttpStatus.BAD_REQUEST
+        );
+      })
     );
   }
 }
