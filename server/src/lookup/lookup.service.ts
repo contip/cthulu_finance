@@ -19,6 +19,13 @@ export class LookupService {
     );
     return response.pipe(
       map((response) => {
+        if (
+          !response.data.optionChain.result[0].quote.regularMarketPrice ||
+          !response.data.optionChain.result[0].quote.shortName ||
+          !response.data.optionChain.result[0].quote.symbol
+        ) {
+          throw new Error();
+        }
         return {
           latestPrice:
             response.data.optionChain.result[0].quote.regularMarketPrice,
@@ -27,6 +34,7 @@ export class LookupService {
         };
       }),
       catchError((err) => {
+        console.log(err);
         throw new HttpException(
           "Not Found / Invalid Stock Symbol",
           HttpStatus.BAD_REQUEST
