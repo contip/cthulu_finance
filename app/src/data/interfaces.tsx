@@ -109,9 +109,9 @@ export interface IUserTransaction {
 
 /* lookup controller */
 export interface IStockData {
-  shortName: string;
+  companyName: string;
   symbol: string;
-  regularMarketPrice: number;
+  latestPrice: number;
   previousClose?: number;
   low?: number;
   lowTime?: string;
