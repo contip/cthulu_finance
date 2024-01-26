@@ -5,6 +5,7 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import { map, catchError } from "rxjs/operators";
+import TickerSymbols from "./lookup.companies";
 
 @Injectable()
 export class LookupService {
@@ -15,28 +16,25 @@ export class LookupService {
    * not found exception */
   async get_quote(symbol: string) {
     let response = this.http.get(
-      "https://query1.finance.yahoo.com/v7/finance/options/" + symbol
+      process.env.LOOKUP_URL + "quote?symbol=" + symbol,
+      {
+        headers: { "X-Finnhub-Token": process.env.API_KEY },
+      }
     );
     return response.pipe(
       map((response) => {
-        let quote = response.data.optionChain.result[0].quote;
-        if (
-          !quote ||
-          !quote.regularMarketPrice ||
-          !quote.shortName ||
-          !quote.symbol
-        ) {
-          throw new Error();
-        }
+        let quote = response.data;
+        if (!quote.c || quote.c === 0) throw new Error();
+        let name = TickerSymbols.find(
+          (e) => e.symbol.toLowerCase() === symbol.toLowerCase()
+        )?.name ?? symbol;
         return {
-          latestPrice: quote.regularMarketPrice,
-          companyName: quote.shortName,
-          symbol: quote.symbol,
-          previousClose: quote.regularMarketPreviousClose,
-          low: quote.regularMarketDayLow,
-          high: quote.regularMarketDayHigh,
-          week52Low: quote.fiftyTwoWeekLow,
-          week52High: quote.fiftyTwoWeekHigh
+          latestPrice: quote.c,
+          companyName: name,
+          symbol: symbol,
+          previousClose: quote.pc,
+          low: quote.l,
+          high: quote.h,
         };
       }),
       catchError((err) => {
