@@ -74,7 +74,7 @@ export default function Trade(props: ITradeProps): JSX.Element {
   /* prevent stale purchase/sale requests from "/" route by fetching latest
    * price data, otherwise use newly generated price data from passed props */
   useEffect(() => {
-    if (location.pathname === "/") {
+    if (!props || !props.latestPrice) {
       let payload: ILookupCall = {
         url: Urls.lookup,
         auth: true,
@@ -168,7 +168,7 @@ export default function Trade(props: ITradeProps): JSX.Element {
             <RadioGroup
               aria-label="tradeType"
               name="typeSelect"
-              value={tradeType}
+              value={tradeType ?? ""}
               onChange={handleChange}
               row
             >
@@ -268,6 +268,7 @@ export default function Trade(props: ITradeProps): JSX.Element {
       <Grid container direction="column" className={classes.root}>
         {(location.pathname === "/buy" || location.pathname === "/sell") && (
           <Typography
+            component="div"
             variant="body1"
             className={[
               lookupPrice > 0 ? classes.visible : classes.hidden,
@@ -275,12 +276,17 @@ export default function Trade(props: ITradeProps): JSX.Element {
             ].join(" ")}
           >
             {props.stock_name} ({props.stock_symbol}) current price:{" "}
-            <Typography variant="body1" className={classes.sums}>
+            <Typography
+              component="div"
+              variant="body1"
+              className={classes.sums}
+            >
               {numFormat(lookupPrice)}
             </Typography>
           </Typography>
         )}
         <Typography
+          component="div"
           variant="body1"
           className={[
             validSharesInput && sharesInput !== "" && sharesInput !== "0"
@@ -290,7 +296,7 @@ export default function Trade(props: ITradeProps): JSX.Element {
           ].join(" ")}
         >
           {tradeType === "buy" ? "Purchase" : "Sale"} price:{" "}
-          <Typography variant="body1" className={classes.sums}>
+          <Typography component="div" variant="body1" className={classes.sums}>
             {new Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",

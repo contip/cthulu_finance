@@ -43,7 +43,7 @@ export default function Home(): JSX.Element {
   /* silently get new JWT and refresh user holding data on load */
   useEffect(() => {
     authService.updateUserData().then(() => {
-      setUserHoldings(authService.currentUserValue.userData.holdings);
+      setUserHoldings(authService.currentUserValue?.userData?.holdings);
     });
   }, []);
 

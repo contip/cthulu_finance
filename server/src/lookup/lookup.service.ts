@@ -19,22 +19,27 @@ export class LookupService {
     );
     return response.pipe(
       map((response) => {
+        let quote = response.data.optionChain.result[0].quote;
         if (
-          !response.data.optionChain.result[0].quote.regularMarketPrice ||
-          !response.data.optionChain.result[0].quote.shortName ||
-          !response.data.optionChain.result[0].quote.symbol
+          !quote ||
+          !quote.regularMarketPrice ||
+          !quote.shortName ||
+          !quote.symbol
         ) {
           throw new Error();
         }
         return {
-          latestPrice:
-            response.data.optionChain.result[0].quote.regularMarketPrice,
-          companyName: response.data.optionChain.result[0].quote.shortName,
-          symbol: response.data.optionChain.result[0].quote.symbol,
+          latestPrice: quote.regularMarketPrice,
+          companyName: quote.shortName,
+          symbol: quote.symbol,
+          previousClose: quote.regularMarketPreviousClose,
+          low: quote.regularMarketDayLow,
+          high: quote.regularMarketDayHigh,
+          week52Low: quote.fiftyTwoWeekLow,
+          week52High: quote.fiftyTwoWeekHigh
         };
       }),
       catchError((err) => {
-        console.log(err);
         throw new HttpException(
           "Not Found / Invalid Stock Symbol",
           HttpStatus.BAD_REQUEST

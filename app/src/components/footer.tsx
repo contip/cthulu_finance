@@ -22,16 +22,16 @@ export default function Footer(): JSX.Element {
   return (
     <Box bgcolor="primary.main" className={classes.root}>
       <Typography variant="body2" className={classes.footerText}>
-        Miskatonic University, 2020.
+        Miskatonic University, 2024.
       </Typography>
       <Typography variant="body2" className={classes.footerText}>
         Financial information provided by{" "}
         <Link
           className={classes.link}
           rel="noreferrer"
-          href="https://iexcloud.io"
+          href="https://finance.yahoo.com"
         >
-          IEX Cloud
+          Yahoo Finance
         </Link>
       </Typography>
     </Box>

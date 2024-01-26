@@ -14,6 +14,18 @@ import { authService } from "../components/auth.service";
 import Trade from "../components/trade";
 import ShopTwo from "@material-ui/icons/ShopTwo";
 import Title from "../components/title";
+import { makeStyles, Theme, createStyles } from "@material-ui/core";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    visible: {
+      visibility: "visible",
+    },
+    hidden: {
+      visibility: "hidden",
+    },
+  })
+);
 
 /* allows user to lookup stocks by symbol, if found, displays table with data
  * from api; table provides quickbuy/sell functionality */
@@ -25,6 +37,7 @@ export default function Lookup() {
   let [didSearch, setDidSearch] = useState<boolean>(false);
   let [userShares, setUserShares] = useState<number>(0);
   let { enqueueSnackbar } = useSnackbar();
+  const classes = useStyles();
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setLookupInput(event.target.value);
@@ -47,28 +60,10 @@ export default function Lookup() {
       setLookupInput("");
       return;
     } else {
-      /* IEX api sometimes includes min/max dates without the associated
-       * min/max price (a bug)... in this case, discard the date */
       let lookupData: any = {};
       Object.keys(LookupColumnsMap).forEach((element) => {
         if (response[element]) {
-          if (element === "lowTime" || element === "highTime") {
-            if (!response[element.substr(0, element.indexOf("T"))]) {
-              delete response[element];
-            } else {
-              /* if date and min/max present, convert to readable string */
-              lookupData[element] = new Intl.DateTimeFormat("en-Us", {
-                year: "numeric",
-                month: "numeric",
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                second: "numeric",
-              }).format(response[element]);
-            }
-          } else {
-            lookupData[element] = response[element];
-          }
+          lookupData[element] = response[element];
         }
       });
       setLookupInput("");
@@ -145,46 +140,51 @@ export default function Lookup() {
         }}
       ></InputForm>
 
-      {
-        /* display table with lookup data if successful lookup, otherwise
-         * render equivalent whitespace to preserve formatting */
-        didSearch && stockData && stockData.companyName && columnData ? (
-          <div>
-            {Table({
-              tableCols: columnData,
-              data: [stockData],
-              detailPanel: [
-                {
-                  icon: ShopTwo,
-                  tooltip: "Quick Trade",
-                  render: () => {
-                    return (
-                      <div style={{ textAlign: "center" }}>
-                        <Trade {...tradeProps} />
-                      </div>
-                    );
-                  },
-                },
-              ],
-              title: `Quote Results for ${stockData.symbol}`,
-              options: {
-                paging: false,
-                showSelectAllCheckbox: false,
-                search: false,
-                sorting: false,
+      <div
+        className={
+          didSearch && stockData && stockData.companyName && columnData
+            ? classes.visible
+            : classes.hidden
+        }
+      >
+        {Table({
+          tableCols: columnData ?? [],
+          data: [stockData ?? null],
+          detailPanel: [
+            {
+              icon: ShopTwo,
+              tooltip: "Quick Trade",
+              render: () => {
+                return (
+                  <div style={{ textAlign: "center" }}>
+                    <Trade {...(tradeProps ?? null)} />
+                  </div>
+                );
               },
-            })}
-          </div>
-        ) : (
-          <span>
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-          </span>
-        )
-      }
+            },
+          ],
+          title: `Quote Results for ${stockData?.symbol}`,
+          options: {
+            paging: false,
+            showSelectAllCheckbox: false,
+            search: false,
+            sorting: false,
+          },
+        })}
+      </div>
+      <span
+        className={
+          !didSearch || !stockData || !stockData.companyName || !columnData
+            ? classes.visible
+            : classes.hidden
+        }
+      >
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+      </span>
     </div>
   );
 }
