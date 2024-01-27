@@ -59,7 +59,6 @@ export default function Trade(props: ITradeProps): JSX.Element {
   const classes = useStyles();
   const componentMounted = useRef(true);
 
-
   /* if the trade type is buy, add max purchase validation rule to form */
   if (tradeType === "buy") {
     ValidatorForm.addValidationRule("maxPurchase", (value: any) => {
@@ -85,23 +84,22 @@ export default function Trade(props: ITradeProps): JSX.Element {
         },
       };
       fetchCall(payload).then((response: any) => {
-        if (response.code && componentMounted.current) {
-          enqueueSnackbar(response.message, { variant: "error" });
-          setLookupPrice(0);
-        } else {
-          setLookupPrice(response.latestPrice);
+        if (componentMounted.current) {
+          if (response.code) {
+            enqueueSnackbar(response.message, { variant: "error" });
+            setLookupPrice(0);
+          } else {
+            setLookupPrice(response.latestPrice);
+          }
         }
       });
     } else {
       setLookupPrice(props.latestPrice);
     }
     return () => {
-      setLookupPrice(0);
-      setTradeType(undefined);
-      setSharesInput("");
-      setValidSharesInput(false);
+      componentMounted.current = false;
     };
-  }, []);
+  }, [props, enqueueSnackbar]);
 
   /* handles server api call to log the trade, then updates state with redirect;
    * reachable by user accepting the transaction confirmation popup */
