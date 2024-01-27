@@ -114,10 +114,6 @@ export interface IStockData {
   latestPrice: number;
   previousClose?: number;
   low?: number;
-  lowTime?: string;
   high?: number;
-  highTime?: string;
-  week52Low?: number;
-  week52High?: number;
   [key: string]: string | number | undefined;
 }

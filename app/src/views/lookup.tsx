@@ -47,7 +47,7 @@ export default function Lookup() {
   /* carries out fetch request to server for stock lookup data */
   async function handleSubmit() {
     /* purge anything in stockData / columnData state before submission */
-    setStockData({ companyName: "", symbol: "", latestPrice: NaN });
+    setStockData({ companyName: "", symbol: "", latestPrice: 0 });
     setColumnData(null);
     let payload: ILookupCall = {
       url: Urls.lookup,
@@ -148,8 +148,8 @@ export default function Lookup() {
         }
       >
         {Table({
-          tableCols: columnData ?? [],
-          data: [stockData ?? null],
+          tableCols: columnData ?? undefined,
+          data: [stockData] ?? null,
           detailPanel: [
             {
               icon: ShopTwo,
@@ -157,7 +157,7 @@ export default function Lookup() {
               render: () => {
                 return (
                   <div style={{ textAlign: "center" }}>
-                    <Trade {...(tradeProps ?? null)} />
+                    <Trade {...(tradeProps) ?? null} />
                   </div>
                 );
               },
