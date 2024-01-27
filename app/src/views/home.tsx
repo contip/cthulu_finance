@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { IUserHoldingFull, ITableCol } from "../data/interfaces";
+import { IUserHoldingFull, ITableCol, ITradeProps } from "../data/interfaces";
 import Table from "../components/table";
 import { HoldingsColumnsMap } from "../data/constants";
 import { authService } from "../components/auth.service";
@@ -35,9 +35,8 @@ Object.keys(HoldingsColumnsMap).forEach((key) => {
 
 /* main landing page of app; displays table of user's stock portfolio */
 export default function Home(): JSX.Element {
-  let [userHoldings, setUserHoldings] = useState<Array<
-    IUserHoldingFull
-  > | null>(null);
+  let [userHoldings, setUserHoldings] =
+    useState<Array<IUserHoldingFull> | null>(null);
   const classes = useStyles();
 
   /* silently get new JWT and refresh user holding data on load */
@@ -73,9 +72,15 @@ export default function Home(): JSX.Element {
               icon: ShopTwo,
               tooltip: "Quick Trade",
               render: (rowData: any) => {
+                let props: ITradeProps = {
+                  stock_symbol: rowData?.stock_symbol ?? "",
+                  stock_name: rowData?.stock_name ?? "",
+                  latestPrice: rowData?.price ?? 0,
+                  shares: rowData?.shares ?? undefined,
+                };
                 return (
                   <div className={classes.quickTrade}>
-                    <Trade {...rowData} />
+                    <Trade {...props} />
                   </div>
                 );
               },
