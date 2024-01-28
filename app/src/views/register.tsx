@@ -47,9 +47,15 @@ export default function Register(): JSX.Element {
     } else {
       authService.newUser(response);
       history.push("/");
-      enqueueSnackbar(`Welcome, ${response.userData.username}. Good luck!`, {
-        variant: "success",
-      });
+      enqueueSnackbar(
+        `Welcome, ${response.userData.username}. You've been given $10,000 \
+        to start.\nLookup a stock and build your portfolio, and grow your \
+        profits over time.  Good luck!`,
+        {
+          style: { whiteSpace: 'pre-line' },
+          variant: "success",
+        }
+      );
     }
   }
 

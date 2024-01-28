@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./app";
 import { ThemeProvider } from "@material-ui/core/styles";
 import theme from "./data/theme";
-import './data/fonts/CHILLER.TTF'
+import './data/fonts/LibreBaskerville.ttf'
 
 ReactDOM.render(
   <div>

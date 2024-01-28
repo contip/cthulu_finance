@@ -5,7 +5,7 @@ import React from "react";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      fontFamily: "Chiller",
+      fontFamily: "Libre Baskerville",
       marginBottom: "25px",
     },
   })

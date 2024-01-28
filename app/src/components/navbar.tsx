@@ -24,24 +24,24 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     title: {
       flexGrow: 1,
-      color: "white",
+      color: theme.palette.common.white,
     },
     infoBar: {
       textAlign: "center",
     },
     textButtons: {
-      color: "white",
+      color: theme.palette.common.white,
     },
     selected: {
       color: theme.palette.secondary.light,
     },
     infoBarTitles: {
-      color: "black",
+      color: theme.palette.common.black,
       padding: 5,
       fontWeight: "bold",
     },
     infoBarSums: {
-      color: "green",
+      color: theme.palette.success.main,
       padding: 5,
       fontWeight: "bold",
     },
@@ -101,7 +101,6 @@ export default function MenuAppBar() {
               edge="start"
               component={Link}
               to={currentUser?.accessToken ? "/" : "/login"}
-              color="inherit"
               aria-label="menu"
             >
               {<img src={logo} alt="Logo" />}
@@ -127,24 +126,7 @@ export default function MenuAppBar() {
                         : classes.textButtons
                     }
                   >
-                    Lookup
-                  </Typography>
-                </Button>
-                <Button
-                  component={Link}
-                  to="/buy"
-                  variant="text"
-                  color="secondary"
-                >
-                  <Typography
-                    variant="button"
-                    className={
-                      location.pathname === "/buy"
-                        ? classes.selected
-                        : classes.textButtons
-                    }
-                  >
-                    Buy
+                    Lookup / Buy
                   </Typography>
                 </Button>
                 <Button
@@ -161,7 +143,24 @@ export default function MenuAppBar() {
                         : classes.textButtons
                     }
                   >
-                    Sell
+                    Quick Sell
+                  </Typography>
+                </Button>
+                <Button
+                  component={Link}
+                  to="/history"
+                  variant="text"
+                  color="secondary"
+                >
+                  <Typography
+                    variant="button"
+                    className={
+                      location.pathname === "/history"
+                        ? classes.selected
+                        : classes.textButtons
+                    }
+                  >
+                    Trade History
                   </Typography>
                 </Button>
                 <Typography variant="h5" className={classes.title}></Typography>
@@ -169,13 +168,7 @@ export default function MenuAppBar() {
             )
           }
           {currentUser?.accessToken /* logged-in dropdown menu */ && (
-            <div
-              className={
-                location.pathname === "/" || location.pathname === "/history"
-                  ? classes.selected
-                  : ""
-              }
-            >
+            <div className={location.pathname === "/" ? classes.selected : ""}>
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"

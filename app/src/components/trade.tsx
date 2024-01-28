@@ -23,12 +23,6 @@ const useStyles = makeStyles((theme: Theme) =>
     quickTrade: {
       textAlign: "center",
     },
-    tradeInfo: {
-      fontFamily: "Chiller",
-      fontSize: "x-large",
-      color: theme.palette.secondary.main,
-      fontWeight: "bold",
-    },
     visible: {
       textAlign: "center",
       visibility: "visible",
@@ -38,10 +32,17 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     sums: {
       fontWeight: "bold",
-      color: theme.palette.primary.main,
+      color: theme.palette.success.main,
       display: "inline",
-      fontFamily: "Chiller",
+      fontFamily: "Libre Baskerville",
       fontSize: "x-large",
+    },
+    common: {
+      fontFamily: "Libre Baskerville",
+      fontSize: "x-large",
+      fontWeight: "bold",
+      color: theme.palette.common.black,
+      display: "inline",
     },
   })
 );
@@ -115,20 +116,22 @@ export default function Trade(props: ITradeProps): JSX.Element {
       },
     };
     let response = await fetchCall(payload);
-    if (response.code) {
-      enqueueSnackbar(response.message, { variant: "error" });
-      setSharesInput("");
-    } else {
-      enqueueSnackbar(
-        tradeType === "buy" ? "Purchase Successful!" : "Sale Successful!",
-        {
-          variant: "success",
-        }
-      );
-      if (location.pathname === "/") {
-        history.push("/redirect");
+    if (componentMounted.current) {
+      if (response.code) {
+        enqueueSnackbar(response.message, { variant: "error" });
+        setSharesInput("");
       } else {
-        history.push("/");
+        enqueueSnackbar(
+          tradeType === "buy" ? "Purchase Successful!" : "Sale Successful!",
+          {
+            variant: "success",
+          }
+        );
+        if (location.pathname === "/") {
+          history.push("/redirect");
+        } else {
+          history.push("/");
+        }
       }
     }
     return;
@@ -172,7 +175,11 @@ export default function Trade(props: ITradeProps): JSX.Element {
             <RadioGroup
               aria-label="tradeType"
               name="typeSelect"
-              value={tradeType ?? ""}
+              value={
+                tradeType ?? (location.pathname === "/lookup" && !props.shares)
+                  ? "buy"
+                  : ""
+              }
               onChange={handleChange}
               row
             >
@@ -276,7 +283,7 @@ export default function Trade(props: ITradeProps): JSX.Element {
             variant="body1"
             className={[
               lookupPrice > 0 ? classes.visible : classes.hidden,
-              classes.tradeInfo,
+              classes.common,
             ].join(" ")}
           >
             {props.stock_name} ({props.stock_symbol}) current price:{" "}
@@ -296,11 +303,15 @@ export default function Trade(props: ITradeProps): JSX.Element {
             validSharesInput && sharesInput !== "" && sharesInput !== "0"
               ? classes.visible
               : classes.hidden,
-            classes.tradeInfo,
+            classes.common,
           ].join(" ")}
         >
           {tradeType === "buy" ? "Purchase" : "Sale"} price:{" "}
-          <Typography component="div" variant="body1" className={classes.sums}>
+          <Typography
+            component="div"
+            variant="body1"
+            className={tradeType === "buy" ? classes.common : classes.sums}
+          >
             {new Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",

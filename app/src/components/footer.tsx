@@ -25,13 +25,14 @@ export default function Footer(): JSX.Element {
         Miskatonic University, 2024.
       </Typography>
       <Typography variant="body2" className={classes.footerText}>
-        Financial information provided by{" "}
+        Financial information is for demonstration purposes only and is provided
+        by{" "}
         <Link
           className={classes.link}
           rel="noreferrer"
-          href="https://finance.yahoo.com"
+          href="https://finnhub.io"
         >
-          Yahoo Finance
+          Finnhub
         </Link>
       </Typography>
     </Box>

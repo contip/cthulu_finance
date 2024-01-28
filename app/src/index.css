@@ -19,18 +19,19 @@ code {
 }
 
 /* Table Zebra striping */
-tr:nth-of-type(odd) { 
-  background: #eee; 
+tr:nth-of-type(odd) {
+  background: #eee;
 }
-th { 
-  background: #333; 
-  color: white; 
-  font-weight: bold; 
+th {
+  background: #333;
+  color: white;
+  font-weight: bold;
 }
-td, th { 
-  padding: 6px; 
-  border: 1px solid #ccc; 
-  text-align: left; 
+td,
+th {
+  padding: 6px;
+  border: 1px solid #ccc;
+  text-align: left;
 }
 
 /* div[class^="MTableToolbar-title"] {
@@ -40,7 +41,7 @@ td, th {
 } */
 
 h6[class^="MuiTypography-root"] {
-  font-family: 'Chiller';
+  font-family: "Libre Baskerville";
   font-size: 50px;
   color: #3d5afe;
 }
@@ -50,8 +51,8 @@ div[class^="MuiInputBase-root"] {
 }
 
 @font-face {
-  font-family: 'Chiller';
-  src: local('Chiller'), url(./data/fonts/CHILLER.TTF) format('truetype');
+  font-family: "Libre Baskerville", serif;
+  src: local("Libre"), url(./data/fonts/LibreBaskerville.ttf) format("truetype");
 }
 /* 
 
