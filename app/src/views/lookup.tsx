@@ -108,6 +108,7 @@ export default function Lookup() {
     stock_symbol: stockData.symbol,
     stock_name: stockData.companyName,
     shares: userShares,
+    type: "buy",
     latestPrice: stockData.latestPrice,
   };
 

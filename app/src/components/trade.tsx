@@ -159,6 +159,7 @@ export default function Trade(props: ITradeProps): JSX.Element {
     if (event.target.name === "shares") {
       setSharesInput(event.target.value);
     } else {
+      console.log(event.target.value);
       setTradeType(event.target.value);
       setSharesInput("");
       setValidSharesInput(false);
@@ -175,11 +176,7 @@ export default function Trade(props: ITradeProps): JSX.Element {
             <RadioGroup
               aria-label="tradeType"
               name="typeSelect"
-              value={
-                tradeType ?? (location.pathname === "/lookup" && !props.shares)
-                  ? "buy"
-                  : ""
-              }
+              value={tradeType ?? ""}
               onChange={handleChange}
               row
             >
