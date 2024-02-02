@@ -22,7 +22,6 @@ FROM node:12.18 AS app
 WORKDIR /app/backend
 
 COPY server/package.json server/npm-shrinkwrap.json ./
-COPY docker-entrypoint.sh ./
 
 RUN npm ci
 
