@@ -23,7 +23,7 @@ const connectionOptions = {
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "build"),
       /* exclude backend api routes from serve static module */
-      exclude: ["/auth*", "/trades*", "/lookup"],
+      exclude: ["/auth*", "/trades*", "/lookup*"],
     }),
     TypeOrmModule.forRoot({
       type: "postgres",
