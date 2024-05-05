@@ -1,49 +1,56 @@
 version: "3.8"
 services:
   postgres:
-    container_name: postgres
+    container_name: "${POSTGRES_DB}_postgres"
     image: postgres:11
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
-      - /data/postgres:/data/postgres
+      - "/data/${POSTGRES_DB}/postgres:/data/${POSTGRES_DB}/postgres"
     env_file:
       - .env
     networks:
-      - postgres
+      - backend
 
   pgadmin:
     links:
       - postgres
-    container_name: pgadmin
+    container_name: "${POSTGRES_DB}_pgadmin"
     image: dpage/pgadmin4
-    ports:
-      - "${PGADMIN_PORT}:${PGADMIN_PORT}"
     volumes:
-      - /data/pgadmin:/root/.pgadmin
+      - "/data/${POSTGRES_DB}/pgadmin:/root/${POSTGRES_DB}/.pgadmin"
     env_file:
       - .env
     networks:
-      - postgres
+      - backend
+      - frontend
 
   app:
-    container_name: finance-app
+    container_name: "${POSTGRES_DB}_app"
     build:
       context: ./
       dockerfile: Dockerfile
-    ports:
-      - "${PORT}:${PORT}"
     networks:
-      - postgres
+      - backend
+      - frontend
     env_file:
       - .env
     restart: on-failure
-    links: 
+    links:
       - postgres
     command: "npm run start:dist"
     volumes:
-      - /data/app:/data/app
+      - "/data/${POSTGRES_DB}/app:/data/${POSTGRES_DB}/app"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.${POSTGRES_DB}.loadbalancer.server.port=${PORT}"
+      - "traefik.http.routers.${POSTGRES_DB}.rule=Host(`${EXT_URL}`)"
+      - "traefik.http.routers.${POSTGRES_DB}.entrypoints=web,websecure"
+      - "traefik.http.routers.${POSTGRES_DB}.tls=true"
+      - "traefik.http.routers.${POSTGRES_DB}.tls.certresolver=myresolver"
+      - "traefik.http.routers.${POSTGRES_DB}.tls.domains[0].main=`${EXT_BASE_URL}`"
+      - "traefik.http.routers.${POSTGRES_DB}.tls.domains[0].sans=`${EXT_URL}`"
 
 networks:
-  postgres:
-    driver: bridge
+  backend:
+    external: true
+  frontend:
+    external: true
