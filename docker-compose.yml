@@ -46,8 +46,6 @@ services:
       - "traefik.http.routers.${POSTGRES_DB}.entrypoints=web,websecure"
       - "traefik.http.routers.${POSTGRES_DB}.tls=true"
       - "traefik.http.routers.${POSTGRES_DB}.tls.certresolver=myresolver"
-      - "traefik.http.routers.${POSTGRES_DB}.tls.domains[0].main=`${EXT_BASE_URL}`"
-      - "traefik.http.routers.${POSTGRES_DB}.tls.domains[0].sans=`${EXT_URL}`"
 
 networks:
   backend:

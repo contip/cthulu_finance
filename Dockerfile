@@ -35,6 +35,6 @@ COPY --from=assets /app/frontend/build/ ./build/
 RUN npm run prebuild
 RUN npm run build
 
-EXPOSE 7112
+EXPOSE $PORT
 
 CMD ["bash"]
