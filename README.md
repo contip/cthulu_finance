@@ -1,13 +1,14 @@
 # Cthulu Finance
 
 A mock stock-trading application created with Node.js and React.  
-Check out the live app [here](https://guarded-reaches-45301.herokuapp.com)
+Check out the live app [here](https://finance.msupial.net)
 
 ## Overview
-!["main_logo"](https://i.imgur.com/Zfqs1Om.gif)
+!["main_logo"](https://i.imgur.com/djEmfs4.gif)
 
 This project was begun in an effort to better learn modern web development 
-principles as a computer science undergraduate student.  
+principles as a computer science undergraduate student, and was recently revisited
+and updated to work with a new finance api, as well as containerized for redeployment.  
 
 ## Technologies
 
